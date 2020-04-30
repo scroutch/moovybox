@@ -2,16 +2,6 @@ const client = require('../db_client');
 const bcrypt = require('bcrypt');
 const salt = parseInt(process.env.SALT, 10);
 
-bcrypt.hash("gedeon", salt, function(err, hash) {
- return hash; 
-});
-/*
-bcrypt.compare("gedeon", hash, function(err, result) {
-    // result == true
-    console.log("compare", result); 
-});
-*/
-
 class User {
 
     constructor(obj){
@@ -37,14 +27,36 @@ class User {
         }
     }
 
+    static async findByEmail(email) {
+        try {
+            // prepare de query 
+            const query = `SELECT * FROM "user" WHERE email = $1`; 
+            const values = [email]; 
+            // make query to DB 
+
+            const results = await client.query(query, values); 
+            // check answer
+                // If one found return value 
+                // Esle return error "ressource not found" 401
+
+               // console.log(results); 
+            return results.rows[0]; 
+            
+        } catch (error) {
+            console.trace(error);
+        }
+    }
+
     async insert() {
         //* Save user in DB 
         try {
             // request to find an associated user
             const query = `INSERT INTO "user" (pseudo, email, password) VALUES ($1, $2, $3) RETURNING *`; 
-            
+            // Hashes the password to insert in DB
             const hashedPassword = await bcrypt.hash(this.password, salt); 
+            // value table setting
             const values = [this.pseudo, this.email, hashedPassword]; 
+
             const results = await client.query(query, values); 
             console.log("insert results",results);
             // Returns a boolean 
