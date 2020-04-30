@@ -1,15 +1,13 @@
-// on définit un objet, qui va contenir des fonctions (c'est la définition même d'un module)
 const mainController = {
 
-    // dans ce module, on va définir une méthode pour afficher la page d'accueil
     homePage: (req, res) => {
-      // on appelle simplement la méthode render de la response
-      res.send('index');
+        
+        res.send('home page'); 
     },
-    notFound: (req, res) => {
-      res.status(404).send('404');
+
+    notFound: (req,res) => {
+        res.status(404).send('not found'); 
     }
 }
 
-// on oublie pas d'exporter notre module
-module.exports = mainController;
+module.exports = mainController ;
