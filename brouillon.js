@@ -1,8 +1,13 @@
 const bcrypt = require('bcrypt');
+require('dotenv').config(); 
 
-const salt = 10;
+const salt = parseInt(process.env.SALT, 10);
+(async () => {
+    const hash = await bcrypt.hash("gedeon", salt); 
+    console.log('hash :>> ', hash);
+})(); 
 
-bcrypt.hash("gedeon", salt, function(err, hash) {
+/*, function(err, hash) {
     // Store hash in your password DB.
 
     console.log("hash", hash); 
@@ -12,3 +17,4 @@ bcrypt.hash("gedeon", salt, function(err, hash) {
         console.log("compare", result); 
     });
 });
+*/
