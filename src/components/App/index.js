@@ -1,26 +1,36 @@
 // == Import npm
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { Route, Redirect, Switch } from 'react-router';
 
 // == Import
 // import reactLogo from './react-logo.svg';
 import './styles.css';
+import SignIn from 'src/components/SignIn';
+import Move from 'src/components/Move';
 
 // == Composant
 const App = () => {
-  const dispatch = useDispatch();
-  const clickCount = useSelector((state) => state.counter);
+  const nickname = useSelector((state) => state.nickname);
 
   return (
     <div className="app">
-      {/* <img src={reactLogo} alt="react logo" /> */}
-      <h1>Composant : App</h1>
-      <button
-        type="button"
-        onClick={(evt) => dispatch({ type: 'INCREMENT' })}
-      >
-        Clic-me ! ({clickCount})
-      </button>
+      <Switch>
+        <Route exact path="/signin">
+          <SignIn />
+        </Route>
+        <Route
+          exact
+          path="/signin"
+          render={() => {
+            if (nickname === '') {
+              return <Redirect to="/signin" />;
+            }
+            return <Move />;
+          }}
+        />
+        <Route>404</Route>
+      </Switch>
     </div>
   );
 };
