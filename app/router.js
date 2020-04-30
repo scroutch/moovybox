@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router(); 
 
 const mainController = require('./controllers/mainController'); 
+const authController = require('./controllers/authController'); 
 
 router.get('/', mainController.homePage); 
+
+router.post('/signup', authController.signup); 
 
 router.use('*', mainController.notFound); 
 
