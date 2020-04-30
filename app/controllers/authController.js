@@ -1,6 +1,13 @@
 const Joi = require('@hapi/joi');
 const User = require('../models/user'); 
 
+const signinSchema = Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string()
+        .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
+        .required()
+    });
+
 const signupSchema = Joi.object({
     pseudo: Joi.string()
         .alphanum()
@@ -58,15 +65,26 @@ const authControlleur = {
                         delete storedUser.password
                         res.send(storedUser);
                     }
-
-            }
-
-            
+            }            
         } catch (error) {
             console.trace(error); 
         }
-    }
+    },
+  
+    signin: (req, res) => {
 
+        try {
+            const signinFormValid = signinSchema.validate(req.body);
+            console.log(signinFormValid);
+        }
+        catch (err) { }
+
+
+        res.send("c'est l'auth signin !"); 
+    }
+// I want to connect my DB to my authcontroller
+// 
 }
+
 
 module.exports = authControlleur ;
