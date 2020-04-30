@@ -10,6 +10,8 @@ router.get('/', mainController.homePage);
 
 router.post('/signin', authController.signin);
 
+router.post('/signup', authController.signup);
+
 router.use('*', mainController.notFound); 
 
 module.exports = router; 
