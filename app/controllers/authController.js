@@ -1,19 +1,30 @@
+const Joi = require('@hapi/joi');
+
+
+const signinSchema = Joi.object().keys({
+
+    email: Joi.string().email().required(),
+    password: Joi.string()
+        .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
+        .required()
+    });
+
 const authControlleur = {
-    signup: (req, res) => {
-        // check for entries
 
-        console.log(req); 
 
-        // check de validity of the sent data
+    signin: (req, res) => {
 
-        // Check if the incoming email isn't already present in DB
-            // if present : send an error (look for server code) "email already existing in DB"
-            // absent : create and send the new entry data back
-            // open a session and add user id in session
-            // 
-        res.send("c'est l'auth  signup !"); 
+        try {
+            const signinFormValid = signinSchema.validate(req.body);
+            console.log(signinFormValid);
+        }
+        catch (err) { }
+
+        res.send("c'est l'auth signin !"); 
     }
-
+// I want to connect my DB to my authcontroller
+// 
 }
+
 
 module.exports = authControlleur ;
