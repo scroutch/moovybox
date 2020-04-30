@@ -83,8 +83,6 @@ const authControlleur = {
         res.send("c'est l'auth signin !"); 
     }
 // I want to connect my DB to my authcontroller
-// 
 }
-
 
 module.exports = authControlleur ;
