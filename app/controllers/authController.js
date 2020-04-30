@@ -7,7 +7,7 @@ const signinSchema = Joi.object().keys({
     password: Joi.string()
         .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
         .required()
-    });
+});
 
 const signupSchema = Joi.object({
     pseudo: Joi.string()
@@ -34,7 +34,6 @@ const authControlleur = {
             // check de validity of the sent data
             const authValidation =  await signupSchema.validate(req.body);
     
-
             // check if the incoming data is valid -> no error
             if (!!authValidation.error) {
                 // if an error occurs send a bad request code (400) to front
@@ -63,7 +62,7 @@ const authControlleur = {
                         console.log('storedUser :>> ', storedUser);
                         // Returning the user as an object
                         delete storedUser.password; 
-                        res.send(storedUser);
+                        res.status(201).send(storedUser); // Status 201 : resosurces created
                     }
             }            
         } catch (error) {
@@ -79,17 +78,17 @@ const authControlleur = {
             //console.log("!!signinFormValid.error :>> ", !!signinFormValid.error);
 
             if (!!signinFormValid.error){
-                res.status(401).send(signinFormValid.error.message); 
+                res.status(401).send(signinFormValid.error); 
             } else {
                 // * Get user from email and match passwords 
 
                 // I query to get user from DB with email address 
                 const storedUser = await User.findByEmail(req.body.email); 
-
+                console.log('storedUser :>> ', storedUser);
                 //console.log("req.body.password :>> ", req.body.password);
                 //console.log("storedUser.password :>> ", storedUser.password);
                 // If the user exists  
-                if (storedUser) {
+                if (!!storedUser) {
 
                     // I compare the hash from the DB with the received password (bcrypt)
                     const passwordMatch = await bcrypt.compare(req.body.password, storedUser.password); 
@@ -108,10 +107,22 @@ const authControlleur = {
                     } else {
                         //   If there is a match add user id to session, 
                         // AND get his moves and send the results back 
+                        req.session.user_id = storedUser.id; 
+                        console.log('req.session :>> ', req.session);
+
+                        delete storedUser.password; 
                         res.send(storedUser); 
                     }
                 } else {
-
+                    res.status(401).send({
+                        error : {
+                            statusCode: 401,
+                            message: {
+                                en:"Email not found", 
+                                fr:"Email non trouvé"
+                            }
+                        }
+                    }); 
                 }
             }
         }
@@ -119,6 +130,11 @@ const authControlleur = {
             console.trace(err);
         }
 
+    }, 
+
+    signout: (req, res) => {
+        delete req.session.user_id;
+        res.redirect('/');   
     }
 }
 

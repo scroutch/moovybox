@@ -2,11 +2,6 @@ const client = require('../db_client');
 const bcrypt = require('bcrypt');
 const salt = parseInt(process.env.SALT, 10);
 
-bcrypt.hash("gedeon", salt, function(err, hash) {
-    return hash; 
-});
-
-
 class User {
 
     constructor(obj){
