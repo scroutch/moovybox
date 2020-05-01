@@ -8,7 +8,7 @@ class Move {
         this.address = obj.address; 
     }
 
-    static async getUsersMoves(req, res) {
+    static async getUserMoves(req, res) {
         // Method to retrieve all user moves and send them to client
 
         const query = `SELECT * FROM move WHERE user_id = $1;`; 
