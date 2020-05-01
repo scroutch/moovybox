@@ -1,7 +1,9 @@
+import withRoot from '../modules/withRoot';
+
 import React from 'react';
 
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
+
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -13,7 +15,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import theme from '../modules/theme';
+import Button from '../modules/components/Button';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -35,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+ const SignIn = () => {
   const classes = useStyles();
 
   return (
@@ -45,7 +47,7 @@ export default function SignIn() {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h4">
           Page de connexion
         </Typography>
         <form className={classes.form} noValidate>
@@ -55,7 +57,7 @@ export default function SignIn() {
             required
             fullWidth
             id="email"
-            label="Adresse Email"
+            label="Email"
             name="email"
             autoComplete="email"
             autoFocus
@@ -71,28 +73,26 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
+          * Champs obligatoires
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
+            color="secondary"
             className={classes.submit}
           >
-            Sign In
+          Connexion
           </Button>
+         
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
-                Forgot password?
+                Mot de passe oublié ?
               </Link>
             </Grid>
             <Grid item>
               <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+                {'Pas de compte, créez-en un ici'}
               </Link>
             </Grid>
           </Grid>
@@ -101,4 +101,5 @@ export default function SignIn() {
       
     </Container>
   );
-}
+};
+export default withRoot(SignIn);

@@ -12,11 +12,6 @@ import axios from 'axios';
 import App from 'src/components/App';
 import store from 'src/store';
 
-axios
-  .get('http://localhost:3001/mes-infos-utilisateur', {
-    withCredentials: true,
-  })
-  .then((response) => console.log(response));
 
 // == Render
 // 1. Élément React racine (celui qui contient l'ensemble de l'app)
