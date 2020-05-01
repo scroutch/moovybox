@@ -2,7 +2,7 @@ const Joi = require('@hapi/joi');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
-const signinSchema = Joi.object().keys({
+const signinSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string()
         .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
