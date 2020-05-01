@@ -46,7 +46,7 @@ const SignUp = () => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h4">
           Création de compte
         </Typography>
         <form className={classes.form} noValidate>
@@ -108,7 +108,7 @@ const SignUp = () => {
           >
             Valider
           </Button>
-          <Grid container justify="flex-end">
+          <Grid container justify="center">
             <Grid item>
               <Link href="/signin" variant="body2">
                 Vous avez déjà un compte ? Connectez-vous ici

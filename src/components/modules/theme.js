@@ -36,10 +36,22 @@ const rawTheme = createMuiTheme({
     fontWeightMedium: 700, // Roboto Condensed
     fontFamilySecondary: "'Josefin Sans', sans-serif",
   },
+  text: {
+    primary: {
+      light: '#fff5f8',
+      main: '#2858d2',
+      dark: '#04309e',
+    },
+    secondary: {
+      light: '#fff5f8',
+      main: '#04309e',
+      dark: '#04309e',
+    },
+  },
 });
 
 const fontHeader = {
-  color: rawTheme.palette.text.primary,
+  color: rawTheme.text.secondary.main,
   fontWeight: rawTheme.typography.fontWeightMedium,
   fontFamily: rawTheme.typography.fontFamilySecondary,
   textTransform: 'uppercase',
