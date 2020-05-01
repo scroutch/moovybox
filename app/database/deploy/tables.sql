@@ -13,7 +13,7 @@ CREATE TABLE "move" (
     "label" TEXT NOT NULL, 
     "date" DATE NOT NULL, 
     "address" TEXT, 
-    "user_id" INT NOT NULL REFERENCES "user"("id")
+    "user_id" INT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE
 ); 
 
 CREATE TABLE "box" (
@@ -24,8 +24,8 @@ CREATE TABLE "box" (
     "fragile" BOOLEAN NOT NULL DEFAULT false, 
     "heavy" BOOLEAN NOT NULL DEFAULT false, 
     "floor" BOOLEAN NOT NULL DEFAULT false, 
-    "user_id" INT NOT NULL REFERENCES "user"("id"),
-    "move_id" INT NOT NULL REFERENCES "move"("id")
+    "user_id" INT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+    "move_id" INT NOT NULL REFERENCES "move"("id") ON DELETE CASCADE
 ); 
 
 CREATE SEQUENCE box_code_seq
@@ -40,8 +40,8 @@ ALTER TABLE "box" ALTER "code" SET DEFAULT lpad(to_hex(nextval('box_code_seq')),
 CREATE TABLE "item" (
     "id" INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "name" TEXT NOT NULL, 
-    "user_id" INT NOT NULL REFERENCES "user"("id"),
-    "box_id" INT NOT NULL REFERENCES "box"("id"),
+    "user_id" INT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+    "box_id" INT NOT NULL REFERENCES "box"("id") ON DELETE CASCADE,
     CONSTRAINT one_box_one_user UNIQUE("user_id","box_id") 
 ); 
 
