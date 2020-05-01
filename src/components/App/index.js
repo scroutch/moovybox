@@ -8,6 +8,7 @@ import { Route, Redirect, Switch } from 'react-router';
 import './styles.css';
 import SignIn from 'src/components/SignIn';
 import Move from 'src/components/Move';
+import SignUp from 'src/components/SignUp';
 
 // == Composant
 const App = () => {
@@ -29,6 +30,9 @@ const App = () => {
             return <Move />;
           }}
         />
+        <Route exact path="/signup">
+          <SignUp />
+        </Route>
         <Route>404</Route>
       </Switch>
     </div>
