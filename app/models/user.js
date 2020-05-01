@@ -47,6 +47,25 @@ class User {
         }
     }
 
+    static async identifyUser(req) {
+        //* Check if the provided password matches the one in DB
+        //* user id in current session
+        try {
+            // request to find an associated user
+            const query = `SELECT * FROM "user" WHERE "id" = $1`; 
+            const results = await client.query(query, [req.session.user.id]); 
+            const user = results.rows[0]; 
+
+            const passwordMatch = await bcrypt.compare(req.body.password, user.password); 
+            // Returns a boolean 
+            // - true : user id and password match
+            // - false : user id and password don't match
+            return !! passwordMatch; 
+        } catch (error) {
+            return console.trace(error); 
+        }
+    }
+
     async insert() {
         //* Save user in DB 
         try {
