@@ -39,19 +39,19 @@ const rawTheme = createMuiTheme({
   text: {
     primary: {
       light: '#fff5f8',
-      main: '#2858d2',
-      dark: '#04309e',
+      main: '#04309e', // dark blue
+      dark: '#04309e', // lighter
     },
     secondary: {
       light: '#fff5f8',
-      main: '#04309e',
-      dark: '#04309e',
+      main: '#fff', // lighter blue
+      dark: '#f0f',
     },
   },
 });
 
 const fontHeader = {
-  color: rawTheme.text.secondary.main,
+  color: rawTheme.text.primary.main,
   fontWeight: rawTheme.typography.fontWeightMedium,
   fontFamily: rawTheme.typography.fontFamilySecondary,
   textTransform: 'uppercase',
@@ -109,6 +109,7 @@ const theme = {
       ...rawTheme.typography.body2,
       fontWeight: rawTheme.typography.fontWeightRegular,
       fontSize: 16,
+
     },
     body2: {
       ...rawTheme.typography.body1,
