@@ -16,7 +16,22 @@ const newMoveSchema = Joi.object({
 });
 
 const moveController = {
+
+    getUserMoves: async(req,res) => {
+        //* Find a send all the moves from a user
+        try {
+            // At this stage, a middleware has checked user authorization. 
+            const moves = await Move.getAll(req); 
+
+            res.send(moves); 
+
+        } catch (error) {
+            console.trace(error);
+        }
+    },
+
     createMove: async (req, res) => {
+        //* Create a new move in DB
         try {
             // Validate the data form the form
             const moveValidation = await newMoveSchema.validate(req.body); 

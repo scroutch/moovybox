@@ -23,7 +23,8 @@ router.route('/profile')
 
 /* Move related routes  */
 router.route('/move')
-    .post(authCheckerMW, moveController.createMove); 
+    .post(authCheckerMW, moveController.createMove)
+    .get(authCheckerMW, moveController.getUserMoves); 
 
 router.use('*', mainController.notFound); 
 

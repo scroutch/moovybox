@@ -13,7 +13,8 @@ CREATE TABLE "move" (
     "label" TEXT NOT NULL, 
     "date" DATE NOT NULL, 
     "address" TEXT, 
-    "user_id" INT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE
+    "user_id" INT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
+    CONSTRAINT one_label_one_move UNIQUE("user_id","label")
 ); 
 
 CREATE TABLE "box" (
