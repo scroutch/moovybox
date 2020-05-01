@@ -107,7 +107,7 @@ const authControlleur = {
                     } else {
                         //   If there is a match add user id to session, 
                         // AND get his moves and send the results back 
-                        req.session.user_id = storedUser.id; 
+                        req.session.user ={id: storedUser.id}; 
                         console.log('req.session :>> ', req.session);
 
                         delete storedUser.password; 
@@ -133,8 +133,19 @@ const authControlleur = {
     }, 
 
     signout: (req, res) => {
-        delete req.session.user_id;
+        delete req.session.user;
         res.redirect('/');   
+    }, 
+
+    updateProfile : (req, res) => {
+        //* Updating user profile (pseudo, email)
+        // Checkout if both 
+        res.send('this is update profile.'); 
+    }, 
+
+    resetPassword : (req, res) => {
+        //* Reseting the password User password
+        // Checkout if both 
     }
 }
 
