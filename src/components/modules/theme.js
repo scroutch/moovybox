@@ -100,6 +100,7 @@ const theme = {
       ...rawTheme.typography.h6,
       ...fontHeader,
       fontSize: 18,
+      color: rawTheme.text.secondary.main, // #fff
     },
     subtitle1: {
       ...rawTheme.typography.subtitle1,

@@ -18,6 +18,8 @@ import Container from '@material-ui/core/Container';
 import withRoot from '../modules/withRoot';
 import Button from '../modules/components/Button';
 import StickyFooter from '../modules/views/StickyFooter';
+import ButtonAppBar from '../modules/views/header';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -51,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
   return (
     <div className={classes.root}>
       <CssBaseline />
+      <ButtonAppBar />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>

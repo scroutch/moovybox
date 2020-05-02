@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
   footer: {
@@ -20,8 +19,7 @@ export default function StickyFooter() {
   return (
     <footer className={classes.footer}>
       <Container maxWidth="sm" align="center">
-
-        <Link href="/contacts" color="inherit" alignItems="center">
+        <Link href="/contacts" color="inherit">
           Nous contacter
         </Link>
         <br />
