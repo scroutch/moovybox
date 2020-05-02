@@ -11,14 +11,29 @@ class Move {
     static async getAll(req) {
         // Method to retrieve all user moves and send them to client
 
-        const query = `SELECT * FROM move WHERE user_id = $1;`; 
+        const query = `SELECT * FROM "move" WHERE user_id = $1;`; 
 
         const values = [req.session.user.id]; 
 
         const results = await client.query(query, values); 
 
         return results.rows; 
+    }
 
+    static async labelExists (req) {
+        //* Check the existence of the entred email in the DB
+        try {
+            // request to find an associated user
+            const query = `SELECT * FROM "move" WHERE "label" = $1 AND user_id = $2`; 
+            const results = await client.query(query, [req.body.label, req.session.user.id]); 
+            
+            // Returns a boolean 
+            // - true : label exists
+            // - false : label does not exist
+            return !!results.rowCount; 
+        } catch (error) {
+            return console.trace(error); 
+        }
     }
 
     async insert(req) {

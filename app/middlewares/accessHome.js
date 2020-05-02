@@ -1,8 +1,8 @@
 const accessHome = (req, res, next) => {
     // Checker if an authentified user is using the session
-    if (req.session.user.id) {
+    if (!!req.session.user) {
         // if there an authentified user redirect towards his moves page. 
-        res.redirect('/move');
+        return res.redirect('/move');
     }
 
     // if not move on 

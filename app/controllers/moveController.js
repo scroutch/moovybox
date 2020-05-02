@@ -33,19 +33,50 @@ const moveController = {
     createMove: async (req, res) => {
         //* Create a new move in DB
         try {
-            // Validate the data form the form
+            // Validate the data from the form
             const moveValidation = await newMoveSchema.validate(req.body); 
+
+           
 
             // if no error found then create Move instance and insert data. 
             if (!moveValidation.error) {
-                // create an instance of a move
-                const newMove = new Move(req.body); 
 
-                // Save the current move object to DB
-                const storedMove = await newMove.insert(req); 
+                //Get the label field
+                req.body.label
+                //Compare the label field with the DB values
+                const labelMatch = await Move.labelExists(req); 
+                console.log("labelMatch :>>", labelMatch);
+ 
+                //If the label is the same of the DB value of the same user
+                if (labelMatch){
+                    // send a error to client
+                    res.status(409).send({
+                        error : {
+                            statusCode: 409,
+                            message: {
+                                en:"This label already exists", 
+                                fr:"Ce label existe déjà"
+                            }
+                        }
+                    });
+                                
+                } else {
+                    // Else, we move on with the request
 
-                // Send the newly added move entry to client
-                res.send(storedMove); 
+                    // create an instance of a move
+                    const newMove = new Move(req.body); 
+                    console.log('newMove :>> ', newMove);
+
+                    // Save the current move object to DB
+                    const storedMove = await newMove.insert(req); 
+
+                    // Send the newly added move entry to client
+                    res.send(storedMove); 
+                               
+                }
+
+                
+                
 
             } else {
                 // if an error is found, update status code (400 for bad request)and send the error details
