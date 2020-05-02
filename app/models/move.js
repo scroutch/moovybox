@@ -53,6 +53,26 @@ class Move {
             console.trace(error);
         }
     }
+
+    static async delete(moveId) {
+
+        try {
+            // Select a move 
+            const query = `DELETE FROM "move" WHERE "id"= $1;`; 
+
+            // Delete the move
+            const result = await client.query(query, [moveId]);
+
+            //console.log('result :>> ', result);
+
+            // return boolean
+            // true : delete ok
+            // false : delete failed
+            return !!result.rowCount; 
+        } catch (error) {
+            console.trace(error);
+        }
+    }
 };
 
 module.exports = Move; 

@@ -68,15 +68,12 @@ const moveController = {
                     console.log('newMove :>> ', newMove);
 
                     // Save the current move object to DB
+                    /// zkdjfzf Move.insert(req)
                     const storedMove = await newMove.insert(req); 
 
                     // Send the newly added move entry to client
-                    res.send(storedMove); 
-                               
+                    res.send(storedMove);        
                 }
-
-                
-                
 
             } else {
                 // if an error is found, update status code (400 for bad request)and send the error details
@@ -86,6 +83,28 @@ const moveController = {
         } catch (error) {
             console.trace(error);
         }
+    }, 
+
+    deleteMove: async (req, res) => {
+        //* Delete a move from DB matching user id
+        // At this stage user IS authentified (authCheckerMW.js)
+                try {
+                    
+                    
+                    // Retrieve move id from url
+                    const moveId = req.params.id; 
+                    
+                    // Request deletion from DB with move id
+                    const success = await Move.delete(moveId); 
+
+                    // return : boolean
+                    // true : deletion ok
+                    // false : deletion didn't work
+                    res.send(success);
+                } catch (error) {
+                    console.trace(error);
+                }
+
     }
 
 }

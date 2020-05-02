@@ -22,9 +22,13 @@ router.route('/profile')
     .put(authCheckerMW, userCheckerMW, authController.updateProfile); 
 
 /* Move related routes  */
+
 router.route('/move')
     .post(authCheckerMW, moveController.createMove)
     .get(authCheckerMW, moveController.getUserMoves); 
+
+router.route('/move/:id')
+    .delete(authCheckerMW, moveController.deleteMove); 
 
 router.use('*', mainController.notFound); 
 
