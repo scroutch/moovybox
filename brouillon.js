@@ -1,4 +1,12 @@
-const bcrypt = require('bcrypt');
+const Move = require('./app/models/move'); 
+
+
+const myMove = new Move({label: 'houlala'}); 
+
+console.log('myMove :>> ', myMove);
+
+
+/*const bcrypt = require('bcrypt');
 require('dotenv').config(); 
 
 const salt = parseInt(process.env.SALT, 10);
@@ -18,3 +26,4 @@ const salt = parseInt(process.env.SALT, 10);
     });
 });
 */
+

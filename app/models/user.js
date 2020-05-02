@@ -27,6 +27,8 @@ class User {
         }
     }
 
+
+
     static async findByEmail(email) {
         try {
             // prepare de query 

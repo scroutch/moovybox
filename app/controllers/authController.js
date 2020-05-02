@@ -78,7 +78,7 @@ const authControlleur = {
             //console.log("!!signinFormValid.error :>> ", !!signinFormValid.error);
 
             if (!!signinFormValid.error){
-                res.status(401).send(signinFormValid.error); 
+                res.status(400).send(signinFormValid.error); 
             } else {
                 // * Get user from email and match passwords 
 
@@ -91,7 +91,9 @@ const authControlleur = {
                 if (!!storedUser) {
 
                     // I compare the hash from the DB with the received password (bcrypt)
+                    // bcrypt.compare(<user password>, <DB hashed password>); 
                     const passwordMatch = await bcrypt.compare(req.body.password, storedUser.password); 
+                    console.log('passwordMatch :>> ', passwordMatch);
                     
                     if (!passwordMatch) {
                         //  If no match send error (wrong password)
