@@ -1,8 +1,9 @@
 import withRoot from '../modules/withRoot';
 
 import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
+import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -16,7 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Button from '../modules/components/Button';
 import StickyFooter from '../modules/views/StickyFooter';
-import ButtonAppBar from '../modules/views/header';
+import HeaderHome from '../modules/views/HeaderHome';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,88 +49,64 @@ const SignUp = () => {
 
   return (
     <div className={classes.root}>
+    <CssBaseline />
+    <HeaderHome />
+    <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <ButtonAppBar />
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Création de compte
-          </Typography>
-          <form className={classes.form} noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  autoComplete="nickname"
-                  name="nickename"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="nickname"
-                  label="Pseudo"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email"
-                  name="email"
-                  autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Mot de passe"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="passwordControl"
-                  label="Mot de passe"
-                  type="password"
-                  id="passwordControl"
-                  autoComplete="current-password"
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="secondary"
-              className={classes.submit}
-            >
-              Valider
-            </Button>
-            <Grid container justify="center">
-              <Grid item>
-                <Link href="/signin" variant="body2">
-                  Vous avez déjà un compte ? Connectez-vous ici
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
-        </div>
-      </Container>
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h4">
+          Création de compte
+        </Typography>
+        <Formik
+          initialValues={{ email: '', password: '' }}
+          validate={values => {
+            const errors = {};
+            if (!values.email) {
+              errors.email = 'Email obligatoire';
+            } else if (
+              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+            ) {
+              errors.email = 'Email non valide';
+            }
+            if (!values.password) {
+              errors.email = 'mot de passe obligatoire';
+            } else if (
+              !/^[A-Z0-9]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+            ) {
+              errors.email = 'Email non valide';
+            }
+            return errors;
+          }}
+          onSubmit={(values, { setSubmitting }) => {
+            setTimeout(() => {
+              alert(JSON.stringify(values, null, 2));
+              setSubmitting(false);
+            }, 400);
+          }}
+        >
+          {({ isSubmitting }) => (
+            <Form className={classes.form}>
+              
+               
+                  <Field type="email" name="email" />
+                  <ErrorMessage name="email" component="div" />
+                  <Field type="password" name="password" pattern=".{8,20}" required title="8 caracteres minimum, une majuscule, 1 minuscule et un caractère parmi #?!@$%^$*-" />
+                  <ErrorMessage name="password" component="div" />
+                  <button type="submit" disabled={isSubmitting}>
+                    Submit
+                  </button>
+                  
+            </Form>
+          )}
+        </Formik>
+      </div>
+    </Container>
       <StickyFooter />
     </div>
   );
-}
+};
+
 export default withRoot(SignUp);
