@@ -1,7 +1,6 @@
 import withRoot from '../modules/withRoot';
 
 import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,7 +16,21 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
-import HeaderHome from '../modules/views/HeaderHome';
+import Header from '../modules/views/Header';
+import { FormHelperText } from '@material-ui/core';
+import { Formik } from "formik";
+import * as Yup from "yup";
+
+const Schema = Yup.object().shape({
+  password: Yup.string().required('Ce champ est requis'),
+  changepassword: Yup.string().when('password', {
+    is: (val) => (!!(val && val.length > 0)),
+    then: Yup.string().oneOf(
+      [Yup.ref('password')],
+      'Les deux mots de passe doivent être identiques',
+    ),
+  }),
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,65 +61,137 @@ const SignUp = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
-    <CssBaseline />
-    <HeaderHome />
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h4">
-          Création de compte
-        </Typography>
-        <Formik
-          initialValues={{ email: '', password: '' }}
-          validate={values => {
-            const errors = {};
-            if (!values.email) {
-              errors.email = 'Email obligatoire';
-            } else if (
-              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-            ) {
-              errors.email = 'Email non valide';
-            }
-            if (!values.password) {
-              errors.email = 'mot de passe obligatoire';
-            } else if (
-              !/^[A-Z0-9]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-            ) {
-              errors.email = 'Email non valide';
-            }
-            return errors;
-          }}
-          onSubmit={(values, { setSubmitting }) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
-              setSubmitting(false);
-            }, 400);
-          }}
-        >
-          {({ isSubmitting }) => (
-            <Form className={classes.form}>
-              
-               
-                  <Field type="email" name="email" />
-                  <ErrorMessage name="email" component="div" />
-                  <Field type="password" name="password" pattern=".{8,20}" required title="8 caracteres minimum, une majuscule, 1 minuscule et un caractère parmi #?!@$%^$*-" />
-                  <ErrorMessage name="password" component="div" />
-                  <button type="submit" disabled={isSubmitting}>
-                    Submit
-                  </button>
-                  
-            </Form>
-          )}
-        </Formik>
-      </div>
-    </Container>
-      <Footer />
-    </div>
+    <Formik
+      initialValues={{
+        password: "",
+        changepassword: ""
+      }}
+      validationSchema={Schema}
+      onSubmit={() => {}}
+    >
+      {({ values, errors, handleSubmit, handleChange, handleBlur }) => {
+        return (
+          <div className={classes.root}>
+            <CssBaseline />
+            <Header />
+            <Container component="main" maxWidth="xs">
+              <CssBaseline />
+              <div className={classes.paper}>
+                <Avatar className={classes.avatar}>
+                  <LockOutlinedIcon />
+                </Avatar>
+                <Typography component="h1" variant="h4">
+                  Création de compte
+                </Typography>
+                <form className={classes.form} 
+                  // onSubmit={(evt) => {
+                  //   evt.preventDefault();
+                  //   // dispatch(sendMessage());
+                  // }}
+                  onSubmit={handleSubmit}
+                >
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        autoComplete="nickname"
+                        name="nickename"
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="nickname"
+                        label="Pseudo"
+                        autoFocus
+                      />
+                      <FormHelperText id="my-helper-text-nickname">Email requis</FormHelperText>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email"
+                        name="email"
+                        autoComplete="email"
+                        type="email"
+                      />
+                      <FormHelperText id="my-helper-text-email">Email requis</FormHelperText>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Mot de passe"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                      />
+                      <FormHelperText id="my-helper-text-psw"> Champs Requis - Minimum 1 minuscule, 1 majuscule, 1 chiffre, un des caractères #?!@$%^&*-</FormHelperText>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        name="passwordControl"
+                        label="Mot de passe"
+                        type="password"
+                        id="passwordControl"
+                        autoComplete="current-password"
+                      />
+                      <FormHelperText id="my-helper-text-psw2">Veuillez saisir à nouveau le mot de passe requis</FormHelperText>
+                    </Grid>
+                    <label for="passowrd">Password</label>
+                    <input
+                      type="password"
+                      name="password"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.password}
+                    />
+                    <span className="error" style={{ color: "red" }}>
+                      {errors.password}
+                    </span>
+
+                    <label for="passowrd">Confirm Password</label>
+                    <input
+                      type="password"
+                      name="changepassword"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.changepassword}
+                    />
+                    <span className="error" style={{ color: "red" }}>
+                      {errors.changepassword}
+                    </span>
+                  </Grid>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    className={classes.submit}
+                  >
+                    Valider
+                  </Button>
+                  <Grid container justify="center">
+                    <Grid item>
+                      <Link href="/signin" variant="body2">
+                        Vous avez déjà un compte ? Connectez-vous ici
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </form>
+              </div>
+            </Container>
+            <Footer />
+          </div>
+        );
+      }}
+    </Formik>
   );
 };
-
 export default withRoot(SignUp);

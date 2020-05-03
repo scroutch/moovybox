@@ -17,7 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
-import ButtonAppBar from '../modules/views/header';
+import Header from '../modules/views/Header';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,7 +50,7 @@ const SignUp = () => {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <ButtonAppBar />
+      <Header />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>

@@ -19,6 +19,7 @@ import withRoot from '../modules/withRoot';
 import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
+import FormHelperText from '@material-ui/core/FormHelperText'
 
 
 
@@ -86,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
               id="password"
               autoComplete="current-password"
             />
-            * Champs obligatoires
+            <FormHelperText id="my-helper-text">* Champs requis</FormHelperText>
             <Button
               type="submit"
               fullWidth
