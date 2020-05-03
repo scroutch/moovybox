@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Button from '../modules/components/Button';
-import StickyFooter from '../modules/views/StickyFooter';
+import Footer from '../modules/views/Footer';
 import HeaderHome from '../modules/views/HeaderHome';
 
 const useStyles = makeStyles((theme) => ({
@@ -104,7 +104,7 @@ const SignUp = () => {
         </Formik>
       </div>
     </Container>
-      <StickyFooter />
+      <Footer />
     </div>
   );
 };
