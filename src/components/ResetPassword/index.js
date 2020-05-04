@@ -26,21 +26,6 @@ import Header from '../modules/views/Header';
 const Schema = Yup.object().shape({
   email: Yup.string().required('Requis')
     .matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, 'Email invalide'),
-  password: Yup.string()
-    .min(8, 'Le mot de passe doit avoir minimum 8 caractères')
-    .max(20, 'Mot de passe > 20 caractères')
-    .matches(
-      /^.*(?=.{8,})((?=.*[#?!@$%^&*-]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-      'Doit contenir au moins 8 caractères dont une majuscule, une minuscule, un chiffre et un caractère spécial suivant #?!@$%^&*-',
-    )
-    .required('Requis'),
-  changepassword: Yup.string().when('password', {
-    is: (val) => (!!(val && val.length > 0)),
-    then: Yup.string().oneOf(
-      [Yup.ref('password')],
-      'Les deux mots de passe doivent être identiques',
-    ),
-  }),
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -59,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
+  subtitle1: {
+    margin: theme.spacing(2),
+    align: 'center',
+
+  },
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
@@ -68,13 +58,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignIn = () => {
+const ResetPassword = () => {
   const classes = useStyles();
   return (
     <Formik
       initialValues={{
         email: '',
-        password: '',
       }}
       validationSchema={Schema}
       // send an alert to view the content of the form
@@ -98,7 +87,10 @@ const SignIn = () => {
                 <LockOutlinedIcon />
               </Avatar>
               <Typography component="h1" variant="h4">
-                Page de connexion
+                Mot de passe perdu ? 
+              </Typography>
+              <Typography component="h4" className={classes.subtitle1} variant="alignCenter">
+                Pas de panique ! Saisissez votre mail pour réinitialiser votre mot de passe. 
               </Typography>
               <form
                 className={classes.form}
@@ -127,25 +119,6 @@ const SignIn = () => {
                       </span>
                     ) : null}
                   </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      name="password"
-                      label="Mot de passe"
-                      type="password"
-                      id="password"
-                      autoComplete="current-password"
-                      helperText="Champs Requis - Minimum 1 minuscule, 1 majuscule, 1 chiffre, un des caractères #?!@$%^&*-"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.password}
-                    />
-                    <span className="error" style={{ color: 'red' }}>
-                      {errors.password}
-                    </span>
-                  </Grid>
                 </Grid>
                 <Button
                   type="submit"
@@ -154,20 +127,19 @@ const SignIn = () => {
                   color="secondary"
                   className={classes.submit}
                 >
-                  Connexion
+                  Réinitialiser mon mot de passe
                 </Button>
-                <Grid container>
-                  <Grid item xs>
-                    <Link href="/resetpassword" variant="body2">
-                      Mot de passe perdu ?
-                      </Link>
-                  </Grid>
-                  <Grid item>
-                    <Link href="/signup" variant="body2">
-                      Pas de compte, créez-en un ici
-                      </Link>
-                  </Grid>
-                </Grid>
+                
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Link href="/signup" variant="body2"> 
+                    Pas de compte, créez-en un ici
+                  </Link>
+                </Box>
+                  
               </form>
             </div>
           </Container>
@@ -177,4 +149,4 @@ const SignIn = () => {
     </Formik>
   );
 };
-export default withRoot(SignIn);
+export default withRoot(ResetPassword);
