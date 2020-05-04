@@ -5,7 +5,9 @@ const authCheckerMW = require('./middlewares/authChecker');
 const userCheckerMW = require('./middlewares/userChecker'); 
 const mainController = require('./controllers/mainController'); 
 const authController = require('./controllers/authController'); 
-const moveController = require('./controllers/moveController'); 
+const moveController = require('./controllers/moveController');
+const boxController = require('./controllers/boxController'); 
+
 
 
 router.get('/', accessHomeMW, mainController.homePage); 
@@ -21,7 +23,7 @@ router.post('/signout', authController.signout);
 router.route('/profile')
     .put(authCheckerMW, userCheckerMW, authController.updateProfile); 
 
-/* Move related routes  */
+/* Box related routes  */
 
 router.route('/move')
     .post(authCheckerMW, moveController.createMove)
@@ -29,7 +31,14 @@ router.route('/move')
 
 router.route('/move/:id')
     .put(authCheckerMW, moveController.updateMove)
-    .delete(authCheckerMW, moveController.deleteMove); 
+    .delete(authCheckerMW, moveController.deleteMove);
+    
+router.route('/box')
+    .post(authCheckerMW,boxController.createBox)
+    .get(authCheckerMW, boxController.getUserBox);
+
+router.route('/box/:id')
+    .delete(authCheckerMW, boxController.deleteBox);
 
 router.use('*', mainController.notFound); 
 

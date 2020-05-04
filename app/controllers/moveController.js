@@ -40,8 +40,6 @@ const moveController = {
             // if no error found then create Move instance and insert data. 
             if (!moveValidation.error) {
 
-                //Get the label field
-                req.body.label
                 //Compare the label field with the DB values
                 const labelMatch = await Move.labelExists(req); 
                 console.log("labelMatch :>>", labelMatch);
