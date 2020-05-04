@@ -10,6 +10,7 @@ import SignIn from 'src/components/SignIn';
 import Move from 'src/components/Move';
 import SignUp from 'src/components/SignUp';
 import ResetPassword from 'src/components/ResetPassword';
+import Profile from 'src/components/Profile';
 
 
 // == Composant
@@ -34,6 +35,9 @@ const App = () => {
         />
         <Route exact path="/signup">
           <SignUp />
+        </Route>
+        <Route exact path="/signup">
+          <Profile />
         </Route>
         <Route exact path="/ResetPassword">
           <ResetPassword />
