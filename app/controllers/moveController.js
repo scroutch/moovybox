@@ -1,7 +1,7 @@
 const Joi = require('@hapi/joi').extend(require('@hapi/joi-date'));
 const Move = require('../models/move'); 
 
-const moveSchema = Joi.object({
+const newMoveSchema = Joi.object({
     label: Joi.string()
         .pattern(new RegExp('^[^<>:%]{3,}$'))
         .max(150)
@@ -11,7 +11,20 @@ const moveSchema = Joi.object({
         .required(), 
     address: Joi.string()
         .pattern(new RegExp('^[^<>:%]{3,}$'))
-        .max(500)''
+        .max(500)
+});
+
+const moveUpdateSchema = Joi.object({
+    label: Joi.string()
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
+        .max(150)
+        .required(), 
+    date: Joi.date()
+        .format('YYYY-MM-DD')
+        .required(), 
+    address: Joi.string()
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
+        .max(500)
 });
 
 const moveController = {
@@ -33,7 +46,7 @@ const moveController = {
         //* Create a new move in DB
         try {
             // Validate the data from the form
-            const moveValidation = await moveSchema.validate(req.body); 
+            const moveValidation = await newMoveSchema.validate(req.body); 
 
            
 
@@ -86,7 +99,7 @@ const moveController = {
         //* Update the moves parameters
         
         // Check form validity
-        const moveValidation = await moveSchema.validate(req.body); 
+        const moveValidation = await moveUpdateSchema.validate(req.body); 
 
         // if the form is valid, 
         if (!moveValidation.error) {
@@ -95,18 +108,18 @@ const moveController = {
             // move id from params
             // move infos from form body
             const moveId = req.params.id;
+            
+            // Execute request
+            const updatedMove = await Move.update(req, moveId); 
+
+            // return the updated move
+            res.send((updatedMove) ? updatedMove : false); 
 
         } else {
-            res.send(); 
-        }
-
-        // if the form is not valid, 
+            // if the form is not valid, 
             // abort operation and send error 
-
-
-        // return the updated move
-        res.send('This is update move'); 
-
+            res.send(moveValidation.error); 
+        }
     },
 
     deleteMove: async (req, res) => {

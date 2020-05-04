@@ -54,19 +54,21 @@ class Move {
         }
     }
 
-    async update(req, moveId) {
+    static async update(req, moveId) {
         
         try {
-            //return the updated
-            const query = `UPDATE "move" SET (label = $1, date = $2, address = $3) WHERE id = $4 RETURNING * `;
+            // Prepare the query
+            const query = `UPDATE "move" SET ("label", "date", "address") = ($1, $2, $3) WHERE "id" = $4 AND "user_id" = $5 RETURNING * ;`;
             
+            // Set the involved data
             const data = req.body; 
-            const values = [data.label, data.date, data.address, moveId]; 
-
-            // 
+            const values = [data.label, data.date, data.address, moveId, req.session.user.id]; 
+            
+            // Query update to DB 
             const result = await client.query(query, values); 
-
-            return result; 
+        
+            //return the updated move
+            return result.rows[0]; 
         } catch (error) {
             console.trace(error);
         }
