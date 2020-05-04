@@ -17,8 +17,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import withRoot from '../modules/withRoot';
 import Button from '../modules/components/Button';
-import StickyFooter from '../modules/views/StickyFooter';
-import ButtonAppBar from '../modules/views/header';
+import Footer from '../modules/views/Footer';
+import Header from '../modules/views/Header';
+import FormHelperText from '@material-ui/core/FormHelperText'
 
 
 
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <ButtonAppBar />
+      <Header />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
@@ -86,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
               id="password"
               autoComplete="current-password"
             />
-            * Champs obligatoires
+            <FormHelperText id="my-helper-text">* Champs requis</FormHelperText>
             <Button
               type="submit"
               fullWidth
@@ -111,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
           </form>
         </div>
       </Container>
-      <StickyFooter />
+      <Footer />
     </div>
 
   );

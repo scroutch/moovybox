@@ -9,7 +9,7 @@ import './styles.css';
 import SignIn from 'src/components/SignIn';
 import Move from 'src/components/Move';
 import SignUp from 'src/components/SignUp';
-import StickyFooter from 'src/components/modules/views/StickyFooter';
+import Footer from 'src/components/modules/views/Footer';
 
 // == Composant
 const App = () => {
@@ -22,7 +22,7 @@ const App = () => {
           <SignIn />
         </Route>
         <Route exact path="/sticky-footer">
-          <StickyFooter />
+          <Footer />
         </Route>
         <Route
           exact
