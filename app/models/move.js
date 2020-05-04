@@ -54,6 +54,24 @@ class Move {
         }
     }
 
+    async update(req, moveId) {
+        
+        try {
+            //return the updated
+            const query = `UPDATE "move" SET (label = $1, date = $2, address = $3) WHERE id = $4 RETURNING * `;
+            
+            const data = req.body; 
+            const values = [data.label, data.date, data.address, moveId]; 
+
+            // 
+            const result = await client.query(query, values); 
+
+            return result; 
+        } catch (error) {
+            console.trace(error);
+        }
+    }
+
     static async delete(moveId) {
 
         try {

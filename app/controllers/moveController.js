@@ -1,18 +1,17 @@
 const Joi = require('@hapi/joi').extend(require('@hapi/joi-date'));
 const Move = require('../models/move'); 
 
-const newMoveSchema = Joi.object({
+const moveSchema = Joi.object({
     label: Joi.string()
-        .alphanum()
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
         .max(150)
         .required(), 
     date: Joi.date()
         .format('YYYY-MM-DD')
         .required(), 
     address: Joi.string()
-        .alphanum()
-        .max(500)
-        .allow("")
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
+        .max(500)''
 });
 
 const moveController = {
@@ -34,7 +33,7 @@ const moveController = {
         //* Create a new move in DB
         try {
             // Validate the data from the form
-            const moveValidation = await newMoveSchema.validate(req.body); 
+            const moveValidation = await moveSchema.validate(req.body); 
 
            
 
@@ -84,6 +83,33 @@ const moveController = {
             console.trace(error);
         }
     }, 
+
+    updateMove: async (req, res) => {
+        //* Update the moves parameters
+        
+        // Check form validity
+        const moveValidation = await moveSchema.validate(req.body); 
+
+        // if the form is valid, 
+        if (!moveValidation.error) {
+            // Check 
+            // Retrieve the arguments
+            // move id from params
+            // move infos from form body
+            const moveId = req.params.id;
+
+        } else {
+            res.send(); 
+        }
+
+        // if the form is not valid, 
+            // abort operation and send error 
+
+
+        // return the updated move
+        res.send('This is update move'); 
+
+    },
 
     deleteMove: async (req, res) => {
         //* Delete a move from DB matching user id
