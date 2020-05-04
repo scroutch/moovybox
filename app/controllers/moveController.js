@@ -8,6 +8,7 @@ const newMoveSchema = Joi.object({
         .required(), 
     date: Joi.date()
         .format('YYYY-MM-DD')
+        .greater('now')
         .required(), 
     address: Joi.string()
         .pattern(new RegExp('^[^<>:%]{3,}$'))
@@ -21,6 +22,7 @@ const moveUpdateSchema = Joi.object({
         .required(), 
     date: Joi.date()
         .format('YYYY-MM-DD')
+        .greater('now')
         .required(), 
     address: Joi.string()
         .pattern(new RegExp('^[^<>:%]{3,}$'))

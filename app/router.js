@@ -38,6 +38,7 @@ router.route('/box')
     .get(authCheckerMW, boxController.getUserBox);
 
 router.route('/box/:id')
+    .put(authCheckerMW, boxController.updateBox)
     .delete(authCheckerMW, boxController.deleteBox);
 
 router.use('*', mainController.notFound); 

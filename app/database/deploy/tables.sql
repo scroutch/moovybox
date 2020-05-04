@@ -26,7 +26,8 @@ CREATE TABLE "box" (
     "heavy" BOOLEAN NOT NULL DEFAULT false, 
     "floor" BOOLEAN NOT NULL DEFAULT false, 
     "user_id" INT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
-    "move_id" INT NOT NULL REFERENCES "move"("id") ON DELETE CASCADE
+    "move_id" INT NOT NULL REFERENCES "move"("id") ON DELETE CASCADE,
+    CONSTRAINT one_box_one_user UNIQUE("user_id","box_id")
 ); 
 
 CREATE SEQUENCE box_code_seq
@@ -43,7 +44,7 @@ CREATE TABLE "item" (
     "name" TEXT NOT NULL, 
     "user_id" INT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
     "box_id" INT NOT NULL REFERENCES "box"("id") ON DELETE CASCADE,
-    CONSTRAINT one_box_one_user UNIQUE("user_id","box_id") 
+    CONSTRAINT one_item_one_box UNIQUE("box_id","id")
 ); 
 
 CREATE TABLE "inventory" (
