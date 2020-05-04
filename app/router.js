@@ -7,6 +7,7 @@ const mainController = require('./controllers/mainController');
 const authController = require('./controllers/authController'); 
 const moveController = require('./controllers/moveController');
 const boxController = require('./controllers/boxController'); 
+const itemController = require('./controllers/itemController'); 
 
 
 
@@ -34,11 +35,18 @@ router.route('/move/:id')
     
 router.route('/box')
     .post(authCheckerMW,boxController.createBox)
-    .get(authCheckerMW, boxController.getUserBox);
-
+    .get(authCheckerMW, boxController.getUserBoxes);
 
 router.route('/box/:id')
+    .get(authCheckerMW, itemController.getBoxItems)
     .delete(authCheckerMW, boxController.deleteBox);
+
+router.route('/item')
+    .post(authCheckerMW,itemController.createItem)
+
+
+router.route('/item/:id')
+    .delete(authCheckerMW, itemController.deleteItem);
 
 router.use('*', mainController.notFound); 
 

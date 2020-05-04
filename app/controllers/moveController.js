@@ -21,7 +21,7 @@ const moveController = {
         //* Find a send all the moves from a user
         try {
             // At this stage, a middleware has checked user authorization. 
-            const moves = await Move.getAll(req); 
+            const moves = await Move.getAllInBox(req); 
 
             res.send(moves); 
 
