@@ -31,6 +31,7 @@ router.route('/move')
     .get(authCheckerMW, moveController.getUserMoves); 
 
 router.route('/move/:id')
+    .put(authCheckerMW, moveController.updateMove)
     .delete(authCheckerMW, moveController.deleteMove);
     
 router.route('/box')

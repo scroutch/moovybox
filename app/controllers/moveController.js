@@ -3,16 +3,29 @@ const Move = require('../models/move');
 
 const newMoveSchema = Joi.object({
     label: Joi.string()
-        .alphanum()
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
         .max(150)
         .required(), 
     date: Joi.date()
         .format('YYYY-MM-DD')
         .required(), 
     address: Joi.string()
-        .alphanum()
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
         .max(500)
+});
+
+const moveUpdateSchema = Joi.object({
+    label: Joi.string()
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
+        .max(150)
+        .required(), 
+    date: Joi.date()
+        .format('YYYY-MM-DD')
+        .required(),
+    address: Joi.string()
+        .pattern(new RegExp('^[^<>:%]{0,}$'))
         .allow("")
+        .max(500)
 });
 
 const moveController = {
@@ -21,7 +34,7 @@ const moveController = {
         //* Find a send all the moves from a user
         try {
             // At this stage, a middleware has checked user authorization. 
-            const moves = await Move.getAllInBox(req); 
+            const moves = await Move.getAll(req); 
 
             res.send(moves); 
 
@@ -83,6 +96,33 @@ const moveController = {
         }
     }, 
 
+    updateMove: async (req, res) => {
+        //* Update the moves parameters
+        
+        // Check form validity
+        const moveValidation = await moveUpdateSchema.validate(req.body); 
+
+        // if the form is valid, 
+        if (!moveValidation.error) {
+            // Check 
+            // Retrieve the arguments
+            // move id from params
+            // move infos from form body
+            const moveId = req.params.id;
+            
+            // Execute request
+            const updatedMove = await Move.update(req, moveId); 
+
+            // return the updated move
+            res.send((updatedMove) ? updatedMove : false); 
+
+        } else {
+            // if the form is not valid, 
+            // abort operation and send error 
+            res.send(moveValidation.error); 
+        }
+    },
+
     deleteMove: async (req, res) => {
         //* Delete a move from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
@@ -93,7 +133,7 @@ const moveController = {
                     const moveId = req.params.id; 
                     
                     // Request deletion from DB with move id
-                    const success = await Move.delete(moveId); 
+                    const success = await Move.delete(req, moveId); 
 
                     // return : boolean
                     // true : deletion ok

@@ -54,14 +54,14 @@ class Item {
         }
     }
 
-    static async delete(itemId) {
+    static async delete(req, itemId) {
 
         try {
             // Select a item 
-            const query = `DELETE FROM "item" WHERE "id"= $1;`; 
+            const query = `DELETE FROM "item" WHERE "id"= $1 AND user_id = $2;`; 
 
             // Delete the item
-            const result = await client.query(query, [itemId]);
+            const result = await client.query(query, [itemId, req.session.user.id]);
 
             //console.log('result :>> ', result);
 

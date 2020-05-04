@@ -96,7 +96,7 @@ const boxController = {
                     const boxId = req.params.id; 
                     
                     // Request deletion from DB with move id
-                    const success = await Box.delete(boxId); 
+                    const success = await Box.delete(req, boxId); 
 
                     // return : boolean
                     // true : deletion ok

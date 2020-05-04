@@ -92,9 +92,11 @@ const itemController = {
                     
                     // Retrieve item id from url
                     const itemId = req.params.id; 
+
+                    console.log('itemId :>> ', itemId);
                     
                     // Request deletion from DB with item id
-                    const success = await Box.delete(itemId); 
+                    const success = await Item.delete(req, itemId); 
 
                     // return : boolean
                     // true : deletion ok

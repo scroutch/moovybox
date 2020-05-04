@@ -54,14 +54,34 @@ class Move {
         }
     }
 
-    static async delete(moveId) {
+    static async update(req, moveId) {
+        
+        try {
+            // Prepare the query
+            const query = `UPDATE "move" SET ("label", "date", "address") = ($1, $2, $3) WHERE "id" = $4 AND "user_id" = $5 RETURNING * ;`;
+            
+            // Set the involved data
+            const data = req.body; 
+            const values = [data.label, data.date, data.address, moveId, req.session.user.id]; 
+            
+            // Query update to DB 
+            const result = await client.query(query, values); 
+        
+            //return the updated move
+            return result.rows[0]; 
+        } catch (error) {
+            console.trace(error);
+        }
+    }
+
+    static async delete(req, moveId) {
 
         try {
             // Select a move 
-            const query = `DELETE FROM "move" WHERE "id"= $1;`; 
+            const query = `DELETE FROM "move" WHERE "id"= $1 AND user_id = $2;`; 
 
             // Delete the move
-            const result = await client.query(query, [moveId]);
+            const result = await client.query(query, [moveId, req.session.user.id]);
 
             //console.log('result :>> ', result);
 
