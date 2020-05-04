@@ -5,11 +5,12 @@ const Box = require('../models/box');
 
 const newBoxSchema = Joi.object({
     label: Joi.string()
-        .alphanum()
+        .pattern(new RegExp('^[^<>%]{3,}$')) 
+        .min(3)
         .max(150)
         .required(), 
     destination_room: Joi.string()
-        .alphanum()
+        .pattern(new RegExp('^[^<>%]{3,}$'))
         .max(500)
         .allow(""),
     fragile: Joi.boolean(),
@@ -21,7 +22,7 @@ const newBoxSchema = Joi.object({
 
 const boxController = {
 
-    getUserBox: async(req,res) => {
+    getUserBoxes: async(req,res) => {
         //* Find a send all the box from a user
         try {
             // At this stage, a middleware has checked user authorization. 
@@ -95,7 +96,7 @@ const boxController = {
                     const boxId = req.params.id; 
                     
                     // Request deletion from DB with move id
-                    const success = await Box.delete(boxId); 
+                    const success = await Box.delete(req, boxId); 
 
                     // return : boolean
                     // true : deletion ok
