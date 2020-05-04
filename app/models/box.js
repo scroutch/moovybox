@@ -81,10 +81,10 @@ class Box {
 
         try {
             // Select a box 
-            const query = `DELETE FROM "box" WHERE "id"= $1;`; 
+            const query = `DELETE FROM "box" WHERE "id"= $1 AND user_id = $2;`; 
 
             // Delete the box
-            const result = await client.query(query, [boxId]);
+            const result = await client.query(query, [boxId, req.session.user.id]);
 
             //console.log('result :>> ', result);
 

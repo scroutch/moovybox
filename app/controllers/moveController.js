@@ -25,7 +25,8 @@ const moveUpdateSchema = Joi.object({
         .greater('now')
         .required(), 
     address: Joi.string()
-        .pattern(new RegExp('^[^<>:%]{3,}$'))
+        .pattern(new RegExp('^[^<>:%]{0,}$'))
+        .allow("")
         .max(500)
 });
 
@@ -134,7 +135,7 @@ const moveController = {
                     const moveId = req.params.id; 
                     
                     // Request deletion from DB with move id
-                    const success = await Move.delete(moveId); 
+                    const success = await Move.delete(req, moveId); 
 
                     // return : boolean
                     // true : deletion ok

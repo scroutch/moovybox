@@ -27,7 +27,7 @@ CREATE TABLE "box" (
     "floor" BOOLEAN NOT NULL DEFAULT false, 
     "user_id" INT NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
     "move_id" INT NOT NULL REFERENCES "move"("id") ON DELETE CASCADE,
-    CONSTRAINT one_box_one_user UNIQUE("user_id","box_id")
+    CONSTRAINT one_box_one_user UNIQUE("user_id","id") 
 ); 
 
 CREATE SEQUENCE box_code_seq
