@@ -30,12 +30,12 @@ router.route('/move')
     .get(authCheckerMW, moveController.getUserMoves); 
 
 router.route('/move/:id')
+    .put(authCheckerMW, moveController.updateMove)
     .delete(authCheckerMW, moveController.deleteMove);
     
 router.route('/box')
     .post(authCheckerMW,boxController.createBox)
     .get(authCheckerMW, boxController.getUserBox);
-
 
 router.route('/box/:id')
     .delete(authCheckerMW, boxController.deleteBox);
