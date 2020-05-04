@@ -9,7 +9,8 @@ import './styles.css';
 import SignIn from 'src/components/SignIn';
 import Move from 'src/components/Move';
 import SignUp from 'src/components/SignUp';
-import Footer from 'src/components/modules/views/Footer';
+import ResetPassword from 'src/components/ResetPassword';
+
 
 // == Composant
 const App = () => {
@@ -20,9 +21,6 @@ const App = () => {
       <Switch>
         <Route exact path="/signin">
           <SignIn />
-        </Route>
-        <Route exact path="/sticky-footer">
-          <Footer />
         </Route>
         <Route
           exact
@@ -36,6 +34,9 @@ const App = () => {
         />
         <Route exact path="/signup">
           <SignUp />
+        </Route>
+        <Route exact path="/ResetPassword">
+          <ResetPassword />
         </Route>
         <Route>404</Route>
       </Switch>
