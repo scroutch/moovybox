@@ -70,8 +70,8 @@ const Contact = () => {
                                 <Avatar src="/broken-image.jpg" className={classes.large} />
                                 <Typography className={classes.name}>Cécile Duhain</Typography>
                                 <Typography className={classes.describe} variant='body2'>Product owner</Typography>
-                                <Link href="https://github.com/scroutch?tab=repositories" onClick={preventDefault}><Icon className="fab fa-github" color="primary" /></Link>
-                                <Link href="#" onClick={preventDefault}><Icon className="fab fa-linkedin-in" color="primary" /></Link>
+                                <Link href="https://github.com/scroutch?tab=repositories" target="_blank"><Icon className="fab fa-github" color="primary" /></Link>
+                                <Link href="https://www.linkedin.com/in/cecile-duhain/" target="_blank"><Icon className="fab fa-linkedin-in" color="primary" /></Link>
                             </Grid>
                         </Paper>
                     </Grid>
@@ -81,8 +81,8 @@ const Contact = () => {
                                 <Avatar src="/broken-image.jpg" className={classes.large} />
                                 <Typography className={classes.name}>Nicolas Garçon</Typography>
                                 <Typography className={classes.describe} variant='body2'>Scrum master</Typography>
-                                <Link href="#" onClick={preventDefault}><Icon className="fab fa-github" color="primary" /></Link>
-                                <Link href="#" onClick={preventDefault}><Icon className="fab fa-linkedin-in" color="primary" /></Link>
+                                <Link href="https://github.com/ngarcon" target="_blank"><Icon className="fab fa-github" color="primary" /></Link>
+                                <Link href="https://www.linkedin.com/in/nicolas-garcon/" target="_blank"><Icon className="fab fa-linkedin-in" color="primary" /></Link>
                             </Grid>
                         </Paper>
                     </Grid>
@@ -92,8 +92,8 @@ const Contact = () => {
                                 <Avatar src="/broken-image.jpg" className={classes.large} />
                                 <Typography className={classes.name}>Carole Barbier</Typography>
                                 <Typography className={classes.describe} variant='body2'>Lead front</Typography>
-                                <Link href="#" onClick={preventDefault}><Icon className="fab fa-github" color="primary" /></Link>
-                                <Link href="#" onClick={preventDefault}><Icon className="fab fa-linkedin-in" color="primary" /></Link>
+                                <Link href="https://github.com/BarbierCarole" target="_blank"><Icon className="fab fa-github" color="primary" /></Link>
+                                <Link href="https://www.linkedin.com/in/carole-barbier/" target="_blank"><Icon className="fab fa-linkedin-in" color="primary" /></Link>
                             </Grid>
                         </Paper>
                     </Grid>
@@ -103,8 +103,8 @@ const Contact = () => {
                                 <Avatar src="/broken-image.jpg" className={classes.large} />
                                 <Typography className={classes.name}>Sebastien Gardes</Typography>
                                 <Typography className={classes.describe} variant='body2'>Lead back</Typography>
-                                <Link href="#" onClick={preventDefault}><Icon className="fab fa-github" color="primary" /></Link>
-                                <Link href="#" onClick={preventDefault}><Icon className="fab fa-linkedin-in" color="primary" /></Link>
+                                <Link href="https://github.com/Sebastien-Gardes" target="_blank"><Icon className="fab fa-github" color="primary" /></Link>
+                                <Link href="https://www.linkedin.com/in/sebgardes/" target="_blank"><Icon className="fab fa-linkedin-in" color="primary" /></Link>
                             </Grid>
                         </Paper>
                     </Grid>
