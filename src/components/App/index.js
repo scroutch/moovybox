@@ -1,5 +1,7 @@
 // == Import npm
 import React from 'react';
+import Home from '../Home';
+
 import { useSelector } from 'react-redux';
 import { Route, Redirect, Switch } from 'react-router';
 
@@ -13,13 +15,18 @@ import Profile from 'src/components/Profile';
 import Contact from '../Contact';
 
 
+
 // == Composant
 const App = () => {
+
   const nickname = useSelector((state) => state.nickname);
 
   return (
     <div className="app">
       <Switch>
+        <Route exact path="/">
+          <Home />
+        </Route>
         <Route exact path="/signin">
           <SignIn />
         </Route>
