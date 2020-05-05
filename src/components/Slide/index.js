@@ -22,19 +22,19 @@ const Slideshow = () => {
           <div className="each-slide">
             <div>
               <img src={img1} alt="img1" />
-              <span className='btn'>Slide 1</span>
+              {/* <span className='btn'>Slide 1</span> */}
             </div>
           </div>
           <div className="each-slide">
             <div>
               <img src={img2} alt="img2" />
-              <span className='btn'>Slide 2</span>
+              {/* <span className='btn'>Slide 2</span> */}
             </div>
           </div>
           <div className="each-slide">
             <div>
               <img src={img3} alt="img1" />
-              <span className='btn'>Slide 3</span>
+              {/* <span className='btn'>Slide 3</span> */}
             </div>
           </div>
         </Slide>
