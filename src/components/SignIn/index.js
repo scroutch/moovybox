@@ -1,5 +1,8 @@
 
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
+import { login, SYNC_EMAIL } from 'src/store/actions';
 
 import Avatar from '@material-ui/core/Avatar';
 
@@ -23,25 +26,6 @@ import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 
 // 1 - l'api YUP utilise ces objets pour la validation des données
-const Schema = Yup.object().shape({
-  email: Yup.string().required('Requis')
-    .matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, 'Email invalide'),
-  password: Yup.string()
-    .min(8, 'Le mot de passe doit avoir minimum 8 caractères')
-    .max(20, 'Mot de passe > 20 caractères')
-    .matches(
-      /^.*(?=.{8,})((?=.*[#?!@$%^&*-]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-      'Doit contenir au moins 8 caractères dont une majuscule, une minuscule, un chiffre et un caractère spécial suivant #?!@$%^&*-',
-    )
-    .required('Requis'),
-  changepassword: Yup.string().when('password', {
-    is: (val) => (!!(val && val.length > 0)),
-    then: Yup.string().oneOf(
-      [Yup.ref('password')],
-      'Les deux mots de passe doivent être identiques',
-    ),
-  }),
-});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,112 +53,97 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SignIn = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const email = useSelector((state) => state.email);
   const classes = useStyles();
   return (
-    <Formik
-      initialValues={{
-        email: '',
-        password: '',
-      }}
-      validationSchema={Schema}
-      // send an alert to view the content of the form
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
-          setSubmitting(false);
-        }, 400);
-      }}
-    >
-      {({
-        values, errors, touched, handleSubmit, handleChange, handleBlur,
-      }) => (
-        <div className={classes.root}>
-          <CssBaseline />
-          <Header />
-          <Container component="main" maxWidth="xs">
-            <CssBaseline />
-            <div className={classes.paper}>
-              <Avatar className={classes.avatar}>
-                <LockOutlinedIcon />
-              </Avatar>
-              <Typography component="h1" variant="h4">
-                Page de connexion
-              </Typography>
-              <form
-                className={classes.form}
-                noValidate
-                onSubmit={handleSubmit}
-              >
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="email"
-                      label="Email"
-                      name="email"
-                      autoComplete="email"
-                      type="email"
-                      helperText="Email requis"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.email}
-                    />
-                    {errors.email && touched.email ? (
-                      <span className="error" style={{ color: 'red' }}>
-                        {errors.email}
-                      </span>
-                    ) : null}
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      name="password"
-                      label="Mot de passe"
-                      type="password"
-                      id="password"
-                      autoComplete="current-password"
-                      helperText="Champs Requis - Minimum 1 minuscule, 1 majuscule, 1 chiffre, un des caractères #?!@$%^&*-"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.password}
-                    />
-                    <span className="error" style={{ color: 'red' }}>
-                      {errors.password}
-                    </span>
-                  </Grid>
-                </Grid>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="secondary"
-                  className={classes.submit}
-                >
-                  Connexion
-                </Button>
-                <Grid container>
-                  <Grid item xs>
-                    <Link href="/resetpassword" variant="body2">
-                      Mot de passe perdu ?
-                      </Link>
-                  </Grid>
-                  <Grid item>
-                    <Link href="/signup" variant="body2">
-                      Pas de compte, créez-en un ici
-                      </Link>
-                  </Grid>
-                </Grid>
-              </form>
-            </div>
-          </Container>
-          <Footer />
-        </div>
-      )}
-    </Formik>
-  );
-};
+    <div className={classes.root}>
+    <CssBaseline />
+    <Header />
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h4">
+          Page de connexion
+        </Typography>
+        <form
+          className={classes.form}
+          noValidate
+          onSubmit={(evt) => {
+            evt.preventDefault();
+            dispatch(login(history));
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                autoComplete="email"
+                type="email"
+                helperText="Email requis"
+                value={email}
+                onChange={(evt) => {
+                  const newEmail = evt.target.value;
+                 
+                  dispatch({ type: SYNC_EMAIL, email: newEmail });
+                }}  
+              />  
+            </Grid>
+            {/* <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Mot de passe"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                helperText="Champs Requis - Minimum 1 minuscule, 1 majuscule, 1 chiffre, un des caractères #?!@$%^&*-"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.password}
+              />
+              <span className="error" style={{ color: 'red' }}>
+                {errors.password}
+              </span>
+            </Grid> */}
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="secondary"
+            className={classes.submit}
+          >
+            Connexion
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link href="/resetpassword" variant="body2">
+                Mot de passe perdu ?
+                </Link>
+            </Grid>
+            <Grid item>
+              <Link href="/signup" variant="body2">
+                Pas de compte, créez-en un ici
+                </Link>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
+    </Container>
+    <Footer />
+  </div>
+)};
+
 export default withRoot(SignIn);

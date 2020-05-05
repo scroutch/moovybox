@@ -15,20 +15,20 @@ import Profile from 'src/components/Profile';
 
 // == Composant
 const App = () => {
-  const nickname = useSelector((state) => state.nickname);
+  const email = useSelector((state) => state.email);
 
   return (
     <div className="app">
       <Switch>
-        <Route exact path="/signin">
+        <Route exact path="/">
           <SignIn />
         </Route>
         <Route
           exact
-          path="/signin"
+          path="/move"
           render={() => {
-            if (nickname === '') {
-              return <Redirect to="/signin" />;
+            if (email === '') {
+              return <Redirect to="/" />;
             }
             return <Move />;
           }}
@@ -36,7 +36,7 @@ const App = () => {
         <Route exact path="/signup">
           <SignUp />
         </Route>
-        <Route exact path="/signup">
+        <Route exact path="/profile">
           <Profile />
         </Route>
         <Route exact path="/ResetPassword">
