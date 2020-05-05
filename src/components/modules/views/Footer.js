@@ -19,7 +19,7 @@ export default function Footer() {
   return (
     <footer className={classes.footer}>
       <Container maxWidth="sm" align="center">
-        <Link href="/contacts" color="inherit">
+        <Link href="/contact" color="inherit">
           Nous contacter
         </Link>
         <br />
