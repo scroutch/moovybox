@@ -13,7 +13,7 @@ const itemController = require('./controllers/itemController');
 
 router.get('/', accessHomeMW, mainController.homePage); 
 
-/* Access related routes */
+/* ACCESS */
 
 router.post('/signin', authController.signin);
 
@@ -21,10 +21,19 @@ router.post('/signup', authController.signup);
 
 router.post('/signout', authController.signout);
 
+/* EMAIL */
+
+// password reset email
+
+// email confirmation email
+
+
+/* PROFILE */
+
 router.route('/profile')
     .put(authCheckerMW, userCheckerMW, authController.updateProfile); 
 
-/* Box related routes  */
+/* MOVES */
 
 router.route('/move')
     .post(authCheckerMW, moveController.createMove)
@@ -33,7 +42,9 @@ router.route('/move')
 router.route('/move/:id')
     .put(authCheckerMW, moveController.updateMove)
     .delete(authCheckerMW, moveController.deleteMove);
-    
+
+/* BOXES */
+
 router.route('/box')
     .post(authCheckerMW,boxController.createBox)
     .get(authCheckerMW, boxController.getUserBoxes);
@@ -42,9 +53,10 @@ router.route('/box/:id')
     .get(authCheckerMW, itemController.getBoxItems)
     .delete(authCheckerMW, boxController.deleteBox);
 
+/* ITEMS */
+
 router.route('/item')
     .post(authCheckerMW,itemController.createItem)
-
 
 router.route('/item/:id')
     .delete(authCheckerMW, itemController.deleteItem);

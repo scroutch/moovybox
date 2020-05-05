@@ -27,6 +27,10 @@ const signupSchema = Joi.object({
 
 const authControlleur = {
     signup: async (req, res) => {
+        // For email confirmatin email sending
+        // We recieve the data from the sign up form 
+        // using the provided user email we send a email with a link to confirm the authenticity of the given email 
+        // upon click an order to validate is receive an allow user to access services. 
         try {
             // check for entries
             // console.log(req.body); 
