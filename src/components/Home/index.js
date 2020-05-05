@@ -7,13 +7,19 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import withRoot from '../modules/withRoot';
+// import Button from '../modules/components/Button';
+import Footer from '../modules/views/Footer';
 import './styles.css';
+import HeaderHome from '../modules/views/HeaderHome';
+import {BrowserRouter as Router, Link} from "react-router-dom";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles( {
     card: {
         width: "70%",
         margin: "auto",
         marginBottom: 20,
+        marginTop: 20
     },
     root: {
       minWidth: 275,
@@ -27,7 +33,7 @@ const useStyles = makeStyles({
     },
     button2: {
         width: "50%",
-        margin: "auto"
+        margin: "auto",
     },
   });
 
@@ -35,6 +41,7 @@ const Home = () => {
     const classes = useStyles();
     return(
         <div>
+            <HeaderHome />
             <Card className={classes.card} variant="outlined">
                 <CardContent>
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
@@ -48,20 +55,20 @@ const Home = () => {
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button className={classes.button} size="small" variant="contained" color="primary" href="#">Je suis déjà inscris, je me connecte</Button>
+                    <Button className={classes.button} size="small" variant="contained" color="primary" href="/signIn">Je suis déjà inscris, je me connecte</Button>
                 </CardActions>
                 <CardActions>
-                    <Button className={classes.button2} size="small" variant="contained" color="primary" href="#">Je m'inscris</Button>
+                    <Button className={classes.button2} size="small" variant="contained" color="primary" href="/signUp">Je m'inscris</Button>
                 </CardActions>
             </Card>
             <Slideshow />
             <div className="contain-btn">
-                <Button className="btn2" size="small" variant="contained" color="primary" href="#" endIcon={<ChevronRightIcon />}>Ca cartonne</Button>
+                <Button className="btn2" size="small" variant="contained" color="primary" href="/signUp" endIcon={<ChevronRightIcon />}>Ca cartonne</Button>
             </div>
-
+            <Footer />
 
         </div>
     )
 }
 
-export default Home;
+export default withRoot(Home);
