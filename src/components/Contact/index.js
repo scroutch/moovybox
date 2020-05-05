@@ -1,4 +1,5 @@
 import React from 'react';
+import withRoot from '../modules/withRoot';
 import { loadCSS } from 'fg-loadcss';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -8,7 +9,8 @@ import './styles.css';
 import { Typography } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import Icon from '@material-ui/core/Icon';
-import { lightBlue } from '@material-ui/core/colors';
+import Footer from '../modules/views/Footer';
+import Header from '../modules/views/Header';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -18,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         textAlign: 'center',
         color: theme.palette.text.secondary,
+        marginBottom: 10,
       },
       large: {
         width: theme.spacing(18),
@@ -27,12 +30,21 @@ const useStyles = makeStyles((theme) => ({
       },
       title: {
           fontSize: 30,
-          padding: 45,
+          padding: 25,
+          textAlign: 'center',
+          marginBottom: 20,
+          marginTop: 20
       },
       name: {
           padding: 10,
-          fontSize: 15
+          fontSize: 20,
       },
+      container: {
+          marginBottom: 5
+      },
+      describe: {
+          padding: 15
+      }
   }));
 
 const Contact = () => {
@@ -48,14 +60,16 @@ const Contact = () => {
 
     return(
         <div className={classes.root}>
+            <Header />
             <Typography className={classes.title}>Nous contacter</Typography>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} className={classes.container}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}  sm={6}>
                         <Paper className={classes.paper}>
                             <Grid>
                                 <Avatar src="/broken-image.jpg" className={classes.large} />
                                 <Typography className={classes.name}>Cécile Duhain</Typography>
+                                <Typography className={classes.describe} variant='body2'>Product owner</Typography>
                                 <Link href="https://github.com/scroutch?tab=repositories" onClick={preventDefault}><Icon className="fab fa-github" color="primary" /></Link>
                                 <Link href="#" onClick={preventDefault}><Icon className="fab fa-linkedin-in" color="primary" /></Link>
                             </Grid>
@@ -66,6 +80,7 @@ const Contact = () => {
                             <Grid>
                                 <Avatar src="/broken-image.jpg" className={classes.large} />
                                 <Typography className={classes.name}>Nicolas Garçon</Typography>
+                                <Typography className={classes.describe} variant='body2'>Scrum master</Typography>
                                 <Link href="#" onClick={preventDefault}><Icon className="fab fa-github" color="primary" /></Link>
                                 <Link href="#" onClick={preventDefault}><Icon className="fab fa-linkedin-in" color="primary" /></Link>
                             </Grid>
@@ -76,6 +91,7 @@ const Contact = () => {
                             <Grid>
                                 <Avatar src="/broken-image.jpg" className={classes.large} />
                                 <Typography className={classes.name}>Carole Barbier</Typography>
+                                <Typography className={classes.describe} variant='body2'>Lead front</Typography>
                                 <Link href="#" onClick={preventDefault}><Icon className="fab fa-github" color="primary" /></Link>
                                 <Link href="#" onClick={preventDefault}><Icon className="fab fa-linkedin-in" color="primary" /></Link>
                             </Grid>
@@ -86,6 +102,7 @@ const Contact = () => {
                             <Grid>
                                 <Avatar src="/broken-image.jpg" className={classes.large} />
                                 <Typography className={classes.name}>Sebastien Gardes</Typography>
+                                <Typography className={classes.describe} variant='body2'>Lead back</Typography>
                                 <Link href="#" onClick={preventDefault}><Icon className="fab fa-github" color="primary" /></Link>
                                 <Link href="#" onClick={preventDefault}><Icon className="fab fa-linkedin-in" color="primary" /></Link>
                             </Grid>
@@ -93,8 +110,9 @@ const Contact = () => {
                     </Grid>
                 </Grid>
             </Grid>
+            <Footer />
         </div>
     )
 }
 
-export default Contact;
+export default withRoot(Contact);
