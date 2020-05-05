@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router(); 
+
 const accessHomeMW = require('./middlewares/accessHome'); 
 const authCheckerMW = require('./middlewares/authChecker'); 
 const userCheckerMW = require('./middlewares/userChecker'); 
+
 const mainController = require('./controllers/mainController'); 
 const authController = require('./controllers/authController'); 
 const moveController = require('./controllers/moveController');
