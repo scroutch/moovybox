@@ -5,6 +5,28 @@ const Box = require('../models/box');
 
 const newBoxSchema = Joi.object({
     label: Joi.string()
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
+        .max(150)
+        .required(), 
+    destination_room: Joi.string()
+        .pattern(new RegExp('^[^<>:%]{3,}$'))
+        .max(500)
+        .allow(""),
+    fragile: Joi.boolean()
+        .truthy('on')
+        .optional(),
+    heavy: Joi.boolean()
+        .truthy('on')
+        .optional(),
+    floor: Joi.boolean()
+        .truthy('on')
+        .optional(),
+    move_id: Joi.number().integer()
+        .min(1).required(),
+    });
+
+const boxUpdateSchema = Joi.object({
+    label: Joi.string()
         .pattern(new RegExp('^[^<>%]{3,}$')) 
         .min(3)
         .max(150)
@@ -13,12 +35,18 @@ const newBoxSchema = Joi.object({
         .pattern(new RegExp('^[^<>%]{3,}$'))
         .max(500)
         .allow(""),
-    fragile: Joi.boolean(),
-    heavy: Joi.boolean(),
-    floor: Joi.boolean(),
+    fragile: Joi.boolean()
+        .truthy('on')
+        .optional(),
+    heavy: Joi.boolean()
+        .truthy('on')
+        .optional(),
+    floor: Joi.boolean()
+        .truthy('on')
+        .optional(),
     move_id: Joi.number().integer()
-        .min(1),
-    });
+        .min(1).required()
+    });  
 
 const boxController = {
 
@@ -38,6 +66,7 @@ const boxController = {
     createBox: async (req, res) => {
         //* Create a new box in DB
         try {
+
             // Validate the data from the form
             const boxValidation = await newBoxSchema.validate(req.body); 
 
@@ -85,6 +114,46 @@ const boxController = {
             console.trace(error);
         }
     }, 
+
+    updateBox: async (req, res) => {
+        //* Update the boxes data
+        
+        // Check form validity
+        const boxValidation = await boxUpdateSchema.validate(req.body); 
+
+        // if the form is valid, 
+        if (!boxValidation.error) {
+            // Check 
+            // Retrieve the arguments
+
+            // the false values to form if not sent 
+            // (by default the client does not send unckeked box data)
+            const boxAttributes = ['fragile', 'heavy', 'floor']; 
+
+            // check in foprm data has boolean attributes 
+            // if it does NOt then add them set to false
+            for (attribute of boxAttributes) {
+                if (!req.body.hasOwnProperty(attribute)) {
+                    req.body[attribute] = false;  
+                }
+            }
+            // move id from params
+            // move infos from form body
+            const boxId = req.params.id;
+            
+            // Execute request
+            // const updatedBox = await Box.update(req, boxId); 
+
+            // return the updated move
+            // res.send((updatedBox) ? updatedBox : false); 
+            res.send(req.body); 
+
+        } else {
+            // if the form is not valid, 
+            // abort operation and send error 
+            res.send(boxValidation.error); 
+        }
+    },
 
     deleteBox: async (req, res) => {
         //* Delete a box from DB matching user id

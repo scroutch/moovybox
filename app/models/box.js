@@ -57,6 +57,26 @@ class Box {
         }
     }
 
+    static async update(req, boxId) {
+        
+        try {
+            // Prepare the query
+            const query = `UPDATE "move" SET ("label", "destination_room", "fragile", "heavy", "floor") = ($1, $2, $3, $4, $5) WHERE "id" = $6 AND "user_id" = $5 RETURNING * ;`;
+            
+            // Set the involved data
+            const data = req.body; 
+            const values = [data.label, data.destination_room, data.fragile, data.heavy, data.floor, boxId, req.session.user.id]; 
+            
+            // Query update to DB 
+            const result = await client.query(query, values); 
+        
+            //return the updated move
+            return result.rows[0]; 
+        } catch (error) {
+            console.trace(error);
+        }
+    }
+
     static async delete(boxId) {
 
         try {
