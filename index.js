@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 5050;
 const app = express(); 
 
 app.use(cors()); 
-app.options('*', cors()); 
+app.options('*', cors({credentials: true})); 
 
 // Bodyparser for form-data encoded body form
 app.use(multer().none()); 
