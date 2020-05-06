@@ -1,8 +1,11 @@
 const express = require('express');
 const session = require('express-session'); 
 require('dotenv').config(); 
+const cors = require('cors');
 const PORT = process.env.PORT || 5050; 
 const app = express(); 
+
+app.use(cors()); 
 
 app.use(session({
     secret: 'keyboard cat',
