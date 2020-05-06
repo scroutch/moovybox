@@ -2,7 +2,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { login, SYNC_EMAIL } from 'src/store/actions';
+import { login, SYNC_EMAIL, SYNC_PASSWORD } from 'src/store/actions';
 
 import Avatar from '@material-ui/core/Avatar';
 
@@ -56,6 +56,7 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const email = useSelector((state) => state.email);
+  const password = useSelector((state) => state.password);
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -95,10 +96,11 @@ const SignIn = () => {
                   const newEmail = evt.target.value;
                  
                   dispatch({ type: SYNC_EMAIL, email: newEmail });
+                  console.log('type: SYNC_EMAIL, email: newEmail', SYNC_EMAIL, newEmail);
                 }}  
               />  
             </Grid>
-            {/* <Grid item xs={12}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -109,14 +111,16 @@ const SignIn = () => {
                 id="password"
                 autoComplete="current-password"
                 helperText="Champs Requis - Minimum 1 minuscule, 1 majuscule, 1 chiffre, un des caractères #?!@$%^&*-"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.password}
+                value={password}
+                onChange={(evt) => {
+                  const newPassword = evt.target.value;
+                 
+                  dispatch({ type: SYNC_PASSWORD, email: newPassword });
+                  console.log('type: SYNC_PASSWORD, email: newPassword ', SYNC_PASSWORD, newPassword);
+                }} 
+                
               />
-              <span className="error" style={{ color: 'red' }}>
-                {errors.password}
-              </span>
-            </Grid> */}
+            </Grid>
           </Grid>
           <Button
             type="submit"

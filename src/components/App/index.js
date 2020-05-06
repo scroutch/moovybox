@@ -16,7 +16,7 @@ import Profile from 'src/components/Profile';
 // == Composant
 const App = () => {
   const email = useSelector((state) => state.email);
-
+  const password = useSelector((state) => state.password);
   return (
     <div className="app">
       <Switch>
@@ -27,7 +27,7 @@ const App = () => {
           exact
           path="/move"
           render={() => {
-            if (email === '') {
+            if ((email === '')||(password === '')) {
               return <Redirect to="/" />;
             }
             return <Move />;

@@ -1,6 +1,7 @@
 import {
   SYNC_NICKNAME,
   SYNC_EMAIL,
+  SYNC_PASSWORD,
 } from './actions';
 
 const initialState = {
@@ -23,6 +24,9 @@ export default (state = initialState, action = {}) => {
     }
     case SYNC_EMAIL: {
       return { ...state, email: action.email };
+    }
+    case SYNC_PASSWORD: {
+      return { ...state, password: action.password };
     }
     case 'INCREMENT': {
       return {
