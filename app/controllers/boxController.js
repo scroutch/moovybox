@@ -22,12 +22,11 @@ const newBoxSchema = Joi.object({
         .truthy('on')
         .optional(),
     move_id: Joi.number().integer()
-        .min(1),
+        .min(1).required(),
     });
 
 const boxUpdateSchema = Joi.object({
     label: Joi.string()
-        .alphanum()
         .pattern(new RegExp('^[^<>%]{3,}$')) 
         .min(3)
         .max(150)
@@ -46,8 +45,8 @@ const boxUpdateSchema = Joi.object({
         .truthy('on')
         .optional(),
     move_id: Joi.number().integer()
-        .min(1)
-    });
+        .min(1).required()
+    });  
 
 const boxController = {
 
@@ -67,6 +66,7 @@ const boxController = {
     createBox: async (req, res) => {
         //* Create a new box in DB
         try {
+
             // Validate the data from the form
             const boxValidation = await newBoxSchema.validate(req.body); 
 

@@ -4,6 +4,7 @@ const router = express.Router();
 const accessHomeMW = require('./middlewares/accessHome'); 
 const authCheckerMW = require('./middlewares/authChecker'); 
 const userCheckerMW = require('./middlewares/userChecker'); 
+const boxOptionFillMW = require('./middlewares/boxOptionFill'); 
 
 const mainController = require('./controllers/mainController'); 
 const authController = require('./controllers/authController'); 
@@ -37,11 +38,11 @@ router.route('/move/:id')
     .delete(authCheckerMW, moveController.deleteMove);
     
 router.route('/box')
-    .post(authCheckerMW,boxController.createBox)
+    .post(authCheckerMW, boxOptionFillMW, boxController.createBox)
     .get(authCheckerMW, boxController.getUserBoxes);
 
 router.route('/box/:id')
-    .put(authCheckerMW, boxController.updateBox)
+    .put(authCheckerMW, boxOptionFillMW, boxController.updateBox)
     .get(authCheckerMW, itemController.getBoxItems)
     .delete(authCheckerMW, boxController.deleteBox);
 
