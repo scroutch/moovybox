@@ -29,7 +29,8 @@ const authControlleur = {
     signup: async (req, res) => {
         try {
             // check for entries
-            // console.log(req.body); 
+            console.log("req.body", req.body); 
+            console.log("req.query", req.query); 
     
             // check de validity of the sent data
             const authValidation =  await signupSchema.validate(req.body);
