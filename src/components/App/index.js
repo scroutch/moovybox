@@ -1,27 +1,35 @@
 // == Import npm
 import React from 'react';
+import Home from '../Home';
+
 import { useSelector } from 'react-redux';
 import { Route, Redirect, Switch } from 'react-router';
 
 // == Import
-// import reactLogo from './react-logo.svg';
 import './styles.css';
 import SignIn from 'src/components/SignIn';
 import Move from 'src/components/Move';
 import SignUp from 'src/components/SignUp';
 import ResetPassword from 'src/components/ResetPassword';
 import Profile from 'src/components/Profile';
+import Contact from '../Contact';
+
 
 
 // == Composant
 const App = () => {
+
   const email = useSelector((state) => state.email);
   const password = useSelector((state) => state.password);
+
   return (
     <div className="app">
       <Switch>
         <Route exact path="/">
-          <SignIn />
+          <Home />
+        </Route>
+        <Route exact path="/signin">
+         <SignIn />
         </Route>
         <Route
           exact
@@ -41,6 +49,9 @@ const App = () => {
         </Route>
         <Route exact path="/ResetPassword">
           <ResetPassword />
+        </Route>
+        <Route exact path="/contact">
+          <Contact />
         </Route>
         <Route>404</Route>
       </Switch>
