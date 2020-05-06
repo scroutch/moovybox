@@ -7,11 +7,12 @@ const PORT = process.env.PORT || 5050;
 const app = express(); 
 
 app.use(cors()); 
+app.options('*', cors()); 
 
 // Bodyparser for form-data encoded body form
 app.use(multer().none()); 
 
-// Bodyparser for url encoded body form
+// Bodyparser for  encoded body form
 app.use(express.urlencoded({extended: true}));
 
 
