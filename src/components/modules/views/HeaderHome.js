@@ -4,6 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
+import boxy from './images/boxy-ready-detoure.png';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +40,7 @@ export default function HeaderHome() {
           <div className={classes.center}>
             <CardMedia
               className={classes.media}
-              image="./images/boxy-ready-detoure.png"
+              image={boxy}
               title="Boxy"
             />
             <Typography variant="h6" className={classes.title}>
