@@ -19,7 +19,8 @@ import Contact from '../Contact';
 // == Composant
 const App = () => {
 
-  const nickname = useSelector((state) => state.nickname);
+  const email = useSelector((state) => state.email);
+  const password = useSelector((state) => state.password);
 
   return (
     <div className="app">
@@ -28,14 +29,14 @@ const App = () => {
           <Home />
         </Route>
         <Route exact path="/signin">
-          <SignIn />
+         <SignIn />
         </Route>
         <Route
           exact
-          path="/signin"
+          path="/move"
           render={() => {
-            if (nickname === '') {
-              return <Redirect to="/signin" />;
+            if ((email === '')||(password === '')) {
+              return <Redirect to="/" />;
             }
             return <Move />;
           }}
@@ -43,7 +44,7 @@ const App = () => {
         <Route exact path="/signup">
           <SignUp />
         </Route>
-        <Route exact path="/signup">
+        <Route exact path="/profile">
           <Profile />
         </Route>
         <Route exact path="/ResetPassword">
