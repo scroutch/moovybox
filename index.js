@@ -5,7 +5,12 @@ const cors = require('cors');
 const PORT = process.env.PORT || 5050; 
 const app = express(); 
 
-app.use(cors({origin:'http://localhost})); 
+const corsOpts = {
+  origin:'*',
+  methods: ['GET', 'PUT', 'POST', 'DELETE']
+};
+
+app.use(cors(corsOpts)); 
 
 app.use(session({
     secret: 'keyboard cat',
