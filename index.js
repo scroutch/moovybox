@@ -1,16 +1,19 @@
 const express = require('express');
 const session = require('express-session'); 
 require('dotenv').config(); 
+const multer = require('multer');
 const cors = require('cors');
 const PORT = process.env.PORT || 5050; 
 const app = express(); 
 
-const corsOpts = {
-  origin:'*',
-  methods: ['GET', 'PUT', 'POST', 'DELETE']
-};
+app.use(cors()); 
 
-app.use(cors(corsOpts)); 
+// Bodyparser for form-data encoded body form
+app.use(multer().none()); 
+
+// Bodyparser for url encoded body form
+app.use(express.urlencoded({extended: true}));
+
 
 app.use(session({
     secret: 'keyboard cat',
@@ -20,9 +23,6 @@ app.use(session({
         maxAge: 6*30*24*3600*1000,
         secure: false }
   })); 
-
-// parse incoming form into an object
-app.use(express.urlencoded({extended: true}));
 
 app.use(require('./app/router')); 
 
