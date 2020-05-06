@@ -3719,6 +3719,11 @@ faye-websocket@~0.11.1:
   dependencies:
     websocket-driver ">=0.5.1"
 
+fg-loadcss@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/fg-loadcss/-/fg-loadcss-3.1.0.tgz#f7f148dccf8a6899f846a974ed50539880158acb"
+  integrity sha512-UgtXKza8nBUO6UWW4c+MOprRL4W5WbIkzPJafnw6y6f5jhA3FiSZkWz8eXeAeX+mC4A/qq0ByDLiAk6erNARaQ==
+
 figgy-pudding@^3.5.1:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.2.tgz#b4eee8148abb01dcf1d1ac34367d59e12fa61d6e"
@@ -7262,11 +7267,7 @@ promise-inflight@^1.0.1:
   resolved "https://registry.yarnpkg.com/promise-inflight/-/promise-inflight-1.0.1.tgz#98472870bf228132fcbdd868129bad12c3c029e3"
   integrity sha1-mEcocL8igTL8vdhoEputEsPAKeM=
 
-<<<<<<< HEAD
-prop-types@^15.5.10, prop-types@^15.6.2, prop-types@^15.7.2:
-=======
-prop-types@^15.5.6, prop-types@^15.6.2, prop-types@^15.7.2:
->>>>>>> 1f09b4d919cc4e9f546e3e0de48b98d35cf39135
+prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -7453,12 +7454,6 @@ react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.1, react-is
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-<<<<<<< HEAD
-react-pure-carousel@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-pure-carousel/-/react-pure-carousel-1.1.0.tgz#7fd5e21be7d37fbce4a2cb438b6e16393212ea7a"
-  integrity sha512-I3tL+ExmltsHI5gjVslOuJOTQu+QmZm9wgCsenW/Ygq0htv6Eh3qQCTiTTwqqMwIagDQQc+XmMULWtSr/9jF/g==
-=======
 react-native-segmented-control-tab@^3.2.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/react-native-segmented-control-tab/-/react-native-segmented-control-tab-3.4.1.tgz#b6e54b8975ce8092315c9b0a1ab58b834d8ccf8e"
@@ -7476,7 +7471,6 @@ react-redux-form@^1.16.14:
     prop-types "^15.5.6"
     react-native-segmented-control-tab "^3.2.1"
     shallow-compare "^1.2.1"
->>>>>>> 1f09b4d919cc4e9f546e3e0de48b98d35cf39135
 
 react-redux@^7.2.0:
   version "7.2.0"
@@ -7518,7 +7512,6 @@ react-router@5.1.2, react-router@^5.1.2:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-<<<<<<< HEAD
 react-slideshow-image@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/react-slideshow-image/-/react-slideshow-image-1.4.2.tgz#0b89f4cc24a9cc10c8a87b67a1883ab3c638326a"
@@ -7529,10 +7522,7 @@ react-slideshow-image@^1.4.2:
     prop-types "^15.5.10"
     style-loader "^0.20.2"
 
-react-transition-group@^4.3.0:
-=======
 react-transition-group@^4.0.0, react-transition-group@^4.3.0:
->>>>>>> 1f09b4d919cc4e9f546e3e0de48b98d35cf39135
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.3.0.tgz#fea832e386cf8796c58b61874a3319704f5ce683"
   integrity sha512-1qRV1ZuVSdxPlPf4O8t7inxUGpdyO5zG9IoNfJxSO0ImU2A1YWkEQvFPuIPZmMLkg5hYs7vv5mMOyfgSkvAwvw==

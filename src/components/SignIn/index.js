@@ -23,7 +23,7 @@ import * as Yup from 'yup';
 import withRoot from '../modules/withRoot';
 import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
-import Header from '../modules/views/Header';
+import HeaderHome from '../modules/views/HeaderHome';
 
 // 1 - l'api YUP utilise ces objets pour la validation des données
 
@@ -60,94 +60,94 @@ const SignIn = () => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-    <CssBaseline />
-    <Header />
-    <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h4">
-          Page de connexion
-        </Typography>
-        <form
-          className={classes.form}
-          noValidate
-          onSubmit={(evt) => {
-            evt.preventDefault();
-            dispatch(login(history));
-          }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email"
-                name="email"
-                autoComplete="email"
-                type="email"
-                helperText="Email requis"
-                value={email}
-                onChange={(evt) => {
-                  const newEmail = evt.target.value;
-                 
-                  dispatch({ type: SYNC_EMAIL, email: newEmail });
-                  console.log('type: SYNC_EMAIL, email: newEmail', SYNC_EMAIL, newEmail);
-                }}  
-              />  
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Mot de passe"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                helperText="Champs Requis - Minimum 1 minuscule, 1 majuscule, 1 chiffre, un des caractères #?!@$%^&*-"
-                value={password}
-                onChange={(evt) => {
-                  const newPassword = evt.target.value;
-                 
-                  dispatch({ type: SYNC_PASSWORD, email: newPassword });
-                  console.log('type: SYNC_PASSWORD, email: newPassword ', SYNC_PASSWORD, newPassword);
-                }} 
-                
-              />
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="secondary"
-            className={classes.submit}
+      <HeaderHome />
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h4">
+            Page de connexion
+          </Typography>
+          <form
+            className={classes.form}
+            noValidate
+            onSubmit={(evt) => {
+              evt.preventDefault();
+              dispatch(login(history));
+            }}
           >
-            Connexion
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="/resetpassword" variant="body2">
-                Mot de passe perdu ?
-                </Link>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email"
+                  name="email"
+                  autoComplete="email"
+                  type="email"
+                  helperText="Requis"
+                  value={email}
+                  onChange={(evt) => {
+                    const newEmail = evt.target.value;
+
+                    dispatch({ type: SYNC_EMAIL, email: newEmail });
+                    console.log('type: SYNC_EMAIL, email: newEmail', SYNC_EMAIL, newEmail);
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Mot de passe"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  helperText="Requis - Minimum 1 minuscule, 1 majuscule, 1 chiffre, un des caractères #?!@$%^&*-"
+                  value={password}
+                  onChange={(evt) => {
+                    const newPassword = evt.target.value;
+
+                    dispatch({ type: SYNC_PASSWORD, email: newPassword });
+                    console.log('type: SYNC_PASSWORD, email: newPassword ', SYNC_PASSWORD, newPassword);
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item>
-              <Link href="/signup" variant="body2">
-                Pas de compte, créez-en un ici
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="secondary"
+              className={classes.submit}
+            >
+              Connexion
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link href="/resetpassword" variant="body2">
+                  Mot de passe perdu ?
                 </Link>
+              </Grid>
+              <Grid item>
+                <Link href="/signup" variant="body2">
+                  Pas de compte, créez-en un ici
+                </Link>
+              </Grid>
             </Grid>
-          </Grid>
-        </form>
-      </div>
-    </Container>
-    <Footer />
-  </div>
-)};
+          </form>
+        </div>
+      </Container>
+      <Footer />
+    </div>
+  );
+};
 
 export default withRoot(SignIn);
