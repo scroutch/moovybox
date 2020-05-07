@@ -10,13 +10,21 @@ export default (store) => (next) => (action) => {
       axios
         .post('http://18.206.96.118:3000/signin', {
           email: store.getState().email,
-          password: store.getState().password,
+          // password: store.getState().password,
         }, {
           withCredentials: true,
         })
         .then((response) => {
-          store.dispatch(enterMove(action.history));
-          console.log('Authenticated');
+          console.log(response);
+          if(response.statusCode == 200) {
+            store.dispatch(enterMove(action.history));
+            console.log('Authenticated');
+          } else {
+                console.error("impossible de se connecter", response);
+          }
+
+          // store.dispatch(enterMove(action.history));
+          // console.log('Authenticated - email');
         }).catch(function(error) {
           console.log('Error on Authentication');
         });

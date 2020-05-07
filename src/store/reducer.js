@@ -14,6 +14,7 @@ const initialState = {
     },
   ],
   email: '',
+  password: '',
 };
 
 
