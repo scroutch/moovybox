@@ -114,9 +114,8 @@ const SignIn = () => {
                   value={password}
                   onChange={(evt) => {
                     const newPassword = evt.target.value;
-
-                    dispatch({ type: SYNC_PASSWORD, email: newPassword });
-                    console.log('type: SYNC_PASSWORD, email: newPassword ', SYNC_PASSWORD, newPassword);
+                    dispatch({ type: SYNC_PASSWORD, password: newPassword });
+                    console.log('type: SYNC_PASSWORD, password: newPassword ', SYNC_PASSWORD, newPassword);
                   }}
                 />
               </Grid>

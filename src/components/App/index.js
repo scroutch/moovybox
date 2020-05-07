@@ -29,33 +29,18 @@ const App = () => {
           <Home />
         </Route>
         <Route exact path="/signin">
-         <SignIn />
+          <SignIn />
         </Route>
         <Route
           exact
           path="/move"
           render={() => {
-            if (email === '') {
+            if ((email === '') || (password === '')) {
               return <Redirect to="/signin" />;
             }
             return <Move />;
           }}
         />
-
-
-
-
-        {/*
-        <Route
-          exact
-          path="/move"
-          render={() => {
-            if ((email === '')||(password === '')) {
-              return <Redirect to="/" />;
-            }
-            return <Move />;
-          }}
-        /> */}
         <Route exact path="/signup">
           <SignUp />
         </Route>
