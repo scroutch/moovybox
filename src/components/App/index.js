@@ -13,6 +13,7 @@ import SignUp from 'src/components/SignUp';
 import ResetPassword from 'src/components/ResetPassword';
 import Profile from 'src/components/Profile';
 import Contact from '../Contact';
+import CreateBox from 'src/components/CreateBox';
 
 
 
@@ -52,6 +53,9 @@ const App = () => {
         </Route>
         <Route exact path="/contact">
           <Contact />
+        </Route>
+        <Route exact path="/create-box">
+          <CreateBox />
         </Route>
         <Route>404</Route>
       </Switch>
