@@ -12,11 +12,11 @@ import axios from 'axios';
 import App from 'src/components/App';
 import store from 'src/store';
 
-axios
-  .get('http://18.206.96.118:3000/', {
-    withCredentials: true,
-  })
-  .then((response) => console.log('reponse axios', response));
+// axios
+//   .get('http://', {
+//     withCredentials: true,
+//   })
+//   .then((response) => console.log('reponse axios', response));
 
 
 // == Render

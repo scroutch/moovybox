@@ -1,8 +1,8 @@
-import React from 'react';
-import axios from 'axios';
+
+import React,{useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { login, SYNC_EMAIL, SYNC_PASSWORD, SYNC_PSEUDO, SYNC_PASSWORDVAL } from 'src/store/actions';
+import { login, SYNC_EMAIL, SYNC_PASSWORD } from 'src/store/actions';
 
 import Avatar from '@material-ui/core/Avatar';
 
@@ -18,10 +18,13 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 import withRoot from '../modules/withRoot';
 import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
 import HeaderHome from '../modules/views/HeaderHome';
+
 // 1 - l'api YUP utilise ces objets pour la validation des données
 
 const useStyles = makeStyles((theme) => ({
@@ -49,39 +52,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUp = () => {
+const SignIn = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const email = useSelector((state) => state.email);
   const password = useSelector((state) => state.password);
-  const pseudo = useSelector((state) => state.pseudo);
-  const passwordVal = useSelector((state) => state.passwordVal);
   const classes = useStyles();
- 
-  function handleSubmit(e) {
-    e.preventDefault(); // stops default reloading behaviour
-    console.log('input on onSubmit', email, password, pseudo);
-    axios
-      .post(`http://18.206.96.118/signup`, { email, password, pseudo })
-      .then(res => {
-        if (res.status === 201) {
-          dispatch(login(history));
-          console.log('response.status',res.status);
-        }
-        else {
-          console.error('erreur', res);
-        };
-        console.log('res : ',res);
-        console.log('res.data : ',res.data);
-
-      })
-      .catch ((error) => {
-        console.log("very big error");
-        alert('Vous avez déjà un compte');
-
-      });
-  }
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -92,33 +68,18 @@ const SignUp = () => {
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h3">
-            Je crée mon compte
+          <Typography component="h1" variant="h4">
+            Page de connexion
           </Typography>
           <form
             className={classes.form}
             noValidate
-            onSubmit={handleSubmit}
-          >   
+            onSubmit={(evt) => {
+              evt.preventDefault();
+              dispatch(login(history));
+            }}
+          >
             <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  autoComplete="pseudo"
-                  name="pseudo"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="pseudo"
-                  label="Pseudo"
-                  autoFocus
-                  helperText="Pseudo requis"
-                  value={pseudo}
-                  onChange={(evt) => {
-                    const newPseudo = evt.target.value;
-                    dispatch({ type: SYNC_PSEUDO, pseudo : newPseudo });
-                  }}
-                />
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"
@@ -155,24 +116,6 @@ const SignUp = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="passwordVal"
-                  label="Mot de passe de validation"
-                  type="password"
-                  id="passwordVal"
-                  autoComplete="current-password"
-                  helperText="Requis - Minimum 1 minuscule, 1 majuscule, 1 chiffre, un des caractères #?!@$%^&*-"
-                  value={passwordVal}
-                  onChange={(evt) => {
-                    const newPasswordVal = evt.target.value;
-                    dispatch({ type: SYNC_PASSWORDVAL, passwordVal: newPasswordVal });
-                  }}
-                />
-              </Grid>
             </Grid>
             <Button
               type="submit"
@@ -203,4 +146,4 @@ const SignUp = () => {
   );
 };
 
-export default withRoot(SignUp);
+export default withRoot(SignIn);

@@ -5,12 +5,12 @@ const rawTheme = createMuiTheme({
   palette: {
     primary: {
       light: '#69696a',
-      main: '#04309e',
+      main: '#04309e', //dark blue
       dark: '#1e1e1f',
     },
     secondary: {
       light: '#fff5f8',
-      main: '#2858d2',
+      main: '#2858d2', // light bhlue
       dark: '#04309e',
     },
     warning: {
@@ -40,7 +40,7 @@ const rawTheme = createMuiTheme({
     primary: {
       light: '#fff5f8',
       main: '#04309e', // dark blue
-      dark: '#04309e', // lighter
+      dark: '#2858d2', // lighter
     },
     secondary: {
       light: '#fff5f8',
@@ -74,37 +74,39 @@ const theme = {
       ...rawTheme.typography.h1,
       ...fontHeader,
       letterSpacing: 0,
-      fontSize: 48,
+      fontSize: 42,
     },
     h2: {
       ...rawTheme.typography.h2,
       ...fontHeader,
-      fontSize: 42,
+      fontSize: 36,
     },
     h3: {
       ...rawTheme.typography.h3,
       ...fontHeader,
-      fontSize: 36,
+      fontSize: 24,
     },
     h4: {
       ...rawTheme.typography.h4,
       ...fontHeader,
-      fontSize: 24,
+      fontSize: 36,
     },
     h5: {
       ...rawTheme.typography.h5,
-      fontSize: 20,
+      fontSize: 24,
       fontWeight: rawTheme.typography.fontWeightLight,
     },
     h6: {
       ...rawTheme.typography.h6,
       ...fontHeader,
-      fontSize: 18,
+      fontSize: 20,
       color: rawTheme.text.secondary.main, // #fff
     },
     subtitle1: {
       ...rawTheme.typography.subtitle1,
-      fontSize: 18,
+      color: rawTheme.text.primary.main,
+      fontSize: 30,
+
     },
     body1: {
       ...rawTheme.typography.body2,
