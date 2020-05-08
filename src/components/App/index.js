@@ -29,19 +29,24 @@ const App = () => {
         <Route exact path="/">
           <Home />
         </Route>
-        <Route exact path="/signin">
-          <SignIn />
-        </Route>
+        
         <Route
           exact
           path="/move"
           render={() => {
             if ((email === '') || (password === '')) {
+              console.log('email,password page App/index',email,password);
               return <Redirect to="/signin" />;
+              
             }
+            console.log('email,password,',email,password);
             return <Move />;
           }}
         />
+        
+        <Route exact path="/signin">
+          <SignIn />
+        </Route>
         <Route exact path="/signup">
           <SignUp />
         </Route>

@@ -8,27 +8,26 @@ export default (store) => (next) => (action) => {
   switch (action.type) {
     case LOGIN: {
       axios
-        .post('http://localhost:3001/login', {
+        .post('http://18.206.96.118/signin', {
           email: store.getState().email,
-          // password: store.getState().password,
-        }, {
-          withCredentials: true,
+          password: store.getState().password,
         })
         .then((response) => {
           console.log(response);
-          if(response.statusCode == 200) {
+          if (response.status == 200) {
             store.dispatch(enterMove(action.history));
             console.log('Authenticated');
-          } else {
-                console.error("impossible de se connecter", response);
+          }
+          else {
+            console.error('impossible de se connecter', response);
           }
 
           // store.dispatch(enterMove(action.history));
           // console.log('Authenticated - email');
-        }).catch(function(error) {
+        }).catch((error) => {
           console.log('Error on Authentication');
         });
-        
+
       return;
     }
 

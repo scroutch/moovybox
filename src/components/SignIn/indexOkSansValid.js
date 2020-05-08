@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React,{useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { login, SYNC_EMAIL, SYNC_PASSWORD } from 'src/store/actions';
@@ -94,9 +94,7 @@ const SignIn = () => {
                   value={email}
                   onChange={(evt) => {
                     const newEmail = evt.target.value;
-
                     dispatch({ type: SYNC_EMAIL, email: newEmail });
-                    console.log('type: SYNC_EMAIL, email: newEmail', SYNC_EMAIL, newEmail);
                   }}
                 />
               </Grid>
@@ -115,7 +113,6 @@ const SignIn = () => {
                   onChange={(evt) => {
                     const newPassword = evt.target.value;
                     dispatch({ type: SYNC_PASSWORD, password: newPassword });
-                    console.log('type: SYNC_PASSWORD, password: newPassword ', SYNC_PASSWORD, newPassword);
                   }}
                 />
               </Grid>
