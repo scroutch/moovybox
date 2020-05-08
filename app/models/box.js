@@ -23,12 +23,24 @@ class Box {
         return results.rows; 
     }
 
+    static async getAllFromMove(req) {
+        // Method to retrieve all user boxes from one specific move and send them to client
+
+        const query = `SELECT * FROM "box" WHERE user_id = $1 AND move_id = $2;`; 
+        
+        const values = [req.session.user.id, req.params.id]; 
+
+        const results = await client.query(query, values); 
+
+        return results.rows; 
+    }
+
     static async boxLabelExists (req) {
         //* Check the existence of the entred box in the DB
         try {
             // request to find an associated user
-            const query = `SELECT * FROM "box" WHERE "label" = $1 AND user_id = $2`; 
-            const results = await client.query(query, [req.body.label, req.session.user.id]); 
+            const query = `SELECT * FROM "box" WHERE "label" = $1 AND move_id = $2 AND user_id = $3 `; 
+            const results = await client.query(query, [req.body.label, , req.body.move_id, req.session.user.id]); 
             
             // Returns a boolean 
             // - true : label exists

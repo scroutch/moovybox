@@ -1,4 +1,4 @@
-// this middleware serves checker for profile related operations
+// this middleware serves checker for operations
 // Email change
 // Pseudo (name) change
 // Password change

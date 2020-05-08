@@ -49,9 +49,7 @@ const moveController = {
         //* Create a new move in DB
         try {
             // Validate the data from the form
-            const moveValidation = await newMoveSchema.validate(req.body); 
-
-           
+            const moveValidation = await newMoveSchema.validate(req.body);
 
             // if no error found then create Move instance and insert data. 
             if (!moveValidation.error) {
@@ -84,6 +82,9 @@ const moveController = {
                     /// zkdjfzf Move.insert(req)
                     const storedMove = await newMove.insert(req); 
 
+                    // add the created move in session 
+                    req.session.user.moves.push(storedMove); 
+                    console.log('req.session.user.move', req.session.user.moves); 
                     // Send the newly added move entry to client
                     res.send(storedMove);        
                 }
