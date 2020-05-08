@@ -295,7 +295,7 @@ const boxController = {
                     // return : boolean
                     // true : deletion ok
                     // false : deletion didn't work
-                    res.status(204).send(success); // 204 : No-content
+                    res.status(204); // 204 : No-content, here '.send()' is useless
                 } catch (error) {
                     console.trace(error);
                 }
