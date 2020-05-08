@@ -101,7 +101,7 @@ class Box {
             console.log("Box.update result", result); 
         
             //return the updated move
-            return result.rows[0]; 
+            return (!!result.rows.length) ? result.rows[0] : false; 
         } catch (error) {
             console.trace(error);
         }
@@ -111,10 +111,10 @@ class Box {
 
         try {
             // Select a box 
-            const query = `DELETE FROM "box" WHERE "id"= $1 AND user_id = $2;`; 
+            const query = `DELETE FROM "box" WHERE "id"= $1;`; 
 
             // Delete the box
-            const result = await client.query(query, [boxId, req.session.user.id]);
+            const result = await client.query(query, [boxId]);
 
             //console.log('result :>> ', result);
 

@@ -167,24 +167,39 @@ const boxController = {
 
     updateBox: async (req, res) => {
         //* Update the boxes data
-        // If the pointed move doesn't belong to to current user
-        // prevent action and send an error
-    
+        
+        // Filter the user moves with the pointed move (from form)
         const move = req.session.user.moves.filter(moveObj => moveObj.id == req.body.move_id); 
-            
-            console.log('move from createBox', move); 
+        console.log('move from createBox', move); 
 
-            if (!move.length) {
-                return res.status(403).send({
-                    error : {
-                        statusCode: 403,
-                        message: {
-                            en:"Forbidden action", 
-                            fr:"Action interdite"
-                        }
+        // If the pointed move doesn't belong to current user
+        if (!move.length) {
+            // prevent action and send an error
+            return res.status(403).send({
+                error : {
+                    statusCode: 403,
+                    message: {
+                        en:"Forbidden action", 
+                        fr:"Action interdite"
                     }
-                });
-            }
+                }
+            });
+        }     
+        console.log('move[0].id', move[0].id); 
+        console.log('req.body.move_id', req.body.move_id);
+        const storedBox = await Box.getByPk(req, req.params.id); 
+            
+        if (move[0].id != storedBox.move_id) {
+            return res.status(403).send({
+                error : {
+                    statusCode: 403,
+                    message: {
+                        en:"Forbidden action", 
+                        fr:"Action interdite"
+                    }
+                }
+            });
+        }  
         
         // Check form validity
         const boxValidation = await boxUpdateSchema.validate(req.body); 
@@ -216,7 +231,7 @@ const boxController = {
             // Execute request
             const updatedBox = await Box.update(req, boxId); 
 
-            console.log("updateBox", updateBox); 
+            // console.log("updateBox", updateBox); 
 
             // return the updated move
             res.send((!!updatedBox) ? updatedBox : false); 
@@ -232,15 +247,37 @@ const boxController = {
         //* Delete a box from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
                 try {
+                    // det pointed box
+
+                    // Retrieve box id from url
+                    const boxId = req.params.id; 
+                    
+
+                    const storedBox = await Box.getByPk(req, boxId); 
+
                     // If move belongs to user continue 
                     // else send error
-                    const move = req.session.user.moves.filter(moveObj => moveObj.id == req.params.id); 
+                    if (!storedBox) {
+                        return res.status(400).send({
+                            error : {
+                                statusCode: 400,
+                                message: {
+                                    en:"Bad request - The ressources doesn't exist", 
+                                    fr:"Requête erronée. - La ressouce visée n'existe pas"
+                                }
+                            }
+                        });
+                    }
+
+
+                    const matchedMove = req.session.user.moves.filter(moveObj => moveObj.id == storedBox.move_id); 
                     
                     // If the box is already deleted and a request for deletion is made, 
                     // It'll simply fallback as a false from the DB
-                    console.log('move from createBox', move); 
 
-                    if (!move.length) {
+                    // If the pointed box Id isnot related to the user moves
+                    if (!matchedMove.length) {
+                        // Abort operation and send error to client;
                         return res.status(403).send({
                             error : {
                                 statusCode: 403,
@@ -252,16 +289,13 @@ const boxController = {
                         });
                     }
                     
-                    // Retrieve box id from url
-                    const boxId = req.params.id; 
-                    
                     // Request deletion from DB with move id
-                    const success = await Box.delete(req, boxId); 
+                    const success = await Box.delete(boxId); 
 
                     // return : boolean
                     // true : deletion ok
                     // false : deletion didn't work
-                    res.send(success);
+                    res.status(204).send(success); // 204 : No-content
                 } catch (error) {
                     console.trace(error);
                 }
