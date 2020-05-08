@@ -184,7 +184,7 @@ const itemController = {
                     // return : boolean
                     // true : deletion ok
                     // false : deletion didn't work
-                    res.send(success);
+                    res.status(204).send(success); // 204 : No-content
                 } catch (error) {
                     console.trace(error);
                 }
