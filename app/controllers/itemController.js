@@ -24,7 +24,39 @@ const itemController = {
             // Get box id  from params
             const boxId = req.params.id; 
 
-            // Retrieve the box from DB populated with items
+            const storedBox = await Box.getByPk(req, boxId); 
+
+            // If no box found send error
+            if (!storedBox) {
+                return res.status(400).send({
+                    error : {
+                        statusCode: 400,
+                        message: {
+                            en:"Bad request - The ressources doesn't exist", 
+                            fr:"Requête erronée. - La ressouce visée n'existe pas"
+                        }
+                    }
+                });
+            }
+
+            // get from users move any who matche the requested destination box
+            const match = req.session.user.moves.filter(moveObj => moveObj.id == storedBox.move_id); 
+
+            // If none matches 
+            if (!match.length) {
+                // abort operation and send a error to client
+                return res.status(403).send({
+                    error : {
+                        statusCode: 403,
+                        message: {
+                            en:"Forbidden action", 
+                            fr:"Action interdite"
+                        }
+                    }
+                });
+            }
+
+            // Retrieve the box content from DB
             const items = await Item.getAllInBox(req, boxId); 
 
             let matchedOwnerMove; 
@@ -136,6 +168,20 @@ const itemController = {
 
                     // Retrieve the box container of storedItem obj
 
+                       // If move belongs to user continue 
+                    // else send error
+                    if (!storedItem) {
+                        return res.status(400).send({
+                            error : {
+                                statusCode: 400,
+                                message: {
+                                    en:"Bad request - The ressources doesn't exist", 
+                                    fr:"Requête erronée. - La ressouce visée n'existe pas"
+                                }
+                            }
+                        });
+                    }
+
                     console.log("req.session.user.id",req.session.user.id); 
                     console.log("deleteItem storedItem",storedItem); 
                     console.log("deleteItem storedItem.box_id",storedItem.box_id); 
@@ -184,7 +230,7 @@ const itemController = {
                     // return : boolean
                     // true : deletion ok
                     // false : deletion didn't work
-                    res.status(204).send(success); // 204 : No-content
+                    res.status(204); // 204 : No-content, here '.send()' is useless
                 } catch (error) {
                     console.trace(error);
                 }
