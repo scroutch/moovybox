@@ -1,6 +1,7 @@
 const Joi = require('@hapi/joi');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const Move = require('../models/move'); 
 
 const signinSchema = Joi.object({
     email: Joi.string().email().required(),
@@ -109,8 +110,11 @@ const authControlleur = {
                         }); 
                     } else {
                         //   If there is a match add user id to session, 
+                        
                         // AND get his moves and send the results back 
-                        req.session.user ={id: storedUser.id}; 
+                        req.session.user ={ id: storedUser.id }; 
+                        req.session.user.moves = storedUser.moves = await Move.getAll(req); 
+                        
                         console.log('req.session :>> ', req.session);
 
                         delete storedUser.password; 
@@ -132,7 +136,6 @@ const authControlleur = {
         catch (err) {
             console.trace(err);
         }
-
     }, 
 
     signout: (req, res) => {

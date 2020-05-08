@@ -50,8 +50,9 @@ const boxUpdateSchema = Joi.object({
 
 const boxController = {
 
+
     getUserBoxes: async(req,res) => {
-        //* Find a send all the box from a user
+        //* Find and send all the boxes from a user
         try {
             // At this stage, a middleware has checked user authorization. 
             const boxes = await Box.getAll(req); 
@@ -63,15 +64,64 @@ const boxController = {
         }
     },
 
+    getMoveBoxes: async(req,res) => {
+        //* Find and send all the boxes from a user move
+        try {
+            // At this stage, a middleware has checked user's presence. 
+            console.log('req.params :>> ', req.params);
+
+            // compare requested move with saved move from user 
+
+            const matchedMove = req.session.user.moves.filter(moveObj => moveObj.id == req.params.id); 
+
+            if (!!matchedMove.length) {
+                const boxes = await Box.getAllFromMove(req); 
+    
+                return res.send(boxes); 
+
+            } else {
+                return res.status(403).send({
+                    error : {
+                        statusCode: 403,
+                        message: {
+                            en:"Forbidden action", 
+                            fr:"Action interdite"
+                        }
+                    }
+                });
+            }
+
+        } catch (error) {
+            console.trace(error);
+        }
+    },
+
     createBox: async (req, res) => {
         //* Create a new box in DB
         try {
+
+            const move = req.session.user.moves.filter(moveObj => moveObj.id == req.body.move_id); 
+            
+            console.log('move from createBox', move); 
+
+            if (!move.length) {
+                return res.status(403).send({
+                    error : {
+                        statusCode: 403,
+                        message: {
+                            en:"Forbidden action", 
+                            fr:"Action interdite"
+                        }
+                    }
+                });
+            }
 
             // Validate the data from the form
             const boxValidation = await newBoxSchema.validate(req.body); 
 
             // if no error found then create Box instance and insert data. 
             if (!boxValidation.error) {
+                // 
 
                 //Compare the label field with the DB values
                 const boxLabelMatch = await Box.boxLabelExists(req); 
@@ -117,6 +167,24 @@ const boxController = {
 
     updateBox: async (req, res) => {
         //* Update the boxes data
+        // If the pointed move doesn't belong to to current user
+        // prevent action and send an error
+    
+        const move = req.session.user.moves.filter(moveObj => moveObj.id == req.body.move_id); 
+            
+            console.log('move from createBox', move); 
+
+            if (!move.length) {
+                return res.status(403).send({
+                    error : {
+                        statusCode: 403,
+                        message: {
+                            en:"Forbidden action", 
+                            fr:"Action interdite"
+                        }
+                    }
+                });
+            }
         
         // Check form validity
         const boxValidation = await boxUpdateSchema.validate(req.body); 
@@ -126,11 +194,13 @@ const boxController = {
             // Check 
             // Retrieve the arguments
 
-            // the false values to form if not sent 
+            // Add the false values to form if not sent 
             // (by default the client does not send unckeked box data)
+
+            // Potential boolean values
             const boxAttributes = ['fragile', 'heavy', 'floor']; 
 
-            // check in foprm data has boolean attributes 
+            // check in form data has boolean attributes 
             // if it does NOt then add them set to false
             for (attribute of boxAttributes) {
                 if (!req.body.hasOwnProperty(attribute)) {
@@ -140,13 +210,16 @@ const boxController = {
             // move id from params
             // move infos from form body
             const boxId = req.params.id;
+
+            console.log("req.body",req.body);
             
             // Execute request
-            // const updatedBox = await Box.update(req, boxId); 
+            const updatedBox = await Box.update(req, boxId); 
+
+            console.log("updateBox", updateBox); 
 
             // return the updated move
-            // res.send((updatedBox) ? updatedBox : false); 
-            res.send(req.body); 
+            res.send((!!updatedBox) ? updatedBox : false); 
 
         } else {
             // if the form is not valid, 
@@ -159,7 +232,25 @@ const boxController = {
         //* Delete a box from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
                 try {
+                    // If move belongs to user continue 
+                    // else send error
+                    const move = req.session.user.moves.filter(moveObj => moveObj.id == req.params.id); 
                     
+                    // If the box is already deleted and a request for deletion is made, 
+                    // It'll simply fallback as a false from the DB
+                    console.log('move from createBox', move); 
+
+                    if (!move.length) {
+                        return res.status(403).send({
+                            error : {
+                                statusCode: 403,
+                                message: {
+                                    en:"Forbidden action", 
+                                    fr:"Action interdite"
+                                }
+                            }
+                        });
+                    }
                     
                     // Retrieve box id from url
                     const boxId = req.params.id; 
