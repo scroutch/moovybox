@@ -24,8 +24,8 @@ class Item {
         //* Check the existence of the entred box in the DB
         try {
             // request to find an associated user
-            const query = `SELECT * FROM "item" WHERE "name" = $1 AND user_id = $2`; 
-            const results = await client.query(query, [req.body.name, req.session.user.id]); 
+            const query = `SELECT * FROM "item" WHERE "name" = $1 AND user_id = $2 AND box_id=$3;`; 
+            const results = await client.query(query, [req.body.name, req.session.user.id, req.body.box_id]); 
             
             // Returns a boolean 
             // - true : name exists

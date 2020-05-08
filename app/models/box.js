@@ -11,6 +11,32 @@ class Box {
         this.move_id = obj.move_id;  
     }
 
+    static async getById(req) {
+        // Method to retrieve a box if it matches with current user id and send them to client
+
+        const query = `SELECT * FROM "box" WHERE user_id = $1 AND "id" = $2;`; 
+
+        const values = [req.session.user.id, req.body.box_id]; 
+
+        const results = await client.query(query, values); 
+
+        return results.rows[0]; 
+    }
+
+    static async getByIdWithContent(req) {
+        // Method to retrieve a box if it matches with current user id and send them to client
+
+        const query = `SELECT * FROM "box" 
+        JOIN "item" ON "item".box_id = box.id 
+        WHERE box.user_id = $1 AND box."id" = $2;`; 
+
+        const values = [req.session.user.id, req.body.box_id]; 
+
+        const results = await client.query(query, values); 
+
+        return results.rows[0]; 
+    }
+
     static async getAll(req) {
         // Method to retrieve all user box and send them to client
 
@@ -27,7 +53,7 @@ class Box {
         // Method to retrieve all user boxes from one specific move and send them to client
 
         const query = `SELECT * FROM "box" WHERE user_id = $1 AND move_id = $2;`; 
-        
+
         const values = [req.session.user.id, req.params.id]; 
 
         const results = await client.query(query, values); 
@@ -73,14 +99,16 @@ class Box {
         
         try {
             // Prepare the query
-            const query = `UPDATE "move" SET ("label", "destination_room", "fragile", "heavy", "floor") = ($1, $2, $3, $4, $5) WHERE "id" = $6 AND "user_id" = $5 RETURNING * ;`;
+            const query = `UPDATE "box" SET ("label", "destination_room", "fragile", "heavy", "floor") = ($1, $2, $3::boolean, $4::boolean, $5::boolean) WHERE "id" = $6 AND "user_id" = $7 RETURNING *;`;
             
             // Set the involved data
             const data = req.body; 
-            const values = [data.label, data.destination_room, data.fragile, data.heavy, data.floor, boxId, req.session.user.id]; 
+            const values = [data.label, data.destination_room, data.fragile.toString(), data.heavy.toString(), data.floor.toString(), boxId, req.session.user.id]; 
             
             // Query update to DB 
             const result = await client.query(query, values); 
+
+            console.log("Box.update result", result); 
         
             //return the updated move
             return result.rows[0]; 

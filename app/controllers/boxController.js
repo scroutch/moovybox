@@ -209,13 +209,16 @@ const boxController = {
             // move id from params
             // move infos from form body
             const boxId = req.params.id;
+
+            console.log("req.body",req.body);
             
             // Execute request
-            // const updatedBox = await Box.update(req, boxId); 
+            const updatedBox = await Box.update(req, boxId); 
+
+            console.log("updateBox", updateBox); 
 
             // return the updated move
-            // res.send((updatedBox) ? updatedBox : false); 
-            res.send(req.body); 
+            res.send((!!updatedBox) ? updatedBox : false); 
 
         } else {
             // if the form is not valid, 
