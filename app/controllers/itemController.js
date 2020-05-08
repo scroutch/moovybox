@@ -42,7 +42,7 @@ const itemController = {
 
             // Make sure the destination box belongs to a move owned by the current user
             // Get the destination box that matches current user id
-            const destinationBox = await Box.getById(req); 
+            const destinationBox = await Box.getByPk(req, req.body.box_id); 
 
             // If a destinationBox (same id and owned by the current user) dosen't 
             if (!destinationBox) {
@@ -128,14 +128,55 @@ const itemController = {
         //* Delete a item from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
                 try {
-
-
-                    
-                    
                     // Retrieve item id from url
                     const itemId = req.params.id; 
 
-                    console.log('itemId :>> ', itemId);
+                    // Retrieve the item pointed for deletion
+                    const storedItem = await Item.getByPk(itemId); 
+
+                    // Retrieve the box container of storedItem obj
+
+                    console.log("req.session.user.id",req.session.user.id); 
+                    console.log("deleteItem storedItem",storedItem); 
+                    console.log("deleteItem storedItem.box_id",storedItem.box_id); 
+
+                    const storedBox = await Box.getByPk(req, storedItem.box_id); 
+                    
+                    console.log("deleteItem storedItem",storedItem); 
+                    console.log("deleteItem storedBox", storedBox); 
+
+                    //If no matching box was found
+                    if (!storedBox) {
+                         // abort operation and send a error to client
+                         return res.status(403).send({
+                            error : {
+                                statusCode: 403,
+                                message: {
+                                    en:"Forbidden action", 
+                                    fr:"Action interdite"
+                                }
+                            }
+                        });
+                    }
+
+                    // If a matching box is found for the pointed item 
+                    // Check if the move_id from the box is related to one of the user move 
+                    const matchedMove = req.session.user.moves.filter(moveObj => moveObj.id == storedBox.move_id); 
+                    
+
+                    // If the box doesn't belong to any of the user moves
+                    if (!matchedMove.length) {
+                        // abort operation and send a error to client
+                        return res.status(403).send({
+                            error : {
+                                statusCode: 403,
+                                message: {
+                                    en:"Forbidden action", 
+                                    fr:"Action interdite"
+                                }
+                            }
+                        });
+                    }
                     
                     // Request deletion from DB with item id
                     const success = await Item.delete(req, itemId); 

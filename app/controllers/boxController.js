@@ -50,8 +50,9 @@ const boxUpdateSchema = Joi.object({
 
 const boxController = {
 
+
     getUserBoxes: async(req,res) => {
-        //* Find a send all the box from a user
+        //* Find and send all the boxes from a user
         try {
             // At this stage, a middleware has checked user authorization. 
             const boxes = await Box.getAll(req); 
@@ -64,7 +65,7 @@ const boxController = {
     },
 
     getMoveBoxes: async(req,res) => {
-        //* Find a send all the box from a user
+        //* Find and send all the boxes from a user move
         try {
             // At this stage, a middleware has checked user's presence. 
             console.log('req.params :>> ', req.params);

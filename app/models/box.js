@@ -11,28 +11,18 @@ class Box {
         this.move_id = obj.move_id;  
     }
 
-    static async getById(req) {
+    static async getByPk(req, boxId) {
         // Method to retrieve a box if it matches with current user id and send them to client
 
         const query = `SELECT * FROM "box" WHERE user_id = $1 AND "id" = $2;`; 
 
-        const values = [req.session.user.id, req.body.box_id]; 
+        const values = [req.session.user.id, boxId]; 
+
+        console.log('Box.getByPk values', values); 
 
         const results = await client.query(query, values); 
 
-        return results.rows[0]; 
-    }
-
-    static async getByIdWithContent(req) {
-        // Method to retrieve a box if it matches with current user id and send them to client
-
-        const query = `SELECT * FROM "box" 
-        JOIN "item" ON "item".box_id = box.id 
-        WHERE box.user_id = $1 AND box."id" = $2;`; 
-
-        const values = [req.session.user.id, req.body.box_id]; 
-
-        const results = await client.query(query, values); 
+        console.log('Box.getByPk results', results); 
 
         return results.rows[0]; 
     }

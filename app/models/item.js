@@ -8,6 +8,18 @@ class Item {
        
     }
 
+    static async getByPk(itemId) {
+        // Method to retrieve all user item and send them to client
+
+        const query = `SELECT * FROM "item" WHERE id = $1;`; 
+
+        const values = [itemId]; 
+
+        const results = await client.query(query, values); 
+
+        return results.rows[0]; 
+    }
+
     static async getAllInBox(req, boxId) {
         // Method to retrieve all user item and send them to client
 
