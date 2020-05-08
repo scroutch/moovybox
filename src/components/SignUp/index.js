@@ -58,7 +58,6 @@ const SignUp = () => {
   const passwordVal = useSelector((state) => state.passwordVal);
   const classes = useStyles();
  
-
   function handleSubmit(e) {
     e.preventDefault(); // stops default reloading behaviour
     console.log('input on onSubmit', email, password, pseudo);
