@@ -11,6 +11,22 @@ class Box {
         this.move_id = obj.move_id;  
     }
 
+    static async getByPk(req, boxId) {
+        // Method to retrieve a box if it matches with current user id and send them to client
+
+        const query = `SELECT * FROM "box" WHERE user_id = $1 AND "id" = $2;`; 
+
+        const values = [req.session.user.id, boxId]; 
+
+        console.log('Box.getByPk values', values); 
+
+        const results = await client.query(query, values); 
+
+        console.log('Box.getByPk results', results); 
+
+        return results.rows[0]; 
+    }
+
     static async getAll(req) {
         // Method to retrieve all user box and send them to client
 
@@ -23,12 +39,24 @@ class Box {
         return results.rows; 
     }
 
+    static async getAllFromMove(req) {
+        // Method to retrieve all user boxes from one specific move and send them to client
+
+        const query = `SELECT * FROM "box" WHERE user_id = $1 AND move_id = $2;`; 
+
+        const values = [req.session.user.id, req.params.id]; 
+
+        const results = await client.query(query, values); 
+
+        return results.rows; 
+    }
+
     static async boxLabelExists (req) {
         //* Check the existence of the entred box in the DB
         try {
             // request to find an associated user
-            const query = `SELECT * FROM "box" WHERE "label" = $1 AND user_id = $2`; 
-            const results = await client.query(query, [req.body.label, req.session.user.id]); 
+            const query = `SELECT * FROM "box" WHERE "label" = $1 AND move_id = $2 AND user_id = $3 `; 
+            const results = await client.query(query, [req.body.label, , req.body.move_id, req.session.user.id]); 
             
             // Returns a boolean 
             // - true : label exists
@@ -61,17 +89,19 @@ class Box {
         
         try {
             // Prepare the query
-            const query = `UPDATE "move" SET ("label", "destination_room", "fragile", "heavy", "floor") = ($1, $2, $3, $4, $5) WHERE "id" = $6 AND "user_id" = $5 RETURNING * ;`;
+            const query = `UPDATE "box" SET ("label", "destination_room", "fragile", "heavy", "floor") = ($1, $2, $3::boolean, $4::boolean, $5::boolean) WHERE "id" = $6 AND "user_id" = $7 RETURNING *;`;
             
             // Set the involved data
             const data = req.body; 
-            const values = [data.label, data.destination_room, data.fragile, data.heavy, data.floor, boxId, req.session.user.id]; 
+            const values = [data.label, data.destination_room, data.fragile.toString(), data.heavy.toString(), data.floor.toString(), boxId, req.session.user.id]; 
             
             // Query update to DB 
             const result = await client.query(query, values); 
+
+            console.log("Box.update result", result); 
         
             //return the updated move
-            return result.rows[0]; 
+            return (!!result.rows.length) ? result.rows[0] : false; 
         } catch (error) {
             console.trace(error);
         }
@@ -81,10 +111,10 @@ class Box {
 
         try {
             // Select a box 
-            const query = `DELETE FROM "box" WHERE "id"= $1 AND user_id = $2;`; 
+            const query = `DELETE FROM "box" WHERE "id"= $1;`; 
 
             // Delete the box
-            const result = await client.query(query, [boxId, req.session.user.id]);
+            const result = await client.query(query, [boxId]);
 
             //console.log('result :>> ', result);
 
