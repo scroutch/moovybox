@@ -9,6 +9,7 @@ import { Route, Redirect, Switch } from 'react-router';
 import './styles.css';
 import SignIn from 'src/components/SignIn';
 import Move from 'src/components/Move';
+import FormMove from 'src/components/FormMove';
 import SignUp from 'src/components/SignUp';
 import ResetPassword from 'src/components/ResetPassword';
 import Profile from 'src/components/Profile';
@@ -31,7 +32,7 @@ const App = () => {
         <Route exact path="/signin">
          <SignIn />
         </Route>
-        <Route
+        {/* <Route
           exact
           path="/move"
           render={() => {
@@ -40,7 +41,7 @@ const App = () => {
             }
             return <Move />;
           }}
-        />
+        /> */}
         <Route exact path="/signup">
           <SignUp />
         </Route>
@@ -49,6 +50,12 @@ const App = () => {
         </Route>
         <Route exact path="/ResetPassword">
           <ResetPassword />
+        </Route>
+        <Route exact path="/move">
+          <Move />
+        </Route>
+        <Route exact path="/create-move">
+          <FormMove />
         </Route>
         <Route exact path="/contact">
           <Contact />
