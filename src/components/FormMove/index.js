@@ -1,10 +1,11 @@
 import 'date-fns';
-import React from 'react';
+import React, {useState} from 'react';
 import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -39,21 +40,46 @@ const useStyles = makeStyles((theme) => ({
 
 const FormMove = () => {
     const classes = useStyles();
-    const [selectedDate, setSelectedDate] = React.useState(new Date('2020-06-18'));
+    const [label, setLabel] = useState('');
+    const [adress, setAdress] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date('2020-06-18'));
 
     const handleDateChange = (date) => {
       setSelectedDate(date);
     };
+
+    const handleLabelChange = (e) => {
+
+        setLabel(e.target.value);
+    }
+
+    const handleAdressChange = (e) => {
+
+        setAdress(e.target.value);
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(`Form envoyé :`);
+        console.log([{label}]);
+        console.log([{adress}]);
+        console.log([{selectedDate}]);
+    }
+
   return (
     <div className={classes.root}>
     <CssBaseline />
     <Header />
     <Container component="main" maxWidth="xs">
       <CssBaseline />
+      <Typography component="h1" variant="h4">
+            Création d'un déménagement
+        </Typography>
       <div className={classes.paper}>
         <form
           className={classes.form}
           noValidate
+          onSubmit={handleSubmit}
         >
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -62,6 +88,8 @@ const FormMove = () => {
                 required
                 fullWidth
                 label="Entrez un nom pour votre déménagement"
+                value={label}
+                onChange={handleLabelChange}
               />
             </Grid>
             <Grid item xs={12}>
@@ -70,6 +98,8 @@ const FormMove = () => {
                 required
                 fullWidth
                 label="Adresse"
+                value={adress}
+                onChange={handleAdressChange}
               />
             </Grid>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -80,7 +110,7 @@ const FormMove = () => {
                     format="dd/MM/yyyy"
                     margin="normal"
                     id="date-picker-inline"
-                    label="Date picker inline"
+                    label="Entrez une date"
                     value={selectedDate}
                     onChange={handleDateChange}
                     KeyboardButtonProps={{
@@ -96,6 +126,7 @@ const FormMove = () => {
             variant="contained"
             color="secondary"
             className={classes.submit}
+
           >
             Valider
           </Button>
