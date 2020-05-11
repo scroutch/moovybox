@@ -6,6 +6,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 5050; 
 const app = express(); 
 
+
 const corsOpts = {
   origin: ['http://localhost', 'http://18.206.96.118'],
   prefligthContinue: true,
@@ -19,6 +20,7 @@ const corsOpts = {
 
 //app.use(cors(['localhost', '18.206.96.118'])); 
 app.use(cors(corsOpts)); 
+
 // app.options('*', cors({credentials: true})); 
 
 // Bodyparser for form-data encoded body form
@@ -48,4 +50,3 @@ app.use(session({
 app.use(require('../app/router')); 
 
 app.listen(PORT, _ => console.log("Server running on ", PORT)); 
-
