@@ -10,10 +10,12 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Button from '../modules/components/Button';
+import Switch from '@material-ui/core/Switch';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
-    KeyboardTimePicker,
     KeyboardDatePicker,
   } from '@material-ui/pickers';
 
@@ -43,6 +45,11 @@ const FormMove = () => {
     const [label, setLabel] = useState('');
     const [adress, setAdress] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date('2020-06-18'));
+    const [reminder, setReminder] = useState({checked: true});
+
+    const handleReminderChange = (e) => {
+        setReminder({ ...reminder, [event.target.name]: event.target.checked});
+    }
 
     const handleDateChange = (date) => {
       setSelectedDate(date);
@@ -64,6 +71,7 @@ const FormMove = () => {
         console.log([{label}]);
         console.log([{adress}]);
         console.log([{selectedDate}]);
+        console.log([{reminder}]);
     }
 
   return (
@@ -119,6 +127,19 @@ const FormMove = () => {
                 />
             </Grid>
             </MuiPickersUtilsProvider>
+            <Grid item xs={12}>
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={reminder.checked}
+                        onChange={handleReminderChange}
+                        name="checked"
+                        color="primary"
+                    />
+                }
+                label="Voulez-vous un rappel"
+            />
+            </Grid>
           </Grid>
           <Button
             type="submit"
