@@ -3,6 +3,8 @@ const session = require('express-session');
 require('dotenv').config(); 
 const PORT = process.env.PORT || 5050; 
 const app = express(); 
+const cors = require('cors');
+const multer = require('multer');
 
 
 const corsOpts = {
@@ -17,7 +19,7 @@ const corsOpts = {
 
 
 //app.use(cors(['localhost', '18.206.96.118'])); 
-app.use(cors(corsOpts)); 
+//app.use(cors(corsOpts)); 
 
 // app.options('*', cors({credentials: true})); 
 
@@ -45,6 +47,6 @@ app.use(session({
 })); 
 
 
-app.use(require('../app/router')); 
+app.use(require('./app/router')); 
 
 app.listen(PORT, _ => console.log("Server running on ", PORT)); 
