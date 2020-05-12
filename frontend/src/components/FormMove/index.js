@@ -1,5 +1,6 @@
 import 'date-fns';
 import React, {useState} from 'react';
+import axios from 'axios';
 import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
@@ -72,6 +73,15 @@ const FormMove = () => {
         console.log([{adress}]);
         console.log([{selectedDate}]);
         console.log([{reminder}]);
+
+        const newMove = () => {
+          label,
+          adress,
+          selectedDate,
+          reminder
+        }
+
+        axios.post('http://localhost:5050/move', newMove).then(res => console.log(res.data));
     }
 
   return (

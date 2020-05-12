@@ -31,7 +31,7 @@ const App = () => {
           <Home />
         </Route>
 
-        <Route
+        {/* <Route
 
           exact
           path="/move"
@@ -39,13 +39,13 @@ const App = () => {
             if ((email === '') || (password === '')) {
               console.log('email,password page App/index',email,password);
               return <Redirect to="/signin" />;
-              
+
             }
             console.log('email,password,',email,password);
             return <Move />;
           }}
-        />
-        
+        /> */}
+
         <Route exact path="/signin">
           <SignIn />
         </Route>
