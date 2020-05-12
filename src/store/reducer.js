@@ -13,6 +13,9 @@ import {
   SYNC_ADDRESS,
   SYNC_NAME_INVENTORY,
   SYNC_NAME_ITEM,
+  SYNC_MOVE_ID,
+  SYNC_USER_ID,
+  SYNC_CODE,
 } from './actions';
 
 const initialState = {
@@ -21,10 +24,10 @@ const initialState = {
   email: 'carole@gmail.com',
   password: 'Azerty83*',
   passwordVal: '',
-  moveId: '4',
+  move_id: '5',
   labelBox: '',
   labelMove: '',
-  destinationRoom: '',
+  destination_room: '',
   fragile: '',
   heavy: '',
   floor: '',
@@ -32,6 +35,8 @@ const initialState = {
   address: '',
   nameInventory: '',
   nameItem: '',
+  user_id: '3',
+  code: '0000000C',
 };
 
 
@@ -56,7 +61,7 @@ export default (state = initialState, action = {}) => {
       return { ...state, labelMove: action.labelMove };
     }
     case SYNC_DESTINATION_ROOM: {
-      return { ...state, destinationRoom: action.destinationRoom };
+      return { ...state, destination_room: action.destination_room };
     }
     case SYNC_FRAGILE: {
       return { ...state, fragile: action.fragile };
@@ -68,16 +73,25 @@ export default (state = initialState, action = {}) => {
       return { ...state, floor: action.floor };
     }
     case SYNC_DATE: {
-      return {...state, date: action.date };
+      return { ...state, date: action.date };
     }
     case SYNC_ADDRESS: {
-      return {...state, address: action.address };
+      return { ...state, address: action.address };
     }
     case SYNC_NAME_INVENTORY: {
-      return {...state, nameInventory: action.nameInventory };
+      return { ...state, nameInventory: action.nameInventory };
     }
     case SYNC_NAME_ITEM: {
-      return {...state, nameItem: action.nameItem };
+      return { ...state, nameItem: action.nameItem };
+    }
+    case SYNC_MOVE_ID: {
+      return { ...state, move_id: action.move_id };
+    }
+    case SYNC_USER_ID: {
+      return { ...state, user_id: action.user_id };
+    }
+    case SYNC_CODE: {
+      return { ...state, code: action.code };
     }
     case 'INCREMENT': {
       return {

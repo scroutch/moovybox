@@ -10,7 +10,7 @@ const rawTheme = createMuiTheme({
     },
     secondary: {
       light: '#fff5f8',
-      main: '#2858d2', // light bhlue
+      main: '#2858d2', // light blue
       dark: '#04309e',
     },
     warning: {
@@ -89,12 +89,14 @@ const theme = {
     h4: {
       ...rawTheme.typography.h4,
       ...fontHeader,
-      fontSize: 36,
+      fontSize: 18,
     },
     h5: {
       ...rawTheme.typography.h5,
-      fontSize: 24,
+      fontSize: 18,
       fontWeight: rawTheme.typography.fontWeightLight,
+      fontFamily: rawTheme.typography.fontFamily,
+      color: rawTheme.palette.primary.main,
     },
     h6: {
       ...rawTheme.typography.h6,
