@@ -2,13 +2,15 @@ import axios from 'axios';
 
 import { LOGIN, enterMove } from 'src/store/actions';
 
+const prodURL = 'http://18.206.96.118';
+
 export default (store) => (next) => (action) => {
   console.log('MW Auth');
 
   switch (action.type) {
     case LOGIN: {
       axios
-        .post('http://18.206.96.118/signin', {
+        .post('http://localhost:5050/signin', {
           email: store.getState().email,
           password: store.getState().password,
         })
