@@ -1,5 +1,7 @@
 import 'date-fns';
 import React, {useState} from 'react';
+import axios from 'axios';
+import { Redirect } from 'react-router-dom';
 import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
@@ -18,6 +20,8 @@ import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
   } from '@material-ui/pickers';
+
+axios.defaults.withCredentials = true;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -40,19 +44,26 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
+
 const FormMove = () => {
     const classes = useStyles();
+    const [redirect, setRedirect] = useState(false);
     const [label, setLabel] = useState('');
-    const [adress, setAdress] = useState('');
-    const [selectedDate, setSelectedDate] = useState(new Date('2020-06-18'));
-    const [reminder, setReminder] = useState({checked: true});
+    const [address, setAddress] = useState('');
+    const [date, setDate] = useState(new Date('2020-06-18'));
+    const [user_id, setUserId] = useState('');
+    // const [reminder, setReminder] = useState({checked: true});
 
-    const handleReminderChange = (e) => {
-        setReminder({ ...reminder, [event.target.name]: event.target.checked});
+    // const handleReminderChange = (e) => {
+    //     setReminder({ ...reminder, [event.target.name]: event.target.checked});
+    // }
+    const renderRedirect = () => {
+      if(redirect) {
+        return <Redirect to='/create-box' />
+      }
     }
-
     const handleDateChange = (date) => {
-      setSelectedDate(date);
+      setDate(date);
     };
 
     const handleLabelChange = (e) => {
@@ -60,18 +71,25 @@ const FormMove = () => {
         setLabel(e.target.value);
     }
 
-    const handleAdressChange = (e) => {
+    const handleAddressChange = (e) => {
 
-        setAdress(e.target.value);
+        setAddress(e.target.value);
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(`Form envoyé :`);
-        console.log([{label}]);
-        console.log([{adress}]);
-        console.log([{selectedDate}]);
-        console.log([{reminder}]);
+        // console.log(`Form envoyé :`);
+        // console.log([{label}]);
+        // console.log([{address}]);
+        // console.log([{date}]);
+        // console.log([{reminder}]);
+
+        axios.post(`http://localhost:5050/move`, { label, address, date })
+             .then(res => {
+                console.log(res.data);
+             }).catch(err => {
+               console.log(err);
+             });
     }
 
   return (
@@ -106,8 +124,8 @@ const FormMove = () => {
                 required
                 fullWidth
                 label="Adresse"
-                value={adress}
-                onChange={handleAdressChange}
+                value={address}
+                onChange={handleAddressChange}
               />
             </Grid>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -119,7 +137,7 @@ const FormMove = () => {
                     margin="normal"
                     id="date-picker-inline"
                     label="Entrez une date"
-                    value={selectedDate}
+                    value={date}
                     onChange={handleDateChange}
                     KeyboardButtonProps={{
                     'aria-label': 'change date',
@@ -127,7 +145,7 @@ const FormMove = () => {
                 />
             </Grid>
             </MuiPickersUtilsProvider>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
             <FormControlLabel
                 control={
                     <Switch
@@ -139,15 +157,16 @@ const FormMove = () => {
                 }
                 label="Voulez-vous un rappel"
             />
-            </Grid>
+            </Grid> */}
           </Grid>
+          {renderRedirect()}
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="secondary"
             className={classes.submit}
-
+            onClick={setRedirect}
           >
             Valider
           </Button>
