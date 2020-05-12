@@ -14,7 +14,7 @@ const itemController = require('./controllers/itemController');
 
 
 
-router.get('/', accessHomeMW, mainController.homePage); 
+router.get('/', /*accessHomeMW,*/ mainController.homePage); 
 
 /* Access related routes */
 
