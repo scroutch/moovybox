@@ -5,3 +5,8 @@ frontend/.DS_Store
 frontend/Thumbs.db
 
 frontend/yarn-error.log
+
+/backend/node_modules
+/backend/.env
+/backend/brouillon.js
+
