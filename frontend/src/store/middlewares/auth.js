@@ -8,7 +8,7 @@ export default (store) => (next) => (action) => {
   switch (action.type) {
     case LOGIN: {
       axios
-        .post('http://18.206.96.118/signin', {
+        .post('http://localhost:5050/signin', {
           email: store.getState().email,
           password: store.getState().password,
         })
