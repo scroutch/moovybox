@@ -1,15 +1,16 @@
 const express = require('express');
 const session = require('express-session'); 
 require('dotenv').config(); 
-const multer = require('multer');
-const cors = require('cors');
 const PORT = process.env.PORT || 5050; 
 const app = express(); 
+const cors = require('cors');
+const multer = require('multer');
 
 
 const corsOpts = {
-  origin: ['http://localhost', 'http://18.206.96.118'],
-  prefligthContinue: true,
+  //origin: ['http://localhost', 'http://18.206.96.118'],
+  origin:'*', 
+  prefligthContinue: false,
   credentials: true, 
   optionsSuccessStatus: 204,
   allowedHeaders : ['Content-Type', 'Authorization', 'Set-Cookie', 'Cookie']
@@ -37,16 +38,16 @@ app.use(express.json());
 app.use(session({
   secret: 'booxxy onthe move', // 'keyboard cat' as a default secret would become easy to hack. 
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     maxAge: 6*30*24*3600*1000,
     httpOnly: true,
     secure: false, // false : http and https / true : only https 
-    domain: 'http://localhost'
+    //domain: 'http://localhost'
   }
 })); 
 
 
-app.use(require('../app/router')); 
+app.use(require('./app/router')); 
 
 app.listen(PORT, _ => console.log("Server running on ", PORT)); 
