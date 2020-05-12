@@ -8,13 +8,18 @@ import {
   SYNC_FRAGILE,
   SYNC_HEAVY,
   SYNC_FLOOR,
-  SYNC_MOVE_ID,
 } from 'src/store/actions';
 
 import Avatar from '@material-ui/core/Avatar';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
@@ -27,14 +32,12 @@ import Container from '@material-ui/core/Container';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormGroup from '@material-ui/core/FormGroup';
 import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControl from '@material-ui/core/FormControl';
 import withRoot from '../modules/withRoot';
 import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
 import HeaderHome from '../modules/views/HeaderHome';
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,24 +62,9 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-  formGroup: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  formLabel: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  titreNumero: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  Numero: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  margin302: {
-    margin: theme.spacing(3, 0, 2),
-  },
 }));
 
-const filter = createFilterOptions(); // to add in the room list
+const filter = createFilterOptions(); // to add in the room list 
 
 
 const CreateBox = () => {
@@ -84,36 +72,39 @@ const CreateBox = () => {
   const history = useHistory();
   const moveId = useSelector((state) => state.moveId);
   const labelBox = useSelector((state) => state.labelBox);
-  const destination_room = useSelector((state) => state.destination_room);
+  const destinationRoom = useSelector((state) => state.destinationRoom);
   const fragile = useSelector((state) => state.fragile);
   const floor = useSelector((state) => state.floor);
   const heavy = useSelector((state) => state.heavy);
-  const move_id = useSelector((state) => state.move_id);
-  const [value, setValue] = React.useState(null); // for the autocomplete
-  const [open, toggleOpen] = React.useState(false); // for the autocomplete
+  const [value, setValue] = React.useState(null);  // for the autocomplete
+  const [open, toggleOpen] = React.useState(false); //for the autocomplete
 
   // for the autocomplete
   const handleClose = () => {
     setDialogValue({
-      nameRoom: '',
+      room: '',
     });
 
-    toggleOpen(true);
+    toggleOpen(false);
   };
 
   const [dialogValue, setDialogValue] = React.useState({
-    nameRoom: '',
+    room: '',
   });
 
   const classes = useStyles();
 
   function handleSubmit(e) {
     e.preventDefault(); // stops default reloading behaviour
-    console.log('input on onSubmit', move_id, labelBox, destination_room, fragile, heavy, floor);
+    console.log('input on onSubmit', moveId, labelBox, destinationRoom, fragile, heavy, floor);
+    const move_id = moveId;
     const label = labelBox;
+    const destination_room = destinationRoom;
     setValue({
-      nameRoom: dialogValue.nameRoom,
+      room: dialogValue.room,
+
     });
+
     handleClose();
     axios
       .post('http://18.206.96.118/box', {
@@ -121,6 +112,7 @@ const CreateBox = () => {
       })
       .then((res) => {
         if (res.status === 201) {
+          
           console.log('response.status', res.status);
         }
         else {
@@ -134,26 +126,24 @@ const CreateBox = () => {
       });
   }
   const [state, setState] = React.useState({
-    heavy: false,
-    fragile: false,
-    floor: false,
+    heavy: true,
+    checkedB: true,
   });
 
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
+  const handleHeavyChange = (event) => {
+    setState({ ...state, heavy: event.target.checked });
   };
 
-  const room = [
-    { nameRoom: 'Salle de bain' },
-    { nameRoom: 'Salon' },
-    { nameRoom: 'Cuisine' },
-    { nameRoom: 'Chambre 1' },
-    { nameRoom: 'Chambre 2' },
-    { nameRoom: 'Cellier' },
-    { nameRoom: 'Cave' },
-    { nameRoom: 'Buanderie' },
-  ];
-
+  const destination_room = [
+    { room: 'Salle de bain'},
+    { room: 'Salon'},
+    { room: 'Cuisine'},
+    { room: 'Chambre 1'},
+    { room: 'Chambre 2'},
+    { room: 'Cellier'},
+    { room: 'Cave'},
+    { room: 'Buanderie'},
+  ]
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -167,12 +157,6 @@ const CreateBox = () => {
           <Typography component="h1" variant="h3">
             J'ajoute un carton
           </Typography>
-          <Typography className="titreNumero" component="h2" variant="h5">
-            Numéro à écrire sur le carton
-          </Typography>
-          <Avatar className={classes.avatar}>
-            11
-          </Avatar>
           <form
             className={classes.form}
             noValidate
@@ -181,38 +165,59 @@ const CreateBox = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Autocomplete
-                  fullWidth
                   freeSolo
                   autoHighlight
                   id="destination_room"
-                  options={room}
-                  getOptionLabel={(option) => option.nameRoom}
+                  options={destination_room}
+                  getOptionLabel={(option) => option.room}
+                  style={{ width: 300 }}
                   renderInput={(params) => <TextField {...params} label="Pièce de destination" variant="outlined" />}
+                />
+                
+                 
+                <TextField
+                  autoComplete="destinationRoom"
+                  name="destinationRoom"
+                  variant="outlined"
+                  fullWidth
+                  id="ddestinationRoom"
+                  label="Pièce de destination"
+                  autoFocus
+                  value={destinationRoom}
                   onChange={(evt) => {
-                    const newDestination_room = evt.target.value;
-                    dispatch({ type: SYNC_DESTINATION_ROOM, destination_room: newDestination_room });
+                    const newDestinationRoom = evt.target.value;
+                    dispatch({ type: SYNC_DESTINATION_ROOM, destinationRoom: newDestinationRoom });
                   }}
                 />
               </Grid>
-              <Grid>
-                <FormControl component="fieldset">
-                  <Typography className={classes.formLabel} variant="h5">Ce carton est :</Typography>
-                  <FormGroup className={classes.formGroup}>
-                    <FormControlLabel
-                      control={<Switch checked={state.heavy} onChange={handleChange} name="heavy" />}
-                      label="Lourd"
+              {/* <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="fragile"
+                  label="fragile"
+                  name="fragile"
+                  autoComplete="fragile"
+                  value={fragile}
+                  onChange={(evt) => {
+                    const newFragile = evt.target.value;
+                    dispatch({ type: SYNC_FRAGILE, fragile: newFragile });
+                  }}
+                />
+              </Grid> */}
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={(
+                    <Switch
+                      checked={state.heavy}
+                      onChange={handleHeavyChange}
+                      name="heavy"
                     />
-                    <FormControlLabel
-                      control={<Switch checked={state.fragile} onChange={handleChange} name="fragile" />}
-                      label="Fragile"
-                    />
-                    <FormControlLabel
-                      control={<Switch checked={state.floor} onChange={handleChange} name="floor" />}
-                      label="A l'étage"
-                    />
-                  </FormGroup>
-
-                </FormControl>
+                )}
+                  label="Lourd"
+                  labelPlacement="start"
+                />
               </Grid>
             </Grid>
             <Button

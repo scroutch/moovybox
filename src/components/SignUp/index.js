@@ -77,7 +77,7 @@ const SignUp = () => {
       })
       .catch ((error) => {
         console.log("very big error");
-        alert('Vous avez déjà un compte');
+        alert('Probleme de server');
 
       });
   }
@@ -190,8 +190,8 @@ const SignUp = () => {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/signup" variant="body2">
-                  Pas de compte, créez-en un ici
+                <Link href="/signin" variant="body2">
+                  Déjà un compte ? Connectez-vous ici.
                 </Link>
               </Grid>
             </Grid>

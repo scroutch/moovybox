@@ -16,7 +16,7 @@ function Form() {
     e.preventDefault(); // stops default reloading behaviour
     console.log('input au onSubmit', email, password);
     axios
-      .post(`http://18.206.96.118/signin`, { email, password })
+      .post(`http://18.206.96.118/signin`, { email, password },{ credentials: true })
       .then(res => {
         console.log(res);
         console.log(res.data);
