@@ -9,20 +9,15 @@ const multer = require('multer');
 
 const corsOpts = {
   //origin: ['http://localhost', 'http://18.206.96.118'],
-  origin:'*', 
+  origin:true,
   prefligthContinue: false,
   credentials: true, 
   optionsSuccessStatus: 204,
   allowedHeaders : ['Content-Type', 'Authorization', 'Set-Cookie', 'Cookie']
 }; 
 
-//app.options('*', cors(corsOpts)); 
-
-
 //app.use(cors(['localhost', '18.206.96.118'])); 
 app.use(cors(corsOpts)); 
-
-// app.options('*', cors({credentials: true})); 
 
 // Bodyparser for form-data encoded body form
 app.use(multer().none()); 
@@ -33,20 +28,17 @@ app.use(express.urlencoded({extended: true}));
 // Bodyparser for json type data
 app.use(express.json()); 
 
-//app.use(cors(corsOpts)); 
-
 app.use(session({
-  secret: 'booxxy onthe move', // 'keyboard cat' as a default secret would become easy to hack. 
+  secret: 'booxxy', // 'keyboard cat' as a default secret would become easy to hack. 
   resave: false,
   saveUninitialized: false,
   cookie: {
+    //path:'*',
     maxAge: 6*30*24*3600*1000,
-    httpOnly: true,
+    httpOnly: false,
     secure: false, // false : http and https / true : only https 
-    //domain: 'http://localhost'
   }
 })); 
-
 
 app.use(require('./app/router')); 
 
