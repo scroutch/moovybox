@@ -1,10 +1,14 @@
 import axios from 'axios';
 
-import { LOGIN, enterMove } from 'src/store/actions';
+import { LOGIN, enterMove, syncPseudo } from 'src/store/actions';
 
 const prodURL = 'http://18.206.96.118';
 
+<<<<<<< HEAD
 axios.defaults.withCredentials = true; 
+=======
+axios.defaults.withCredentials = true;
+>>>>>>> dbe974c26d29b9a91ab22ba45376c860d6c88e78
 
 export default (store) => (next) => (action) => {
   console.log('MW Auth');
@@ -17,10 +21,16 @@ export default (store) => (next) => (action) => {
           password: store.getState().password,
         })
         .then((response) => {
-          console.log(response);
+          const { pseudo } = response.data;
+          console.log('pseudo', pseudo);
+          console.log('action history', action);
+          //store.dispatch(syncPseudo({pseudo}))
           if (response.status == 200) {
+            console.log('action', action)
             store.dispatch(enterMove(action.history));
+            store.dispatch(syncPseudo({pseudo}))
             console.log('Authenticated');
+            
           }
           else {
             console.error('impossible de se connecter', response);
@@ -29,7 +39,7 @@ export default (store) => (next) => (action) => {
           // store.dispatch(enterMove(action.history));
           // console.log('Authenticated - email');
         }).catch((error) => {
-          console.log('Error on Authentication');
+          console.log('Error on Authentication', error);
         });
 
       return;
