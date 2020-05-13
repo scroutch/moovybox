@@ -8,8 +8,8 @@ const multer = require('multer');
 
 
 const corsOpts = {
-  //origin: ['http://localhost', 'http://18.206.96.118'],
-  origin:true,
+  origin: ['http://localhost','http://localhost:8080', 'http://18.206.96.118'],
+  //origin:true,
   prefligthContinue: false,
   credentials: true, 
   optionsSuccessStatus: 204,
@@ -31,12 +31,13 @@ app.use(express.json());
 app.use(session({
   secret: 'booxxy', // 'keyboard cat' as a default secret would become easy to hack. 
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {
-    //path:'*',
+    path:'/',
     maxAge: 6*30*24*3600*1000,
     httpOnly: false,
     secure: false, // false : http and https / true : only https 
+    sameSite:'none',
   }
 })); 
 

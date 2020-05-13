@@ -4,6 +4,8 @@ import { LOGIN, enterMove } from 'src/store/actions';
 
 const prodURL = 'http://18.206.96.118';
 
+axios.defaults.withCredentials = true; 
+
 export default (store) => (next) => (action) => {
   console.log('MW Auth');
 
