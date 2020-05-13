@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+
 require('dotenv').config(); 
 
 const password = process.env.SMTPPASSWORD; 
@@ -17,9 +18,9 @@ let transportGmail  = nodemailer.createTransport({
 
 const message = {
     from: process.env.SMTPUSER, // Sender address
-    to: 'nicolas.garcon@gmail.com',         // List of recipients
+    to: process.env.SMTPUSER,         // List of recipients
     subject: 'Bienvenue sur Moovybox', // Subject line
-    text: 'test mail 1' // Plain text body
+    html: html// Plain text body
 };
 
 transportGmail.sendMail(message, function(err, info) {
