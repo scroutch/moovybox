@@ -116,7 +116,7 @@ const CreateBox = () => {
     });
     handleClose();
     axios
-      .post('http://18.206.96.118/box', {
+      .post('http://localhost:5050/box', {
         move_id, label, destination_room, fragile, heavy, floor,
       })
       .then((res) => {

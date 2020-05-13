@@ -57,12 +57,12 @@ const SignUp = () => {
   const pseudo = useSelector((state) => state.pseudo);
   const passwordVal = useSelector((state) => state.passwordVal);
   const classes = useStyles();
- 
+
   function handleSubmit(e) {
     e.preventDefault(); // stops default reloading behaviour
     console.log('input on onSubmit', email, password, pseudo);
     axios
-      .post(`http://18.206.96.118/signup`, { email, password, pseudo })
+      .post(`http://localhost:5050/signup`, { email, password, pseudo })
       .then(res => {
         if (res.status === 201) {
           dispatch(login(history));
@@ -99,7 +99,7 @@ const SignUp = () => {
             className={classes.form}
             noValidate
             onSubmit={handleSubmit}
-          >   
+          >
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField

@@ -49,7 +49,6 @@ const App = () => {
         <Route exact path="/signin">
           <SignIn />
         </Route>
-
         <Route exact path="/signup">
           <SignUp />
         </Route>

@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Link from '@material-ui/core/Link';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Header() {
+const Header = ({history}) => {
   const classes = useStyles();
 
   return (
@@ -52,7 +53,7 @@ export default function Header() {
       <AppBar position="static" color="secondary">
         <Toolbar className={classes.toolbar}>
           <div className={classes.left}>
-            <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+            <IconButton edge="start" onClick={() => history.goBack()} className={classes.menuButton} color="inherit" aria-label="menu">
               <ArrowBackIosRoundedIcon />
             </IconButton>
           </div>
@@ -67,3 +68,5 @@ export default function Header() {
     </div>
   );
 }
+
+export default withRouter(Header);
