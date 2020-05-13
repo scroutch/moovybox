@@ -37,13 +37,14 @@ const initialState = {
   nameItem: '',
   user_id: '3',
   code: '0000000C',
+  isLogged: false
 };
 
 
 export default (state = initialState, action = {}) => {
   switch (action.type) {
     case SYNC_PSEUDO: {
-      return { ...state, pseudo: action.pseudo };
+      return { ...state, pseudo: action.pseudo }; // ...state, pseudo: action.history.pseudo
     }
     case SYNC_EMAIL: {
       return { ...state, email: action.email };
