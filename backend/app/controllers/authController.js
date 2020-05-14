@@ -2,6 +2,9 @@ const Joi = require('@hapi/joi');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Move = require('../models/move'); 
+const jwt = require('jsonwebtoken'); 
+const sendConfirmationEmail = require('../mail/sendConfirmation'); 
+require('dotenv').config(); 
 
 const signinSchema = Joi.object({
     email: Joi.string().email().required(),
@@ -64,6 +67,21 @@ const authControlleur = {
                         console.log('storedUser :>> ', storedUser);
                         // Returning the user as an object
                         delete storedUser.password; 
+
+                        // Send email confirmation to the user email
+                        const confirmationEmailData = {}; 
+
+                        // - Retrieve user email
+                        confirmationEmailData.userId = storedUser.id; 
+                        confirmationEmailData.userPseudo = storedUser.pseudo; 
+                        confirmationEmailData.userEmail = storedUser.email; 
+
+                        // - Create token with user id and email
+                        confirmationEmailData.userToken = jwt.sign(storedUser, process.env.TOKENKEY, {expiresIn: '1d'}); 
+                        // - Use the email function ({userPseudo, userEmail, UserToken})
+
+                        sendConfirmationEmail(confirmationEmailData); 
+
                         res.status(201).send(storedUser); // Status 201 : resosurces created
                     }
             }            
@@ -71,6 +89,30 @@ const authControlleur = {
             console.trace(error); 
         }
     },
+
+    confirmEmail: async (req, res) => {
+        try {
+            // verifiy token 
+            const user = jwt.verify(req.params.token, process.env.TOKENKEY); 
+
+            if (!!user.id) {
+                // Update user state in DB : confirm : false-> true
+                const updatedUser = await User.confirmUser(user.id); 
+
+                if (!!updatedUser) {
+                    // Redirection towards front app signin page 
+                    res.redirect('http://localhost:8080/signIn'); 
+                } else {
+                    // Redirection towards front app 404
+                    res.redirect(404, 'http://localhost:8080/404'); 
+                }
+            }
+
+        } catch (error) {
+            console.trace(error); 
+        }
+
+    }, 
   
     signin: async (req, res) => {
 

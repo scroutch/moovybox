@@ -24,6 +24,8 @@ router.post('/signup', authController.signup);
 
 router.post('/signout', authController.signout);
 
+router.get('/confirmation/:token', authController.confirmEmail);
+
 router.route('/profile')
     .put(authCheckerMW, userCheckerMW, authController.updateProfile); 
 

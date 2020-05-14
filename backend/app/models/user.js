@@ -27,7 +27,19 @@ class User {
         }
     }
 
+    static async confirmUser(userId) {
+        try {
+            // 
+            const query = `UPDATE "user" SET "confirmed"='true' WHERE "id"=$1 RETURNING *;`; 
 
+            const result = await client.query(query, [userId]); 
+
+            return result.rows[0]; 
+            
+        } catch (error) {
+            return console.trace(error); 
+        }
+    }
 
     static async findByEmail(email) {
         try {
