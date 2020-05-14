@@ -9,6 +9,7 @@ import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Link from '@material-ui/core/Link';
 import { withRouter } from 'react-router-dom';
+import GoBack from '../components/GoBack' 
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,9 +54,10 @@ const Header = ({history}) => {
       <AppBar position="static" color="secondary">
         <Toolbar className={classes.toolbar}>
           <div className={classes.left}>
-            <IconButton edge="start" onClick={() => history.goBack()} className={classes.menuButton} color="inherit" aria-label="menu">
+            <GoBack />
+            {/* <IconButton edge="start" onClick={() => console.log(history)} className={classes.menuButton} color="inherit" aria-label="menu">
               <ArrowBackIosRoundedIcon />
-            </IconButton>
+            </IconButton> */}
           </div>
           <Typography variant="h6" className={classes.title}>
             MoovyBox
