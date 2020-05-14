@@ -29,6 +29,12 @@ const signupSchema = Joi.object({
     repeat_password: Joi.ref('password'),
 }); 
 
+const emailSchema = Joi.object({
+    email: Joi.string()
+        .email()
+        .required()
+});
+
 const authControlleur = {
     signup: async (req, res) => {
         try {
@@ -113,6 +119,87 @@ const authControlleur = {
         }
 
     }, 
+
+    resetToken : async (req, res) => {
+        //* A already registred user is not confirmed and his token is outdated
+        //Renw token and
+
+        try {
+
+            const validEmail = emailSchema.validate(req.body); 
+
+            if(!!validEmail.error) {
+                return res.status(400).send({ // server code 400 : bad request
+                    error : {
+                        statusCode: 400,
+                        message: {
+                            en:"The email format is not correct.", 
+                            fr:"Le format d'email n'est pas correct."
+                        }
+                    }
+                });
+            }
+
+            // Retreive user by email 
+            const storedUser = await User.findByEmail(req.body.email); 
+
+            if (!storedUser) {
+               // If no user is found send 404 (not found) error
+                return res.status(401).send({
+                    error : {
+                        statusCode: 401,
+                        message: {
+                            en:"Email not found", 
+                            fr:"Email non trouvé"
+                        }
+                    }
+                }); 
+            }
+
+
+            if (storedUser.confirmed) {
+                // If user exists and account is activated, send error
+                return res.status(409).send({ // server code 409 : conflict
+                    error : {
+                        statusCode: 409,
+                        message: {
+                            en:"Account already confirmed", 
+                            fr:"Ce compte est déjà confirmé"
+                        }
+                    }
+                });
+            }
+
+            // If user exists and has an unactivated account 
+            // -> send New confirmation email
+
+            // Removing unecessary password for token creation
+            delete storedUser.password; 
+
+            // Send email confirmation to the user email
+            const confirmationEmailData = {}; 
+
+            // - Retrieve user email
+            confirmationEmailData.userId = storedUser.id; 
+            confirmationEmailData.userPseudo = storedUser.pseudo; 
+            confirmationEmailData.userEmail = storedUser.email; 
+
+            // - Create token with user id, pseudo and email
+            confirmationEmailData.userToken = jwt.sign(storedUser, process.env.TOKENKEY, {expiresIn: '1d'}); 
+            // - Use the email function ({userPseudo, userEmail, UserToken})
+
+            sendConfirmationEmail(confirmationEmailData); 
+
+            res.status(200).send({ // server code 200 : success
+                en: "Success - The new confirmation link has been sent.", 
+                fr: "Réussie - Le nouveau lien de confirmation a été envoyé."
+            });
+
+            
+        } catch (error) {
+            console.trace(error); 
+        }
+    }, 
   
     signin: async (req, res) => {
 
@@ -159,14 +246,14 @@ const authControlleur = {
                                 error : {
                                     statusCode: 403,
                                     message: {
-                                        en:"Email is not confirmed - check email to activate account", 
-                                        fr:"L'adresse email n'est pas confirmée - Vérifier le mail pour activation de compte"
+                                        en:"Account is not activated - check email to activate account", 
+                                        fr:"Le compte n'est pas activé - Vérifier le mail pour activation de compte"
                                     }
                                 }
                             }); 
                         }
-                        delete storedUser.password; 
 
+                        delete storedUser.password; 
                         return res.send(storedUser); 
                     }
                 } else {
