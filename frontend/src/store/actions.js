@@ -17,6 +17,7 @@ export const SYNC_NAME_ITEM = 'actions/SYNC_NAME_ITEM';
 export const SYNC_MOVE_ID = 'actions/SYNC_MOVE_ID';
 export const SYNC_USER_ID = 'actions/SYNC_USER_ID';
 export const SYNC_CODE = 'actions/SYNC_CODE';
+export const SYNC_ISLOGGED = 'actions/SYNC_ISLOGGED';
 export const login = (history) => ({ type: LOGIN, history });
 export const enterMove = (history) => ({ type: ENTER_MOVE, history });
 export const syncPseudo = (history) => ({ type: SYNC_PSEUDO, history})

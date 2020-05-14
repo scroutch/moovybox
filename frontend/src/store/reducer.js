@@ -16,15 +16,17 @@ import {
   SYNC_MOVE_ID,
   SYNC_USER_ID,
   SYNC_CODE,
+  SYNC_ISLOGGED, 
+
 } from './actions';
 
 const initialState = {
   counter: 0,
   pseudo: '',
-  email: 'carole@gmail.com',
-  password: 'Azerty83*',
+  email: '',
+  password: '',
   passwordVal: '',
-  move_id: '5',
+  move_id: '',
   labelBox: '',
   labelMove: '',
   destination_room: '',
@@ -35,8 +37,8 @@ const initialState = {
   address: '',
   nameInventory: '',
   nameItem: '',
-  user_id: '3',
-  code: '0000000C',
+  user_id: '',
+  code: '',
   isLogged: false
 };
 
@@ -44,6 +46,7 @@ const initialState = {
 export default (state = initialState, action = {}) => {
   switch (action.type) {
     case SYNC_PSEUDO: {
+      console.log('from signin', action)
       return { ...state, pseudo: action.pseudo }; // ...state, pseudo: action.history.pseudo
     }
     case SYNC_EMAIL: {
@@ -93,6 +96,9 @@ export default (state = initialState, action = {}) => {
     }
     case SYNC_CODE: {
       return { ...state, code: action.code };
+    }
+    case SYNC_ISLOGGED: {
+      return { ...state, isLogged: action.isLogged };
     }
     case 'INCREMENT': {
       return {

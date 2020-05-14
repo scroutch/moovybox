@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-import { LOGIN, enterMove, syncPseudo } from 'src/store/actions';
+import { LOGIN, SYNC_PSEUDO, SYNC_PASSWORD, SYNC_ISLOGGED, SYNC_USER_ID, enterMove } from 'src/store/actions';
 
 const prodURL = 'http://18.206.96.118';
 
 axios.defaults.withCredentials = true; 
 
 export default (store) => (next) => (action) => {
-  console.log('MW Auth');
+  //console.log('MW Auth');
 
   switch (action.type) {
     case LOGIN: {
@@ -17,20 +17,25 @@ export default (store) => (next) => (action) => {
           password: store.getState().password,
         })
         .then((response) => {
-          const { pseudo } = response.data;
-          console.log('pseudo', pseudo);
-          console.log('action history', action);
+          console.log(response.data)
+          const { pseudo, id } = response.data;
+          //console.log('pseudo', pseudo);
+          //console.log('action history', action);
           //store.dispatch(syncPseudo({pseudo}))
           if (response.status == 200) {
-            console.log('action', action)
+            //console.log('action', action)
+            store.dispatch({ type: SYNC_ISLOGGED, isLogged: true });
             store.dispatch(enterMove(action.history));
-            store.dispatch(syncPseudo({pseudo}))
-            console.log('Authenticated');
+            //store.dispatch(syncPseudo({pseudo}))
+            store.dispatch({ type: SYNC_PSEUDO, pseudo });
+            store.dispatch({ type: SYNC_USER_ID, user_id: id})
+            //console.log('Authenticated');
             
           }
           else {
             console.error('impossible de se connecter', response);
           }
+          //store.dispatch({ type: SYNC_PASSWORD, password: '' })
 
           // store.dispatch(enterMove(action.history));
           // console.log('Authenticated - email');

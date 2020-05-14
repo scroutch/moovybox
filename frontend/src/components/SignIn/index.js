@@ -55,6 +55,7 @@ const SignIn = () => {
   const history = useHistory();
   const email = useSelector((state) => state.email);
   const password = useSelector((state) => state.password);
+  const pseudo = useSelector(state => state.pseudo)
   const classes = useStyles();
   
   return (

@@ -21,8 +21,9 @@ import CreateBox from 'src/components/CreateBox';
 // == Composant
 const App = () => {
 
-  const email = useSelector((state) => state.email);
-  const password = useSelector((state) => state.password);
+  //const email = useSelector((state) => state.email);
+  //const password = useSelector((state) => state.password);
+  const isLogged = useSelector((state) => state.isLogged);
 
   return (
     <div className="app">
@@ -36,12 +37,14 @@ const App = () => {
           exact
           path="/move"
           render={() => {
-            if ((email === '') || (password === '')) {
-              console.log('email,password page App/index',email,password);
+            //if ((email === '') || (password === '')) {
+            if (!isLogged) {
+              console.log('isLogged',isLogged);
+              //console.log('email,password page App/index',email,password);
               return <Redirect to="/signin" />;
               
             }
-            console.log('email,password,',email,password);
+            //console.log('email,password,',email,password);
             return <Move />;
           }}
         />
