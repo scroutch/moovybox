@@ -4,11 +4,7 @@ import { LOGIN, enterMove, syncPseudo } from 'src/store/actions';
 
 const prodURL = 'http://18.206.96.118';
 
-<<<<<<< HEAD
 axios.defaults.withCredentials = true; 
-=======
-axios.defaults.withCredentials = true;
->>>>>>> dbe974c26d29b9a91ab22ba45376c860d6c88e78
 
 export default (store) => (next) => (action) => {
   console.log('MW Auth');
