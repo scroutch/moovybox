@@ -252,6 +252,13 @@ const authControlleur = {
                                 }
                             }); 
                         }
+                        //   If there is a match add user id to session, 
+
+                        // AND get his moves and send the results back 
+                        req.session.user ={ id: storedUser.id }; 
+                        req.session.user.moves = storedUser.moves = await Move.getAll(req); 
+
+                        console.log('req.session :>> ', req.session);
 
                         delete storedUser.password; 
                         return res.send(storedUser); 
