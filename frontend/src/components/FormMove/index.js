@@ -1,7 +1,6 @@
 import 'date-fns';
 import React, {useState} from 'react';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
 import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
@@ -12,9 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Button from '../modules/components/Button';
-import Switch from '@material-ui/core/Switch';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import moment from 'moment';
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
@@ -39,6 +36,11 @@ const useStyles = makeStyles((theme) => ({
       width: '100%', // Fix IE 11 issue.
       marginTop: theme.spacing(1),
     },
+    textField: {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      width: 200,
+    },
     submit: {
       margin: theme.spacing(3, 0, 2),
     },
@@ -47,21 +49,18 @@ const useStyles = makeStyles((theme) => ({
 
 const FormMove = () => {
     const classes = useStyles();
-    const [redirect, setRedirect] = useState(false);
+
     const [label, setLabel] = useState('');
     const [address, setAddress] = useState('');
-    const [date, setDate] = useState(new Date('2020-06-18'));
-    const [user_id, setUserId] = useState('');
+    const [date, setDate] = useState(new Date());
+
+
     // const [reminder, setReminder] = useState({checked: true});
 
     // const handleReminderChange = (e) => {
     //     setReminder({ ...reminder, [event.target.name]: event.target.checked});
     // }
-    const renderRedirect = () => {
-      if(redirect) {
-        return <Redirect to='/create-box' />
-      }
-    }
+
     const handleDateChange = (date) => {
       setDate(date);
     };
@@ -76,18 +75,21 @@ const FormMove = () => {
         setAddress(e.target.value);
     }
 
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        // console.log(`Form envoyé :`);
-        // console.log([{label}]);
-        // console.log([{address}]);
-        // console.log([{date}]);
-        // console.log([{reminder}]);
 
-        axios.post(`http://localhost:5050/move`, { label, address, date })
+        const data = {label, address, date};
+
+        console.log(data)
+
+        axios.post('http://localhost:5050/move', data)
              .then(res => {
-                console.log(res.data);
+                console.log('coincoin')
+                console.log(res);
              }).catch(err => {
+               console.log('pouet');
                console.log(err);
              });
     }
@@ -128,15 +130,16 @@ const FormMove = () => {
                 onChange={handleAddressChange}
               />
             </Grid>
+
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justify="space-around">
                 <KeyboardDatePicker
                     disableToolbar
                     variant="inline"
-                    format="dd/MM/yyyy"
+                    format="yyyy-MM-dd"
+                    type="date.format"
                     margin="normal"
                     id="date-picker-inline"
-                    label="Entrez une date"
                     value={date}
                     onChange={handleDateChange}
                     KeyboardButtonProps={{
@@ -159,17 +162,18 @@ const FormMove = () => {
             />
             </Grid> */}
           </Grid>
-          {renderRedirect()}
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="secondary"
             className={classes.submit}
-            onClick={setRedirect}
+            // href="/move"
           >
             Valider
           </Button>
+
         </form>
       </div>
     </Container>
