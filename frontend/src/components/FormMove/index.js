@@ -11,7 +11,6 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Button from '../modules/components/Button';
-import moment from 'moment';
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
@@ -137,7 +136,7 @@ const FormMove = () => {
                     disableToolbar
                     variant="inline"
                     format="yyyy-MM-dd"
-                    type="date.format"
+                    // type="date.format"
                     margin="normal"
                     id="date-picker-inline"
                     value={date}
