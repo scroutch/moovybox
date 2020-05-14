@@ -2,6 +2,9 @@ const Joi = require('@hapi/joi');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Move = require('../models/move'); 
+const jwt = require('jsonwebtoken'); 
+const sendConfirmationEmail = require('../mail/sendConfirmation'); 
+require('dotenv').config(); 
 
 const signinSchema = Joi.object({
     email: Joi.string().email().required(),
@@ -25,6 +28,12 @@ const signupSchema = Joi.object({
         // ^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$
     repeat_password: Joi.ref('password'),
 }); 
+
+const emailSchema = Joi.object({
+    email: Joi.string()
+        .email()
+        .required()
+});
 
 const authControlleur = {
     signup: async (req, res) => {
@@ -64,6 +73,21 @@ const authControlleur = {
                         console.log('storedUser :>> ', storedUser);
                         // Returning the user as an object
                         delete storedUser.password; 
+
+                        // Send email confirmation to the user email
+                        const confirmationEmailData = {}; 
+
+                        // - Retrieve user email
+                        confirmationEmailData.userId = storedUser.id; 
+                        confirmationEmailData.userPseudo = storedUser.pseudo; 
+                        confirmationEmailData.userEmail = storedUser.email; 
+
+                        // - Create token with user id and email
+                        confirmationEmailData.userToken = jwt.sign(storedUser, process.env.TOKENKEY, {expiresIn: '1d'}); 
+                        // - Use the email function ({userPseudo, userEmail, UserToken})
+
+                        sendConfirmationEmail(confirmationEmailData); 
+
                         res.status(201).send(storedUser); // Status 201 : resosurces created
                     }
             }            
@@ -71,6 +95,111 @@ const authControlleur = {
             console.trace(error); 
         }
     },
+
+    confirmEmail: async (req, res) => {
+        try {
+            // verifiy token 
+            const user = jwt.verify(req.params.token, process.env.TOKENKEY); 
+
+            if (!!user.id) {
+                // Update user state in DB : confirm : false-> true
+                const updatedUser = await User.confirmUser(user.id); 
+
+                if (!!updatedUser) {
+                    // Redirection towards front app signin page 
+                    res.redirect('http://localhost:8080/signIn'); 
+                } else {
+                    // Redirection towards front app 404
+                    res.redirect(404, 'http://localhost:8080/404'); 
+                }
+            }
+
+        } catch (error) {
+            console.trace(error); 
+        }
+
+    }, 
+
+    resetToken : async (req, res) => {
+        //* A already registred user is not confirmed and his token is outdated
+        //Renw token and
+
+        try {
+
+            const validEmail = emailSchema.validate(req.body); 
+
+            if(!!validEmail.error) {
+                return res.status(400).send({ // server code 400 : bad request
+                    error : {
+                        statusCode: 400,
+                        message: {
+                            en:"The email format is not correct.", 
+                            fr:"Le format d'email n'est pas correct."
+                        }
+                    }
+                });
+            }
+
+            // Retreive user by email 
+            const storedUser = await User.findByEmail(req.body.email); 
+
+            if (!storedUser) {
+               // If no user is found send 404 (not found) error
+                return res.status(401).send({
+                    error : {
+                        statusCode: 401,
+                        message: {
+                            en:"Email not found", 
+                            fr:"Email non trouvé"
+                        }
+                    }
+                }); 
+            }
+
+
+            if (storedUser.confirmed) {
+                // If user exists and account is activated, send error
+                return res.status(409).send({ // server code 409 : conflict
+                    error : {
+                        statusCode: 409,
+                        message: {
+                            en:"Account already confirmed", 
+                            fr:"Ce compte est déjà confirmé"
+                        }
+                    }
+                });
+            }
+
+            // If user exists and has an unactivated account 
+            // -> send New confirmation email
+
+            // Removing unecessary password for token creation
+            delete storedUser.password; 
+
+            // Send email confirmation to the user email
+            const confirmationEmailData = {}; 
+
+            // - Retrieve user email
+            confirmationEmailData.userId = storedUser.id; 
+            confirmationEmailData.userPseudo = storedUser.pseudo; 
+            confirmationEmailData.userEmail = storedUser.email; 
+
+            // - Create token with user id, pseudo and email
+            confirmationEmailData.userToken = jwt.sign(storedUser, process.env.TOKENKEY, {expiresIn: '1d'}); 
+            // - Use the email function ({userPseudo, userEmail, UserToken})
+
+            sendConfirmationEmail(confirmationEmailData); 
+
+            res.status(200).send({ // server code 200 : success
+                en: "Success - The new confirmation link has been sent.", 
+                fr: "Réussie - Le nouveau lien de confirmation a été envoyé."
+            });
+
+            
+        } catch (error) {
+            console.trace(error); 
+        }
+    }, 
   
     signin: async (req, res) => {
 
@@ -95,6 +224,7 @@ const authControlleur = {
                     // I compare the hash from the DB with the received password (bcrypt)
                     // bcrypt.compare(<user password>, <DB hashed password>); 
                     const passwordMatch = await bcrypt.compare(req.body.password, storedUser.password); 
+                    
                     console.log('passwordMatch :>> ', passwordMatch);
                     
                     if (!passwordMatch) {
@@ -109,16 +239,29 @@ const authControlleur = {
                             }
                         }); 
                     } else {
+                        //   If there is a match
+                        // Check if user is confirmed
+                        if (!storedUser.confirmed) {
+                            return res.status(403).send({
+                                error : {
+                                    statusCode: 403,
+                                    message: {
+                                        en:"Account is not activated - check email to activate account", 
+                                        fr:"Le compte n'est pas activé - Vérifier le mail pour activation de compte"
+                                    }
+                                }
+                            }); 
+                        }
                         //   If there is a match add user id to session, 
-                        
+
                         // AND get his moves and send the results back 
                         req.session.user ={ id: storedUser.id }; 
                         req.session.user.moves = storedUser.moves = await Move.getAll(req); 
-                        
+
                         console.log('req.session :>> ', req.session);
 
                         delete storedUser.password; 
-                        res.send(storedUser); 
+                        return res.send(storedUser); 
                     }
                 } else {
                     res.status(401).send({
