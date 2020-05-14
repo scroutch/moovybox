@@ -137,6 +137,7 @@ const authControlleur = {
                     // I compare the hash from the DB with the received password (bcrypt)
                     // bcrypt.compare(<user password>, <DB hashed password>); 
                     const passwordMatch = await bcrypt.compare(req.body.password, storedUser.password); 
+                    
                     console.log('passwordMatch :>> ', passwordMatch);
                     
                     if (!passwordMatch) {
@@ -151,16 +152,22 @@ const authControlleur = {
                             }
                         }); 
                     } else {
-                        //   If there is a match add user id to session, 
-                        
-                        // AND get his moves and send the results back 
-                        req.session.user ={ id: storedUser.id }; 
-                        req.session.user.moves = storedUser.moves = await Move.getAll(req); 
-                        
-                        console.log('req.session :>> ', req.session);
-
+                        //   If there is a match
+                        // Check if user is confirmed
+                        if (!storedUser.confirmed) {
+                            return res.status(403).send({
+                                error : {
+                                    statusCode: 403,
+                                    message: {
+                                        en:"Email is not confirmed - check email to activate account", 
+                                        fr:"L'adresse email n'est pas confirmée - Vérifier le mail pour activation de compte"
+                                    }
+                                }
+                            }); 
+                        }
                         delete storedUser.password; 
-                        res.send(storedUser); 
+
+                        return res.send(storedUser); 
                     }
                 } else {
                     res.status(401).send({

@@ -43,7 +43,7 @@ const sendMail = async (emailData) => {
               L'équipe Moovybox est fière de te compter parmi ses utilisateurs, plus qu'une étape.
         </p> 
         
-        <a class="confirm-btn" href="http://localhost:5050/confirmation/${emailData.userToken}"></a>
+        <a class="confirm-btn" href="http://localhost:5050/confirmation/${emailData.userToken}">Activer mon compte</a>
 
         <p class='email-body--text'>
               Sinon, clique sur le lien suivant: <a href="http://localhost:5050/confirmation/${emailData.userToken}">http://localhost:5050/confirmation/${emailData.userToken}</a>
@@ -63,7 +63,7 @@ const sendMail = async (emailData) => {
     const message = {
       from: process.env.SMTPUSER, // Sender address
       to: emailData.userEmail,  // List of recipients
-      subject: 'Bienvenue sur Moovybox', // Subject line
+      subject: `Bienvenue ${emailData.userPseudo} Activer votre compte Moovybox`, // Subject line
       html: html// Plain text body
     };
 
