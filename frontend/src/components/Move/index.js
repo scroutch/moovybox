@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 const Move = () => {
   const classes = useStyles();
   const [moves, setMoves] = useState([]);
+
   useEffect(() => {
     axios.get('http://localhost:5050/move')
          .then(res => {
@@ -51,8 +52,19 @@ const Move = () => {
          })
   }, []);
 
-  const handleDelete = (moveToDelete) => () => {
-    setMoves((moves) => moves.filter((move) => move.key !== moveToDelete.key));
+
+  const handleDelete = (id) => {
+
+    console.log('cliqué');
+
+    axios.delete(`http://localhost:5050/move/${id}`)
+         .then(res => {
+
+           console.log("ok");
+          setMoves(moves.filter((move)=>(move.id !== id)));
+         }).catch(err => {
+          console.log(err);
+        })
   };
 
   return (
@@ -63,18 +75,17 @@ const Move = () => {
       <Tooltip title="Add" aria-label="add">
         <Fab color="primary" className={classes.fab}>
           <AddIcon />
-
         </Fab>
       </Tooltip>
       Ajouter un déménagement
       </Typography>
       </Link>
         <ul className={classes.liste}>
-          {moves.map(move => <li key={move.id}>
+          {moves.map((move) => <li key={move.id}>
             <Button variant="outlined" color="primary" href="/create-box" className={classes.btn} >
-               {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
+              {move.id + 1} - {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
             </Button>
-            <DeleteIcon fontSize="large" color="secondary" />
+            <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleDelete(move.id)}}/>
             </li>)}
         </ul>
       <Footer />
