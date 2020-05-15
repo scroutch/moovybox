@@ -100,6 +100,23 @@ class User {
             return console.trace(error); 
         }
     }
+
+    static async updatePseudo(req) {
+        try {
+            // request to find an associated user
+            const query = `UPDATE "user" SET "pseudo" = $1 WHERE "id" = $2 RETURNING *`; 
+            // value table setting
+            const values = [req.body.pseudo, req.session.user.id]; 
+            // launch query
+            const results = await client.query(query, values); 
+            console.log("update results", results.rows[0]);
+            
+            // Returns the user object
+            return results.rows[0]; 
+        } catch (error) {
+            console.trace(error); 
+        }
+    }
 }; 
 
 module.exports = User; 
