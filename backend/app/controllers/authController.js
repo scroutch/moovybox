@@ -286,12 +286,6 @@ const authControlleur = {
         res.redirect('/');   
     }, 
 
-    updateProfile : (req, res) => {
-        //* Updating user profile (pseudo, email)
-        // Checkout if both 
-        res.send('this is update profile.'); 
-    }, 
-
     resetPassword : (req, res) => {
         //* Reseting the password User password
         // Checkout if both 

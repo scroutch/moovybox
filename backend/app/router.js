@@ -3,11 +3,11 @@ const router = express.Router();
 
 const accessHomeMW = require('./middlewares/accessHome'); 
 const authCheckerMW = require('./middlewares/authChecker'); 
-const userCheckerMW = require('./middlewares/userChecker'); 
 const boxOptionFillMW = require('./middlewares/boxOptionFill'); 
 
 const mainController = require('./controllers/mainController'); 
 const authController = require('./controllers/authController'); 
+const profileController = require('./controllers/profileController'); 
 const moveController = require('./controllers/moveController');
 const boxController = require('./controllers/boxController'); 
 const itemController = require('./controllers/itemController'); 
@@ -28,8 +28,7 @@ router.get('/confirmation/:token', authController.confirmEmail);
 
 router.post('/reset-token', authController.resetToken);
 
-router.route('/profile')
-    .put(authCheckerMW, userCheckerMW, authController.updateProfile); 
+router.put('/profile/pseudo', authCheckerMW, profileController.updatePseudo); 
 
 /* Box related routes  */
 
