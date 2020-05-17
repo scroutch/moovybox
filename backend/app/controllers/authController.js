@@ -3,7 +3,7 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Move = require('../models/move'); 
 const jwt = require('jsonwebtoken'); 
-const sendConfirmationEmail = require('../mail/sendConfirmation'); 
+const sendAccountConfirmationEmail = require('../mail/sendAccountConfirmation'); 
 require('dotenv').config(); 
 
 const signinSchema = Joi.object({
@@ -181,14 +181,14 @@ const authControlleur = {
 
             // - Retrieve user email
             confirmationEmailData.userId = storedUser.id; 
-            confirmationEmailData.userPseudo = storedUser.pseudo; 
+            confirmationEmailData.pseudo = storedUser.pseudo; 
             confirmationEmailData.userEmail = storedUser.email; 
 
             // - Create token with user id, pseudo and email
-            confirmationEmailData.userToken = jwt.sign(storedUser, process.env.TOKENKEY, {expiresIn: '1d'}); 
+            confirmationEmailData.token = jwt.sign(storedUser, process.env.TOKENKEY, {expiresIn: '1d'}); 
             // - Use the email function ({userPseudo, userEmail, UserToken})
 
-            sendConfirmationEmail(confirmationEmailData); 
+            sendAccountConfirmationEmail(confirmationEmailData); 
 
             res.status(200).send({ // server code 200 : success
                 en: "Success - The new confirmation link has been sent.", 
@@ -255,7 +255,7 @@ const authControlleur = {
                         //   If there is a match add user id to session, 
 
                         // AND get his moves and send the results back 
-                        req.session.user ={ id: storedUser.id }; 
+                        req.session.user ={ id: storedUser.id,  }; 
                         req.session.user.moves = storedUser.moves = await Move.getAll(req); 
 
                         console.log('req.session :>> ', req.session);

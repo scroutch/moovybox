@@ -30,6 +30,10 @@ router.post('/reset-token', authController.resetToken);
 
 router.put('/profile/pseudo', authCheckerMW, profileController.updatePseudo); 
 
+router.post('/profile/email', authCheckerMW, profileController.requestEmailUpdate); 
+router.get('/profile/confirm-email-update/:token',  profileController.confirmEmailUpdate);
+router.get('/profile/confirm-new-email-update/:token',  profileController.updateEmail); 
+
 /* Box related routes  */
 
 router.route('/move')

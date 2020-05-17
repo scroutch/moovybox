@@ -41,6 +41,26 @@ class User {
         }
     }
 
+    static async findByPk(req) {
+        try {
+            // prepare de query 
+            const query = `SELECT * FROM "user" WHERE "id" = $1`; 
+            const values = [req.session.user.id]; 
+            // make query to DB 
+
+            const results = await client.query(query, values); 
+            // check answer
+                // If one found return value 
+                // Esle return error "ressource not found" 401
+
+               // console.log(results); 
+            return results.rows[0]; 
+            
+        } catch (error) {
+            console.trace(error);
+        }
+    }
+
     static async findByEmail(email) {
         try {
             // prepare de query 
@@ -96,6 +116,25 @@ class User {
             // - true : mail exists
             // - false : mail does not exist
             return results.rows[0]; 
+        } catch (error) {
+            return console.trace(error); 
+        }
+    }
+
+    static async saveEmail(obj) {
+        //* Save user in DB 
+        try {
+            // request to find an associated user
+            const query = `UPDATE "user" SET "email" = $1 WHERE "id" = $2;`; 
+            // value table setting
+            const values = [obj.new_email, obj.id]; 
+
+            const results = await client.query(query, values); 
+            console.log("update email results",results.rows[0]);
+            // Returns a boolean 
+            // - true : mail changed
+            // - false : mail did not change
+            return !!results.rowCount; 
         } catch (error) {
             return console.trace(error); 
         }
