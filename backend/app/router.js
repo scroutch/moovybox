@@ -28,11 +28,18 @@ router.get('/confirmation/:token', authController.confirmEmail);
 
 router.post('/reset-token', authController.resetToken);
 
+/* PROFILE RELATED ROUTES */ 
+
+// Upadate pseudo
 router.put('/profile/pseudo', authCheckerMW, profileController.updatePseudo); 
 
+// Change email
 router.post('/profile/email', authCheckerMW, profileController.requestEmailUpdate); 
 router.get('/profile/confirm-email-update/:token',  profileController.confirmEmailUpdate);
 router.get('/profile/confirm-new-email-update/:token',  profileController.updateEmail); 
+
+// Modify password
+router.post('/profile/password', authCheckerMW, profileController.updatePassword);
 
 /* Box related routes  */
 

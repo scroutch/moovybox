@@ -26,14 +26,18 @@ const updateEmailSchema = Joi.object({
         .required(),
 }); 
 
+const passwordChangeSchema = Joi.object({
+    old_password: Joi.string()
+        .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
+        .required(),
+    new_password: Joi.string()
+        .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
+        .required(),
+    password_repeat: Joi.ref('new_password')
+})
+
 
 const profileController = {
-
-    updateProfile : (req, res) => { // Might ot keep it that way 
-        //* Updating user profile (pseudo, email)
-        // Checkout if both 
-        res.send('this is update profile.'); 
-    }, 
 
     updatePseudo: async (req, res) => {
         //* Updating user pseudo 
@@ -236,6 +240,70 @@ const profileController = {
             
         } catch (error) {
             console.trace(error); 
+        }
+    }, 
+
+    updatePassword : async (req, res) => { // Might not keep it that way 
+        //* Updating Password under user request 
+        //? Payload : {old_password, new_password, password_repeat}
+        try {
+            
+            // validate payload data
+            const payloadValidation = await passwordChangeSchema.validate(req.body); 
+    
+            // If payload is not valid (no error)
+            if (!!payloadValidation.error) {
+                // abort and send error 
+                return res.status(400).send(payloadValidation.error); 
+            }
+    
+            // If payload is valid
+                // move on 
+            // get current user
+            const storedUser = await User.findByPk(req); 
+
+            console.log("req.body.old_password", req.body.old_password); 
+            console.log("storedUser.passwordd", storedUser.passwordd); 
+    
+            // match old_password with saved password in DB
+            const passwordMatch = await bcrypt.compare(req.body.old_password, storedUser.password); 
+            console.log("passwordMatch",passwordMatch); 
+            // if no match 
+            if (!passwordMatch) {
+                // abort and send error 
+                res.status(401).send({
+                    error : {
+                        statusCode: 401,
+                        message: {
+                            en:"Wrong password", 
+                            fr:"Mot de passe incorrect"
+                        }
+                    }
+                }); 
+            }
+            // If match 
+            // change password in storedUser and update
+            storedUser.password = req.body.new_password; 
+                // proceed to change 
+            const result = await User.updatePassword(storedUser);
+            
+            //
+            if (!result){
+                res.status(500).send({
+                    statusCode : 500,
+                    message:  {
+                        en:"Something went wrong", 
+                        fr:"Quelque chose s'est mal passé"
+                    }
+                });
+            }
+
+            res.send({
+                en: 'Success - Password was updated',
+                fr: 'Le mot de passe à bien été mis à jour.'
+            }); 
+        } catch (error) {
+            
         }
     }
 
