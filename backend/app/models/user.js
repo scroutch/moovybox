@@ -156,6 +156,29 @@ class User {
             console.trace(error); 
         }
     }
+
+    static async updatePassword (obj) {
+        //* Save user in DB 
+        try {
+            // request to find an associated user
+            const query = `UPDATE "user" SET "password" = $1 WHERE "id" = $2 RETURNING *;`; 
+            // value table setting
+
+            // Hashes the password to insert in DB
+            const hashedPassword = await bcrypt.hash(obj.password, salt); 
+            // value table setting
+            const values = [hashedPassword, obj.id]; 
+
+            const results = await client.query(query, values); 
+
+            // Returns a boolean 
+            // - true : mail changed
+            // - false : mail did not change
+            return !!results.rows[0]; 
+        } catch (error) {
+            return console.trace(error); 
+        }
+    }
 }; 
 
 module.exports = User; 
