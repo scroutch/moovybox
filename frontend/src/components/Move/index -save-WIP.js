@@ -16,7 +16,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
-
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,8 +47,24 @@ const Move = () => {
   const history = useHistory();
   const classes = useStyles();
   const moves = useSelector((state) => state.moves);
-  const moveIdSelected = useSelector((state) => state.moveIdSelected);
-  
+  // const [moves, setMoves] = useState([]);
+  // useEffect(() => {
+  function handleSubmit(e) {
+    e.preventDefault(); // stops default reloading behaviour
+    
+    axios
+        .get("http://localhost:5050/move/")
+        .then(res => {
+          // setMoves(res.data);
+          console.log("res.data du move",res.data);
+          console.log("moves",moves);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+  }
+
+
   return (
     <div className={classes.root}>
       <Header />
@@ -70,13 +86,13 @@ const Move = () => {
             color="primary" 
             href={"/move/"+move.id} 
             className={classes.btn} 
+            name="moveIdSelected"
             value={move.id}
             onClick={(evt) => {
               evt.preventDefault();
               const newMoveIdSelected = evt.target.value;
-              console.log('evt.target.value',evt.target.value);
-              dispatch({ type: SYNC_MOVE_ID_SELECTED, moveIdSelected: newMoveIdSelected });
-              console.log('moveIdSelected', newMoveIdSelected);
+              dispatch({ type: SYNC_MOVE_ID_SELECTED, moveIdSelected : newMoveIdSelected });
+              console.log("moveIdSelected", moveIdSelected);
             }}
             >
                {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}

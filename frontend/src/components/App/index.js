@@ -15,6 +15,7 @@ import ResetPassword from 'src/components/ResetPassword';
 import Profile from 'src/components/Profile';
 import Contact from '../Contact';
 import CreateBox from 'src/components/CreateBox';
+import BoxesByMove from 'src/components/BoxesByMove';
 
 
 
@@ -69,6 +70,9 @@ const App = () => {
         </Route>
         <Route exact path="/contact">
           <Contact />
+        </Route>
+        <Route exact path="/move/:id">
+          <BoxesByMove />
         </Route>
         <Route exact path="/create-box">
           <CreateBox />

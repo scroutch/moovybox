@@ -34,7 +34,7 @@ import FormControl from '@material-ui/core/FormControl';
 import withRoot from '../modules/withRoot';
 import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
-import HeaderHome from '../modules/views/HeaderHome';
+import Header from '../modules/views/HeaderHome';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -82,7 +82,7 @@ const filter = createFilterOptions(); // to add in the room list
 const CreateBox = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const moveId = useSelector((state) => state.moveId);
+  // const moveId = useSelector((state) => state.moveId);
   const labelBox = useSelector((state) => state.labelBox);
   const destination_room = useSelector((state) => state.destination_room);
   const fragile = useSelector((state) => state.fragile);
@@ -117,7 +117,7 @@ const CreateBox = () => {
     handleClose();
     axios
       .post('http://localhost:5050/box', {
-        move_id, label, destination_room, fragile, heavy, floor,
+        label, destination_room, fragile, heavy, floor,
       })
       .then((res) => {
         if (res.status === 201) {
@@ -157,7 +157,7 @@ const CreateBox = () => {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <HeaderHome />
+      <Header />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>

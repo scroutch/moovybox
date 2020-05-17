@@ -1,12 +1,19 @@
-import { ENTER_MOVE } from '../actions';
+import { ENTER_MOVE, BOXES_BY_MOVE, SYNC_MOVE_ID_SELECTED } from '../actions';
+
 
 export default (store) => (next) => (action) => {
   switch (action.type) {
     case ENTER_MOVE: {
       action.history.push('/move'); // sert à traiter les liens
-      console.log('routes.js -> ok');
+      // console.log('routes.js -> ok');
       break;
     }
+    // case BOXES_BY_MOVE: {
+    //   action.history.push('/move/'+SYNC_MOVE_ID_SELECTED); // sert à traiter les liens
+    //   console.log('routes.js -> ok*********',SYNC_MOVE_ID_SELECTED);
+    //   break;
+    // }
+    
     default: {
       console.log('routes.js default-> ok');
       // Si le middleware n'est pas intéressé par l'action reçue,
@@ -15,13 +22,3 @@ export default (store) => (next) => (action) => {
     }
   }
 };
-
-
-// Structure de la définition d'un middleware pour Redux :
-// function (store) {
-//   return function(next) {
-//     return function(action) {
-//       // switch blabla
-//     }
-//   }
-// }

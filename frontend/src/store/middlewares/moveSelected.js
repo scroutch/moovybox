@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { LOGIN, SYNC_PSEUDO, SYNC_PASSWORD, SYNC_ISLOGGED, SYNC_USER_ID, enterMove,SYNC_MOVES } from 'src/store/actions';
+import { SYNC_PSEUDO, SYNC_USER_ID, SYNC_MOVES, SYNC_MOVE_ID_SELECTED } from 'src/store/actions';
 
 const prodURL = 'http://18.206.96.118';
 
@@ -10,12 +10,9 @@ export default (store) => (next) => (action) => {
   //console.log('MW Auth');
 
   switch (action.type) {
-    case LOGIN: {
+    case MOVESLECTED: {
       axios
-        .post('http://localhost:5050/signin', {
-          email: store.getState().email,
-          password: store.getState().password,
-        })
+        .get('http://localhost:5050/move/', )
         .then((res) => {
           console.log("res.data",res.data)
           const { pseudo, id, moves} = res.data;
@@ -27,7 +24,7 @@ export default (store) => (next) => (action) => {
             store.dispatch({ type: SYNC_ISLOGGED, isLogged: true });
             store.dispatch({ type: SYNC_PSEUDO, pseudo });
             store.dispatch({ type: SYNC_USER_ID, user_id: id});
-            store.dispatch({ type: SYNC_MOVES, moves})
+            store.dispatch({ type: SYNC_MOVES, moves});
             store.dispatch(enterMove(action.history));
             //console.log('Authenticated');
             

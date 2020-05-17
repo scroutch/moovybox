@@ -1,9 +1,4 @@
 import React, {useState, useEffect} from 'react';
-// for REDUX
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
-import { SYNC_MOVE_ID_SELECTED } from 'src/store/actions';
-
 import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
@@ -16,6 +11,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
+import axios from 'axios';
+import { SYNC_MOVE_ID } from 'src/store/actions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,17 +39,29 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Move = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
+const BoxesByMove = () => {
   const classes = useStyles();
-  const moves = useSelector((state) => state.moves);
-  const moveIdSelected = useSelector((state) => state.moveIdSelected);
-  
+  const move_id = useSelector((state) => state.move_id);
+  const [boxes, setBoxes] = useState([]);
+
+  console.log("boxes.move_id 1 ",boxes);
+  useEffect(() => {
+   
+    axios.get('http://localhost:5050/move/18')
+    .then(res => {
+      console.log(res.data);
+      setBoxes(res.data);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }, []);
+
+ 
   return (
     <div className={classes.root}>
       <Header />
-      <Link to="/create-move">
+      <Link to="/create-box">
       <Typography component="h1" variant="h4" className={classes.titre}>
       <Tooltip title="Add" aria-label="add">
         <Fab color="primary" className={classes.fab}>
@@ -60,26 +69,19 @@ const Move = () => {
 
         </Fab>
       </Tooltip>
-      Ajouter un déménagement
+      Liste des cartons
       </Typography>
       </Link>
         <ul className={classes.liste}>
-          {moves.map(move => <li key={move.id}>
+          {boxes.map(boxe => <li key={boxe.id}>
             <Button 
             variant="outlined" 
             color="primary" 
-            href={"/move/"+move.id} 
+            href={"/box/"+boxe.id} 
             className={classes.btn} 
-            value={move.id}
-            onClick={(evt) => {
-              evt.preventDefault();
-              const newMoveIdSelected = evt.target.value;
-              console.log('evt.target.value',evt.target.value);
-              dispatch({ type: SYNC_MOVE_ID_SELECTED, moveIdSelected: newMoveIdSelected });
-              console.log('moveIdSelected', newMoveIdSelected);
-            }}
             >
-               {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
+               {boxe.label}- 
+               {/* {( {boxe.fragile} => {<Typography>Fragile</Typography> })();} */}
             </Button>
             <DeleteIcon fontSize="large" color="secondary" />
             </li>)}
@@ -89,4 +91,4 @@ const Move = () => {
   );
 };
 
-export default withRoot(Move);
+export default withRoot(BoxesByMove);
