@@ -6,6 +6,8 @@ const app = express();
 const cors = require('cors');
 const multer = require('multer');
 
+const ejs = require('ejs');
+
 
 const corsOpts = {
   origin: ['http://localhost:8080', 'http://localhost:5050','http://18.206.96.118'],
@@ -16,17 +18,23 @@ const corsOpts = {
   allowedHeaders : ['Content-Type', 'Authorization', 'Set-Cookie', 'Cookie']
 }; 
 
+app.set("view engine", "ejs");
+app.set("views", "./app/mail/views"); 
+
 //app.use(cors(['localhost', '18.206.96.118'])); 
 app.use(cors(corsOpts)); 
 
 // Bodyparser for form-data encoded body form
 app.use(multer().none()); 
 
-// Bodyparser for  encoded body form
+// Bodyparser for encoded body form
 app.use(express.urlencoded({extended: true}));
 
 // Bodyparser for json type data
 app.use(express.json()); 
+
+
+
 
 app.use(session({
   secret: 'booxxy', // 'keyboard cat' as a default secret would become easy to hack. 
