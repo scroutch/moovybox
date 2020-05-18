@@ -3,7 +3,11 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Move = require('../models/move'); 
 const jwt = require('jsonwebtoken'); 
-const sendAccountConfirmationEmail = require('../mail/sendAccountConfirmation');
+
+const configLocal = require('../config'); 
+
+const salt = parseInt(process.env.SALT, 10);
+const sendAccountConfirmationEmail= require('../mail/sendAccountConfirmation');
 const sendPasswordResetLink = require('../mail/sendPasswordResetLink'); 
 require('dotenv').config(); 
 
@@ -37,9 +41,6 @@ const emailSchema = Joi.object({
 });
 
 const newPasswordSchema = Joi.object({
-    id: Joi.number()
-        .integer()
-        .positive(),
     email: Joi.string()
         .email()
         .required(), 
@@ -51,6 +52,7 @@ const newPasswordSchema = Joi.object({
 });
 
 const authControlleur = {
+
     signup: async (req, res) => {
         try {
             // check for entries
@@ -58,58 +60,148 @@ const authControlleur = {
             console.log("req.query", req.query); 
     
             // check de validity of the sent data
-            const authValidation =  await signupSchema.validate(req.body);
+            const payloadValidation =  await signupSchema.validate(req.body);
     
             // check if the incoming data is valid -> no error
-            if (!!authValidation.error) {
+            if (!!payloadValidation.error) {
                 // if an error occurs send a bad request code (400) to front
-                res.status(400).send(authValidation.error); 
-            } else {
-                console.log('in else');
-                // Check if the incoming email isn't already present in DB
-                const emailExists = await User.emailExists(req.body.email); 
+                return res.status(400).send(payloadValidation.error); 
+            } 
 
-                    if (emailExists) {
-                        // if present : send an error (look for server code) "email already existing in DB" status (409) Conflict
-                        res.status(409).send({
-                            error : {
-                                statusCode: 409,
-                                message: {
-                                    en:"This email already exists", 
-                                    fr:"Ce mail existe déjà"
-                                }
-                            }
-                        }); 
-                    } else {
-                        // Creating the object user
-                        const newUser = new User(req.body); 
-                        // Save new user in DB 
-                        const storedUser = await newUser.insert(); 
-                        console.log('storedUser :>> ', storedUser);
-                        // Returning the user as an object
-                        delete storedUser.password; 
+            // Form is acceptable !
 
-                        // Send email confirmation to the user email
-                        const confirmationEmailData = {}; 
+            console.log('in else');
+            // Check if the incoming email isn't already present in DB
+            const emailExists = await User.emailExists(req.body.email); 
 
-                        // - Retrieve user email
-                        confirmationEmailData.userId = storedUser.id; 
-                        confirmationEmailData.userPseudo = storedUser.pseudo; 
-                        confirmationEmailData.userEmail = storedUser.email; 
-
-                        // - Create token with user id and email
-                        confirmationEmailData.userToken = jwt.sign(storedUser, process.env.TOKENKEY, {expiresIn: '1d'}); 
-                        // - Use the email function ({userPseudo, userEmail, UserToken})
-
-                        sendConfirmationEmail(confirmationEmailData); 
-
-                        res.status(201).send(storedUser); // Status 201 : resosurces created
+            if (emailExists) {
+                // if present : send an error (look for server code) "email already existing in DB" status (409) Conflict
+                return res.status(409).send({
+                    error : {
+                        statusCode: 409,
+                        message: {
+                            en:"This email already exists", 
+                            fr:"Ce mail existe déjà"
+                        }
                     }
-            }            
+                }); 
+            } 
+
+            // Mail is available ! 
+                    
+            req.body.password = await bcrypt.hash(req.body.password, salt); 
+            // Creating the object user
+            const newUser = new User(req.body); 
+            // Save new user in DB 
+            const storedUser = await newUser.insert(); 
+            console.log('storedUser :>> ', storedUser);
+            // Returning the user as an object
+            delete storedUser.password; 
+
+            // Send email confirmation to the user email
+            const emailInfo = {}; 
+            const payload = {}; 
+
+            // - Retrieve user email
+            emailInfo.userId = payload.id = storedUser.id; 
+            emailInfo.userPseudo = storedUser.pseudo; 
+            emailInfo.userEmail = payload.email = storedUser.email; 
+
+            // - Create token with user id and email
+            emailInfo.userToken = jwt.sign(payload, process.env.TOKENKEY, {expiresIn: '1d'}); 
+            
+            // - Use the email function ({userPseudo, userEmail, UserToken})
+            sendAccountConfirmationEmail(emailInfo); 
+
+            res.status(201).send(storedUser); // Status 201 : resosurces created
+                
+                        
         } catch (error) {
             console.trace(error); 
         }
     },
+
+    signin: async (req, res) => {
+
+        try {
+
+            const payloadValidation = signinSchema.validate(req.body);
+
+            if (!!payloadValidation.error){
+                res.status(400).send(payloadValidation.error); 
+            } else {
+                // * Get user from email and match passwords 
+
+                // I query to get user from DB with email address 
+                const storedUser = await User.findByEmail(req.body.email); 
+                console.log('storedUser :>> ', storedUser);
+
+                // If the user exists  
+                if (!storedUser) {
+                    res.status(401).send({
+                        error : {
+                            statusCode: 401,
+                            message: {
+                                en:"Email not found", 
+                                fr:"Email non trouvé"
+                            }
+                        }
+                    }); 
+                }
+
+                // User found with email ! 
+
+                // I compare the hash from the DB with the received password (bcrypt)
+                // bcrypt.compare(<user password>, <DB hashed password>); 
+                const passwordMatch = await bcrypt.compare(req.body.password, storedUser.password); 
+                
+                console.log('passwordMatch :>> ', passwordMatch);
+                
+                if (!passwordMatch) {
+                    //  If no match send error (wrong password)
+                    res.status(401).send({
+                        error : {
+                            statusCode: 401,
+                            message: {
+                                en:"Wrong password", 
+                                fr:"Mot de passe incorrect"
+                            }
+                        }
+                    }); 
+                }
+
+                // Password is valid
+                
+                // Check if user has confirmed account
+                if (!storedUser.confirmed) {
+                    return res.status(403).send({
+                        error : {
+                            statusCode: 403,
+                            message: {
+                                en:"Account is not activated - check email to activate account", 
+                                fr:"Le compte n'est pas activé - Vérifier le mail pour activation de compte"
+                            }
+                        }
+                    }); 
+                }
+                    //   If there is a match add user id to session, 
+
+                    // AND get his moves and send the results back 
+                    req.session.user ={ id: storedUser.id }; 
+                    req.session.user.moves = storedUser.moves = await Move.getAllFromUserId(req.session.user.id); 
+
+                    console.log('req.session :>> ', req.session);
+
+                    delete storedUser.password; 
+                    return res.send(storedUser); 
+                
+              
+            }
+        }
+        catch (err) {
+            console.trace(err);
+        }
+    }, 
 
     confirmEmail: async (req, res) => {
         try {
@@ -122,10 +214,10 @@ const authControlleur = {
 
                 if (!!updatedUser) {
                     // Redirection towards front app signin page 
-                    res.redirect('http://localhost:8080/signIn'); 
+                    res.redirect(`${configLocal.frontAppDomain}/signIn`); 
                 } else {
                     // Redirection towards front app 404
-                    res.redirect(404, 'http://localhost:8080/404'); 
+                    res.redirect(404, `${configLocal.frontAppDomain}/404`); 
                 }
             }
 
@@ -215,91 +307,6 @@ const authControlleur = {
             console.trace(error); 
         }
     }, 
-  
-    signin: async (req, res) => {
-
-        try {
-            const signinFormValid = signinSchema.validate(req.body);
-            console.log("signinFormValid :>> ", signinFormValid);
-            //console.log("!!signinFormValid.error :>> ", !!signinFormValid.error);
-
-            if (!!signinFormValid.error){
-                res.status(400).send(signinFormValid.error); 
-            } else {
-                // * Get user from email and match passwords 
-
-                // I query to get user from DB with email address 
-                const storedUser = await User.findByEmail(req.body.email); 
-                console.log('storedUser :>> ', storedUser);
-                //console.log("req.body.password :>> ", req.body.password);
-                //console.log("storedUser.password :>> ", storedUser.password);
-                // If the user exists  
-                if (!!storedUser) {
-
-                    // I compare the hash from the DB with the received password (bcrypt)
-                    // bcrypt.compare(<user password>, <DB hashed password>); 
-                    const passwordMatch = await bcrypt.compare(req.body.password, storedUser.password); 
-                    
-                    console.log('passwordMatch :>> ', passwordMatch);
-                    
-                    if (!passwordMatch) {
-                        //  If no match send error (wrong password)
-                        res.status(401).send({
-                            error : {
-                                statusCode: 401,
-                                message: {
-                                    en:"Wrong password", 
-                                    fr:"Mot de passe incorrect"
-                                }
-                            }
-                        }); 
-                    } else {
-                        //   If there is a match
-                        // Check if user is confirmed
-                        if (!storedUser.confirmed) {
-                            return res.status(403).send({
-                                error : {
-                                    statusCode: 403,
-                                    message: {
-                                        en:"Account is not activated - check email to activate account", 
-                                        fr:"Le compte n'est pas activé - Vérifier le mail pour activation de compte"
-                                    }
-                                }
-                            }); 
-                        }
-                        //   If there is a match add user id to session, 
-
-                        // AND get his moves and send the results back 
-                        req.session.user ={ id: storedUser.id,  }; 
-                        req.session.user.moves = storedUser.moves = await Move.getAll(req); 
-
-                        console.log('req.session :>> ', req.session);
-
-                        delete storedUser.password; 
-                        return res.send(storedUser); 
-                    }
-                } else {
-                    res.status(401).send({
-                        error : {
-                            statusCode: 401,
-                            message: {
-                                en:"Email not found", 
-                                fr:"Email non trouvé"
-                            }
-                        }
-                    }); 
-                }
-            }
-        }
-        catch (err) {
-            console.trace(err);
-        }
-    }, 
-
-    signout: (req, res) => {
-        delete req.session;
-        res.redirect('/');   
-    }, 
 
     requestNewPassword : async (req, res) => {
         //* Request a new password
@@ -321,6 +328,8 @@ const authControlleur = {
                     }
                 }); 
             }
+
+            // Email is stored
 
             delete storedUser.password; 
             delete storedUser.confirmed; 
@@ -346,18 +355,18 @@ const authControlleur = {
         }
     }, 
 
-    resetPassword : async (req, res) => {
+    resetPasswordRedirection : async (req, res) => {
         //* Resetting the User password
         //? Payload :  {email}
         try {
             //
-            const payloadValidation = await newPasswordSchema.validate(req.body);
+            const payloadValidation = await emailSchema.validate(req.body);
 
             if (!!payloadValidation.error){
                 return res.status(400).send(payloadValidation.error); 
             }
 
-            const storedUser = await User.updatePassword(req.body); 
+            const storedUser = await User.findByEmail(req.body.email); 
 
             // Get user with id AND email
 
@@ -371,14 +380,72 @@ const authControlleur = {
                 }); 
             }
 
-            res.send({ // server code 200 : success
-                en: "Success - Password was updated.", 
-                fr: "Réussie - Le mot de passe a bien été changé."
-            }); 
+            res.send(storedUser); //! SHOULD REDIRECT TO PASSWORD RESET FRONT PAGE 
 
         } catch (error) {
             console.log(error); 
         }
+    },
+
+    resetPassword: async (req, res) => {
+        //* Resetting the User password
+        //? Payload : {email, password, repeat_password}
+        try {
+            //
+            const payloadValidation = await newPasswordSchema.validate(req.body);
+
+            if (!!payloadValidation.error){
+                return res.status(400).send(payloadValidation.error); 
+            }
+
+            // Get user by email
+            const storedUser = await User.findByEmail(req.body.email); 
+
+            // Check DB response
+            if (!storedUser) {
+                res.status(401).send({
+                    error : {
+                        statusCode: 401,
+                        message: {
+                            en:"Email not found", 
+                            fr:"Email non trouvé"
+                        }
+                    }
+                }); 
+            }
+
+            // user is identified ! 
+
+            // hash the passwoprd prior to update in DB
+            storedUser.password = await bcrypt.hash(req.body.password, salt);
+
+            console.log(storedUser); 
+
+            // execute update
+            const updatedUser = await storedUser.save();
+
+            if (!updatedUser) {
+                return res.status(500).send({
+                    statusCode : 500,
+                    message : { // server code 200 : success
+                        en: "Error - Something went wrong.", 
+                        fr: "Aïe - Quelque chose s'est mal passé."
+                    }
+                }); 
+            }
+
+            // data is saved !
+
+            res.send(updatedUser); //! SHOULD REDIRECT TO SIGNIN FRONT PAGE 
+
+        } catch (error) {
+            console.log(error); 
+        }
+    },
+
+    signout: (req, res) => {
+        delete req.session;
+        res.redirect('/');   
     }
 }
 

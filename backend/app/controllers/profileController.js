@@ -1,6 +1,7 @@
 const Joi = require('@hapi/joi');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const salt = parseInt(process.env.SALT, 10);
 const jwt = require('jsonwebtoken');
 const sendEmailUpdateRequest = require('../mail/sendEmailUpdateRequest'); 
 const sendEmailUpdateConfirmation = require('../mail/sendEmailUpdateConfirmation'); 
@@ -45,22 +46,42 @@ const profileController = {
         //?  payload {pseudo}
 
         try {
+
             // At this stage a user login state is tested
             const pseudoValidation = await pseudoSchema.validate(req.body);
             console.log('req.body', req.body);
             console.log('pseudoValidation', pseudoValidation);
+
             // If payload is not proper send error; 
             if (!!pseudoValidation.error) {
                 return res.status(400).send(pseudoValidation.error); 
             }
+
+            const userId = req.session.user.id; 
+
+            const user = await User.findByPk(userId); 
+
+            if (!user) {
+                return res.status(404).send({
+                    statusCode : 404,
+                    message : { // server code 404 : not found
+                        en: "User not found.", 
+                        fr: "Pas d'utilisateur"
+                    }
+                }); 
+            }
+
+            // A user was found 
+            user.pseudo = req.body.pseudo; 
+
             // pass req obj to model function for pseudo update
-            const updateUser = await User.updatePseudo(req); 
+            const updatedUser = await user.save(); 
             // Send update value in session 
-            req.session.user.pseudo = updateUser.pseudo; 
+            req.session.user.pseudo = updatedUser.pseudo; 
             // remove password from object to send as response
-            delete updateUser.password; 
+            delete updatedUser.password; 
             // send it back to front
-            res.send(updateUser); 
+            res.send(updatedUser); 
         } catch (error) {
             console.trace(error); 
         }
@@ -83,8 +104,10 @@ const profileController = {
                 return res.status(400).send(updateEmailValidation.error); 
             }
 
+            const userID  = req.session.user.id; 
+
             // Retrieve/Get current user from DB 
-            const storedUser = await User.findByPk(req);
+            const storedUser = await User.findByPk(userID);
 
             // Check matching email with the once in session 
             const passwordMatch = await bcrypt.compare(req.body.password, storedUser.password);
@@ -116,7 +139,7 @@ const profileController = {
             }; 
 
             // Check if email doesn't already exist
-            const emailExists = await User.emailExists (req.body.new_email); 
+            const emailExists = await User.emailExists(req.body.new_email); 
 
             // If email exists, send error : 409 Conflict
             if (emailExists) {
@@ -197,10 +220,18 @@ const profileController = {
             // Send email 
             await sendEmailUpdateConfirmation(emailInfo); 
 
-            res.send({ // server code 200 : success
-                en: "Success - The email update validation link has been sent to new email.", 
-                fr: "Réussie - Le lien de validation de changement d'email a été envoyé à la nouvelle adresse."
-            }); 
+            res.send(`
+            <!DOCTYPE html>
+            <html lang="fr">
+            <head>
+            </head>
+            <body>
+                <script>
+                    window.close(); 
+                </script>
+            </body>
+            </html>
+            `); 
             
         } catch (error) {
             console.trace(error); 
@@ -232,10 +263,18 @@ const profileController = {
 
                 await sendInfoEmailChanged(emailInfo); 
 
-                res.send({ // server code 200 : success
-                    en: "Success - The email was successfuly updated.", 
-                    fr: "Réussie - Le mail du compte Moovybox  a bien été mis à jour."
-                }); 
+                res.send(`
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                </head>
+                <body>
+                    <script>
+                        window.close(); 
+                    </script>
+                </body>
+                </html>
+                `); 
             }
             
         } catch (error) {
@@ -259,8 +298,10 @@ const profileController = {
     
             // If payload is valid
                 // move on 
+
+            const userID = req.session.user.id; 
             // get current user
-            const storedUser = await User.findByPk(req); 
+            const storedUser = await User.findByPk(userID); 
 
             console.log("req.body.old_password", req.body.old_password); 
             console.log("storedUser.password", storedUser.password); 
@@ -283,11 +324,10 @@ const profileController = {
             }
             // If match 
             // change password in storedUser and update
-            storedUser.password = req.body.new_password; 
-                // proceed to change 
-            const result = await User.updatePassword(storedUser);
+            storedUser.password = await bcrypt.hash(req.body.new_password, salt); 
 
-            
+                // proceed to change 
+            const result = await storedUser.save(storedUser);
             
             //
             if (!result){
@@ -311,6 +351,43 @@ const profileController = {
                 en: 'Success - Password was updated',
                 fr: 'Le mot de passe à bien été mis à jour.'
             }); 
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    deleteAccount : async (req, res) => {
+        try {
+            const userID = req.session.user.id; 
+
+            const user = await User.findByPk(userID); 
+
+            if (!user) {
+                return res.status(404).send({
+                    statusCode : 404,
+                    message : { // server code 404 : not found
+                        en: "User not found.", 
+                        fr: "Pas d'utilisateur"
+                    }
+                }); 
+            }
+
+            // A user is found ! 
+
+            const result = await user.delete(); 
+
+            if(!result) {
+                return res.status(500).send({
+                    statusCode: 500,
+                    message: {
+                        en: 'Oups, something went wrong',
+                        fr: "Aïe, quelque chose s'est mal passé"
+                    }
+                });
+            }
+
+            res.status(200).send(true);
+           
         } catch (error) {
             console.log(error);
         }

@@ -8,7 +8,8 @@ class User {
         this.id = obj.id; 
         this.pseudo = obj.pseudo; 
         this.email = obj.email; 
-        this.password = obj.password; 
+        this.password = obj.password;
+        this.confirmed = obj.confirmed;
     }
 
     static async emailExists (email) {
@@ -41,11 +42,11 @@ class User {
         }
     }
 
-    static async findByPk(req) {
+    static async findByPk(id) {
         try {
             // prepare de query 
             const query = `SELECT * FROM "user" WHERE "id" = $1`; 
-            const values = [req.session.user.id]; 
+            const values = [id]; 
             // make query to DB 
 
             const results = await client.query(query, values); 
@@ -54,7 +55,7 @@ class User {
                 // Esle return error "ressource not found" 401
 
                // console.log(results); 
-            return results.rows[0]; 
+            return (!!results.rows[0]) ? new this(results.rows[0]) : false; 
             
         } catch (error) {
             console.trace(error);
@@ -74,29 +75,10 @@ class User {
                 // Esle return error "ressource not found" 401
 
                // console.log(results); 
-            return results.rows[0]; 
+            return (!!results.rows[0]) ? new this(results.rows[0]) : false;  
             
         } catch (error) {
             console.trace(error);
-        }
-    }
-
-    static async identifyUser(req) {
-        //* Check if the provided password matches the one in DB
-        //* user id in current session
-        try {
-            // request to find an associated user
-            const query = `SELECT * FROM "user" WHERE "id" = $1`; 
-            const results = await client.query(query, [req.session.user.id]); 
-            const user = results.rows[0]; 
-
-            const passwordMatch = await bcrypt.compare(req.body.password, user.password); 
-            // Returns a boolean 
-            // - true : user id and password match
-            // - false : user id and password don't match
-            return !! passwordMatch; 
-        } catch (error) {
-            return console.trace(error); 
         }
     }
 
@@ -105,80 +87,70 @@ class User {
         try {
             // request to find an associated user
             const query = `INSERT INTO "user" (pseudo, email, password) VALUES ($1, $2, $3) RETURNING *`; 
-            // Hashes the password to insert in DB
-            const hashedPassword = await bcrypt.hash(this.password, salt); 
+            
             // value table setting
-            const values = [this.pseudo, this.email, hashedPassword]; 
+            const values = [this.pseudo, this.email, this.password]; 
 
             const results = await client.query(query, values); 
             console.log("insert results",results);
-            // Returns a boolean 
-            // - true : mail exists
-            // - false : mail does not exist
-            return results.rows[0]; 
+            // Returns created entity
+            return (!!results.rows[0]) ? new User(results.rows[0]) : false;
         } catch (error) {
             return console.trace(error); 
         }
     }
 
-    static async saveEmail(obj) {
-        //* Save user in DB 
+    async save() {
+        try {
+
+            if(!!this.id) {
+                this.update(); 
+            } else {
+                this.insert(); 
+            }
+            
+        } catch (error) {
+            console.log(error); 
+        }
+    }
+
+    async update() {
         try {
             // request to find an associated user
-            const query = `UPDATE "user" SET "email" = $1 WHERE "id" = $2;`; 
+            const query = `UPDATE "user" SET "email" = $1, "pseudo" = $2, "password" = $3 WHERE "id" = $4 RETURNING * ;`; 
             // value table setting
-            const values = [obj.new_email, obj.id]; 
+            const values = [this.email, this.pseudo, this.password, this.id];
 
             const results = await client.query(query, values); 
+
             console.log("update email results",results.rows[0]);
             // Returns a boolean 
             // - true : mail changed
             // - false : mail did not change
+            return (!!results.rows[0]) ? new User(results.rows[0]) : false; 
+        } catch (error) {
+            return console.trace(error); 
+        }
+    }
+
+    async delete() {
+        try {
+            // request to find an associated user
+            const query = `DELETE FROM "user" WHERE "id" = $1 RETURNING * ;`; 
+            // value table setting
+            const values = [this.id];
+
+            const results = await client.query(query, values); 
+
+            // Returns a boolean 
+            // - true : user is deleted
+            // - false : user is not deleted
             return !!results.rowCount; 
         } catch (error) {
             return console.trace(error); 
         }
     }
 
-    static async updatePseudo(req) {
-        try {
-            // request to find an associated user
-            const query = `UPDATE "user" SET "pseudo" = $1 WHERE "id" = $2 RETURNING *`; 
-            // value table setting
-            const values = [req.body.pseudo, req.session.user.id]; 
-            // launch query
-            const results = await client.query(query, values); 
-            console.log("update results", results.rows[0]);
-            
-            // Returns the user object
-            return results.rows[0]; 
-        } catch (error) {
-            console.trace(error); 
-        }
-    }
-
-    static async updatePassword (obj) {
-        //* Save user in DB 
-        try {
-            // request to find an associated user
-            const query = `UPDATE "user" SET "password" = $1 WHERE "id" = $2 RETURNING *;`; 
-            // value table setting
-
-            // Hashes the password to insert in DB
-            const hashedPassword = await bcrypt.hash(obj.password, salt); 
-            // value table setting
-            const values = [hashedPassword, obj.id]; 
-
-            const results = await client.query(query, values); 
-
-            // Returns a boolean 
-            // - true : mail changed
-            // - false : mail did not change
-            return !!results.rows[0]; 
-        } catch (error) {
-            return console.trace(error); 
-        }
-    }
 }; 
 
 module.exports = User; 
