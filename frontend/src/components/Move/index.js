@@ -13,7 +13,6 @@ import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
 import axios from 'axios';
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -39,8 +38,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Move = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
   const classes = useStyles();
   const [moves, setMoves] = useState([]);
 
@@ -54,7 +51,6 @@ const Move = () => {
            console.log(err);
          })
   }, []);
-
 
   const handleDelete = (id) => {
 
@@ -84,10 +80,24 @@ const Move = () => {
       </Typography>
       </Link>
         <ul className={classes.liste}>
-          {moves.map((move) => <li key={move.id}>
-            <Button variant="outlined" color="primary" href="/create-box" className={classes.btn} >
-              {move.id + 1} - {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
+          {moves.map(move => <li key={move.id}>
+            <Link to ={{
+              pathname:"/move/"+move.id,
+              state: {
+                id: move.id,
+              }
+              }}>
+            
+            <Button 
+            variant="outlined" 
+            color="primary" 
+            //href={"/move/"+move.id} mettre LINK
+            // href={"/create-box"}
+            className={classes.btn} 
+            >
+               {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
             </Button>
+            </Link>
             <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleDelete(move.id)}}/>
             </li>)}
         </ul>

@@ -44,16 +44,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BoxesByMove = (props) => {
-  
+  console.log("ceci est le props",props.location.state.id);
   const classes = useStyles();
   const [boxes, setBoxes] = useState([]);
-  const [moves, setMoves] = useState([]);
+  
   
   // requeste to display all the boxes of 1 move selected
-  useEffect((props) => {
-    const id = props.location.state.id;
-    console.log("id :", id);
-    axios.get(`http://localhost:5050/move/${id}`)
+  useEffect(() => {
+
+    
+    axios.get(`http://localhost:5050/move/${props.location.state.id}`)
     .then(res => {
       console.log(res.data);
       setBoxes(res.data);
