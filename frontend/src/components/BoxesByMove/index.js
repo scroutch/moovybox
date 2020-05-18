@@ -13,6 +13,10 @@ import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
 import axios from 'axios';
 import { SYNC_MOVE_ID } from 'src/store/actions';
+import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
+import IconButton from '@material-ui/core/IconButton';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -39,15 +43,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const BoxesByMove = () => {
+const BoxesByMove = (props) => {
+  
   const classes = useStyles();
-  const move_id = useSelector((state) => state.move_id);
   const [boxes, setBoxes] = useState([]);
-
-  console.log("boxes.move_id 1 ",boxes);
-  useEffect(() => {
-   
-    axios.get('http://localhost:5050/move/18')
+  const [moves, setMoves] = useState([]);
+  
+  // requeste to display all the boxes of 1 move selected
+  useEffect((props) => {
+    const id = props.location.state.id;
+    console.log("id :", id);
+    axios.get(`http://localhost:5050/move/${id}`)
     .then(res => {
       console.log(res.data);
       setBoxes(res.data);
@@ -57,7 +63,21 @@ const BoxesByMove = () => {
     })
   }, []);
 
- 
+  // delete a box selected
+  const handleBoxDelete = (id) => {
+
+    console.log('cliqué');
+
+    axios.delete(`http://localhost:5050/box/${id}`)
+         .then(res => {
+
+           console.log("ok");
+          setBoxes(boxes.filter((boxe)=>(boxe.id !== id)));
+         }).catch(err => {
+          console.log(err);
+        })
+  };
+
   return (
     <div className={classes.root}>
       <Header />
@@ -73,17 +93,47 @@ const BoxesByMove = () => {
       </Typography>
       </Link>
         <ul className={classes.liste}>
-          {boxes.map(boxe => <li key={boxe.id}>
+          {boxes.map(boxe => 
+            <li key={boxe.id}>
             <Button 
             variant="outlined" 
             color="primary" 
             href={"/box/"+boxe.id} 
             className={classes.btn} 
             >
-               {boxe.label}- 
+               Nom : {boxe.label}- 
+               Pièce de destination : {boxe.destination_room} - 
+               Lourd : {boxe.heavy} - 
+               
+               {(() => {
+                if (boxe.heavy===true) {
+                  return (
+                    <FitnessCenterIcon />
+                  )
+                }
+              })()}
+              {(() => {
+                if (boxe.floor===true) {
+                  return (
+                   <ArrowUpwardIcon /> 
+                  )
+                }
+              })()}
+              {(() => {
+                if (boxe.fragile===true) {
+                  return (
+                    <AssignmentLateIcon />
+                  )
+                }
+              })()}
+
+               Etage : {boxe.floor} -
                {/* {( {boxe.fragile} => {<Typography>Fragile</Typography> })();} */}
             </Button>
-            <DeleteIcon fontSize="large" color="secondary" />
+            {/* <DeleteIcon fontSize="large" color="secondary"  onClick={() => {handleDelete(move.id)}}/> */}
+            <IconButton aria-label="delete" color="secondary"  onClick={() => {handleBoxDelete(boxe.id)}} className={classes.margin}>
+              <DeleteIcon fontSize="large" />
+            </IconButton>
             </li>)}
         </ul>
       <Footer />
