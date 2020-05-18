@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { login, SYNC_EMAIL, SYNC_PASSWORD, SYNC_PSEUDO, SYNC_PASSWORDVAL } from 'src/store/actions';
+import { signup, SYNC_EMAIL, SYNC_PASSWORD, SYNC_PSEUDO, SYNC_PASSWORDVAL } from 'src/store/actions';
 
 import Avatar from '@material-ui/core/Avatar';
 
@@ -58,29 +58,30 @@ const SignUp = () => {
   const passwordVal = useSelector((state) => state.passwordVal);
   const classes = useStyles();
 
-  function handleSubmit(e) {
-    e.preventDefault(); // stops default reloading behaviour
-    console.log('input on onSubmit', email, password, pseudo);
-    axios
-      .post(`http://localhost:5050/signup`, { email, password, pseudo })
-      .then(res => {
-        if (res.status === 201) {
-          dispatch(login(history));
-          console.log('response.status',res.status);
-        }
-        else {
-          console.error('erreur', res);
-        };
-        console.log('res : ',res);
-        console.log('res.data : ',res.data);
+  // function handleSubmit(e) {
+  //   e.preventDefault(); // stops default reloading behaviour
+  //   console.log('input on onSubmit', email, password, pseudo);
+  //   axios
+  //     .post(`http://localhost:5050/signup`, { email, password, pseudo })
+  //     .then(res => {
+  //       if (res.status === 201) {
+  //         // dispatch(login(history));
+  //         store.dispatch(returnSignin(action.history));
+  //         console.log('it is ok -status',res.status);
+  //       }
+  //       else {
+  //         console.error('erreur', res);
+  //       };
+  //       console.log('res : ',res);
+  //       console.log('res.data : ',res.data);
 
-      })
-      .catch ((error) => {
-        console.log("very big error");
-        alert('Probleme de server');
+  //     })
+  //     .catch ((error) => {
+  //       console.log("very big error");
+  //       alert('Probleme de server');
 
-      });
-  }
+  //     });
+  // }
 
   return (
     <div className={classes.root}>
@@ -98,7 +99,10 @@ const SignUp = () => {
           <form
             className={classes.form}
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={(evt) => {
+              evt.preventDefault();
+              dispatch(signup(history));
+            }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12}>
