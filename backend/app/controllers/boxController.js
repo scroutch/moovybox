@@ -252,7 +252,6 @@ const boxController = {
                     // Retrieve box id from url
                     const boxId = req.params.id; 
                     
-
                     const storedBox = await Box.getByPk(req, boxId); 
 
                     // If move belongs to user continue 
@@ -282,8 +281,8 @@ const boxController = {
                             error : {
                                 statusCode: 403,
                                 message: {
-                                    en:"Forbidden action", 
-                                    fr:"Action interdite"
+                                    en:"Forbidden action - The related move doesn't belongs to current user", 
+                                    fr:"Action interdite - Le déménagement concerné n'appartient pas à l'utilisateur actuel"
                                 }
                             }
                         });
@@ -292,10 +291,23 @@ const boxController = {
                     // Request deletion from DB with move id
                     const success = await Box.delete(boxId); 
 
+                    console.log('delete box success', success); 
+
                     // return : boolean
                     // true : deletion ok
                     // false : deletion didn't work
-                    res.status(204); // 204 : No-content, here '.send()' is useless
+
+                    if (!success) {
+                        res.status(500).send({
+                            statusCode : 500,
+                            message:  {
+                                en:"Something went wrong", 
+                                fr:"Quelque chose s'est mal passé"
+                            }
+                        });
+                    }
+
+                    return res.status(200).send(true); // 204 : No-content, here '.send()' is useless
                 } catch (error) {
                     console.trace(error);
                 }

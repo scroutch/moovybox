@@ -18,11 +18,7 @@ class Box {
 
         const values = [req.session.user.id, boxId]; 
 
-        console.log('Box.getByPk values', values); 
-
         const results = await client.query(query, values); 
-
-        console.log('Box.getByPk results', results); 
 
         return results.rows[0]; 
     }
@@ -55,8 +51,8 @@ class Box {
         //* Check the existence of the entred box in the DB
         try {
             // request to find an associated user
-            const query = `SELECT * FROM "box" WHERE "label" = $1 AND move_id = $2 AND user_id = $3 `; 
-            const results = await client.query(query, [req.body.label, , req.body.move_id, req.session.user.id]); 
+            const query = `SELECT * FROM "box" WHERE "label" = $1 AND move_id = $2 AND user_id = $3`; 
+            const results = await client.query(query, [req.body.label, req.body.move_id, req.session.user.id]); 
             
             // Returns a boolean 
             // - true : label exists
