@@ -10,8 +10,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import Link from '@material-ui/core/Link';
+
+
+
+// import Link from '@material-ui/core/Link';
 import { withRouter } from 'react-router-dom';
+import GoBack from '../components/GoBack' 
 
 
 const useStyles = makeStyles((theme) => ({
@@ -67,9 +71,10 @@ const Header = ({history}) => {
       <AppBar position="static" color="secondary">
         <Toolbar className={classes.toolbar}>
           <div className={classes.left}>
-            <IconButton edge="start" onClick={() => history.goBack()} className={classes.menuButton} color="inherit" aria-label="menu">
+            <GoBack />
+            {/* <IconButton edge="start" onClick={() => console.log(history)} className={classes.menuButton} color="inherit" aria-label="menu">
               <ArrowBackIosRoundedIcon />
-            </IconButton>
+            </IconButton> */}
           </div>
           <Link to="/move">
           <Typography variant="h6" className={classes.title}>

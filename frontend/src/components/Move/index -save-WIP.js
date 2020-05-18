@@ -1,4 +1,9 @@
 import React, {useState, useEffect} from 'react';
+// for REDUX
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
+import { SYNC_MOVE_ID_SELECTED } from 'src/store/actions';
+
 import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
@@ -12,7 +17,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
 import axios from 'axios';
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,33 +46,24 @@ const Move = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const classes = useStyles();
-  const [moves, setMoves] = useState([]);
-
-  useEffect(() => {
-    axios.get('http://localhost:5050/move')
-         .then(res => {
-           console.log(res.data);
-           setMoves(res.data);
-         })
-         .catch(err => {
-           console.log(err);
-         })
-  }, []);
-
-
-  const handleDelete = (id) => {
-
-    console.log('cliqué');
-
-    axios.delete(`http://localhost:5050/move/${id}`)
-         .then(res => {
-
-           console.log("ok");
-          setMoves(moves.filter((move)=>(move.id !== id)));
-         }).catch(err => {
+  const moves = useSelector((state) => state.moves);
+  // const [moves, setMoves] = useState([]);
+  // useEffect(() => {
+  function handleSubmit(e) {
+    e.preventDefault(); // stops default reloading behaviour
+    
+    axios
+        .get("http://localhost:5050/move/")
+        .then(res => {
+          // setMoves(res.data);
+          console.log("res.data du move",res.data);
+          console.log("moves",moves);
+        })
+        .catch(err => {
           console.log(err);
         })
-  };
+  }
+
 
   return (
     <div className={classes.root}>
@@ -78,17 +73,31 @@ const Move = () => {
       <Tooltip title="Add" aria-label="add">
         <Fab color="primary" className={classes.fab}>
           <AddIcon />
+
         </Fab>
       </Tooltip>
       Ajouter un déménagement
       </Typography>
       </Link>
         <ul className={classes.liste}>
-          {moves.map((move) => <li key={move.id}>
-            <Button variant="outlined" color="primary" href="/create-box" className={classes.btn} >
-              {move.id + 1} - {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
+          {moves.map(move => <li key={move.id}>
+            <Button 
+            variant="outlined" 
+            color="primary" 
+            href={"/move/"+move.id} 
+            className={classes.btn} 
+            name="moveIdSelected"
+            value={move.id}
+            onClick={(evt) => {
+              evt.preventDefault();
+              const newMoveIdSelected = evt.target.value;
+              dispatch({ type: SYNC_MOVE_ID_SELECTED, moveIdSelected : newMoveIdSelected });
+              console.log("moveIdSelected", moveIdSelected);
+            }}
+            >
+               {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
             </Button>
-            <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleDelete(move.id)}}/>
+            <DeleteIcon fontSize="large" color="secondary" />
             </li>)}
         </ul>
       <Footer />

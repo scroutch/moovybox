@@ -7,7 +7,7 @@ const newMoveSchema = Joi.object({
         .max(150)
         .required(),
     date: Joi.date()
-        .format('YYYY-MM-DD')
+        .format()
         .greater('now')
         .required(),
     address: Joi.string()
@@ -21,7 +21,7 @@ const moveUpdateSchema = Joi.object({
         .max(150)
         .required(),
     date: Joi.date()
-        .format('YYYY-MM-DD')
+        .format()
         .greater('now')
         .required(),
     address: Joi.string()

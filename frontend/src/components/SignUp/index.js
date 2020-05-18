@@ -116,6 +116,7 @@ const SignUp = () => {
                   onChange={(evt) => {
                     const newPseudo = evt.target.value;
                     dispatch({ type: SYNC_PSEUDO, pseudo : newPseudo });
+                   
                   }}
                 />
               </Grid>

@@ -13,7 +13,6 @@ import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
 import axios from 'axios';
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -39,13 +38,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Move = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
   const classes = useStyles();
   const [moves, setMoves] = useState([]);
-
   useEffect(() => {
-    axios.get('http://localhost:5050/move')
+    axios.get('http://localhost:5050/move', )
          .then(res => {
            console.log(res.data);
            setMoves(res.data);
@@ -55,19 +51,8 @@ const Move = () => {
          })
   }, []);
 
-
-  const handleDelete = (id) => {
-
-    console.log('cliqué');
-
-    axios.delete(`http://localhost:5050/move/${id}`)
-         .then(res => {
-
-           console.log("ok");
-          setMoves(moves.filter((move)=>(move.id !== id)));
-         }).catch(err => {
-          console.log(err);
-        })
+  const handleDelete = (moveToDelete) => () => {
+    setMoves((moves) => moves.filter((move) => move.key !== moveToDelete.key));
   };
 
   return (
@@ -78,17 +63,24 @@ const Move = () => {
       <Tooltip title="Add" aria-label="add">
         <Fab color="primary" className={classes.fab}>
           <AddIcon />
+
         </Fab>
       </Tooltip>
       Ajouter un déménagement
       </Typography>
       </Link>
         <ul className={classes.liste}>
-          {moves.map((move) => <li key={move.id}>
-            <Button variant="outlined" color="primary" href="/create-box" className={classes.btn} >
-              {move.id + 1} - {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
+          {moves.map(move => <li key={move.id}>
+            <Button 
+            variant="outlined" 
+            color="primary" 
+            href={"/move/"+move.id} 
+            // href={"/create-box"}
+            className={classes.btn} 
+            >
+               {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
             </Button>
-            <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleDelete(move.id)}}/>
+            <DeleteIcon fontSize="large" color="secondary" />
             </li>)}
         </ul>
       <Footer />
