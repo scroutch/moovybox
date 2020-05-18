@@ -1,5 +1,5 @@
 import React from 'react';
-// import {BrowserRouter as Router, Link} from "react-router-dom";
+import {BrowserRouter as Router, Link} from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -7,15 +7,13 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/IconButton';
-import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 
 
 // import Link from '@material-ui/core/Link';
 import { withRouter } from 'react-router-dom';
-import GoBack from '../components/GoBack' 
+import GoBack from '../components/GoBack'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -43,6 +41,9 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-end',
   },
+  menu: {
+    paddingTop: "26px",
+  },
   rightLink: {
     fontSize: 16,
     color: theme.palette.common.white,
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = ({history}) => {
+const Header = () => {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -85,15 +86,16 @@ const Header = ({history}) => {
             <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} color="inherit"><AccountCircleIcon style={{ fontSize: 40 }} /></Button>
             <Menu
         id="simple-menu"
+        className = "menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <Link href="/profile">
+        <Link to="/profile">
           <MenuItem onClick={handleClose}>Profil</MenuItem>
         </Link>
-        <Link href="/move">
+        <Link to="/move">
           <MenuItem onClick={handleClose}>Mes déménagements</MenuItem>
         </Link>
         <MenuItem onClick={handleClose}>Déconnexion</MenuItem>
