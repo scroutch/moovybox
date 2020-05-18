@@ -1,5 +1,5 @@
 import React from 'react';
-// import {BrowserRouter as Router, Link} from "react-router-dom";
+import {BrowserRouter as Router, Link} from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,7 +15,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 // import Link from '@material-ui/core/Link';
 import { withRouter } from 'react-router-dom';
-import GoBack from '../components/GoBack' 
+import GoBack from '../components/GoBack'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -90,10 +90,10 @@ const Header = ({history}) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <Link href="/profile">
+        <Link to="/profile">
           <MenuItem onClick={handleClose}>Profil</MenuItem>
         </Link>
-        <Link href="/move">
+        <Link to="/move">
           <MenuItem onClick={handleClose}>Mes déménagements</MenuItem>
         </Link>
         <MenuItem onClick={handleClose}>Déconnexion</MenuItem>
