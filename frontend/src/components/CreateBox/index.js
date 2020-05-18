@@ -16,8 +16,14 @@ import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import TextField from '@material-ui/core/TextField';
-
-
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,18 +48,25 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
-axios.defaults.withCredentials = true; 
+axios.defaults.withCredentials = true;
 
 function CreateBox(props) {
   const classes = useStyles();
   const [label, setLabel] = useState('');
   const [destination_room, setDestinationRoom] = useState('');
-  const [fragile, setFragile] = useState('false');
-  const [floor, setFloor] = useState('false');
+  const [fragile, setFragile] = useState({checked: false});
+  const [floor, setFloor] = useState({checked: false});
   const [move_id, setMoveId] = useState(props.location.state.id);
-  const [heavy, setHeavy] = useState('false');
+  const [heavy, setHeavy] = useState({checked: false});
   //
   function handleLabelChange(e) {
     console.log('input au onChange label ', e.target.value);
@@ -65,11 +78,11 @@ function CreateBox(props) {
   }
   function handleFragileChange(e) {
     console.log('input au onChange', e.target.value);
-    setFragile(e.target.value);
+    setFragile({ ...fragile, [event.target.name]: event.target.checked});
   }
   function handleFloorChange(e) {
     console.log('input au onChange', e.target.value);
-    setFloor(e.target.value);
+    setFloor({ ...floor, [event.target.name]: event.target.checked});
   }
   function handleMoveIdChange(e) {
     console.log('input au onChange', e.target.value);
@@ -77,14 +90,14 @@ function CreateBox(props) {
   }
   function handleHeavyChange(e) {
     console.log('input au onChange', e.target.value);
-    setHeavy(e.target.value);
+    setHeavy({ ...heavy, [event.target.name]: event.target.checked});
   }
-  
+
   function handleSubmit(e) {
     e.preventDefault(); // stops default reloading behaviour
     console.log('input au onSubmit', label, destination_room, heavy, fragile, floor, move_id); // , user_id, destination_room, heavy, fragile, floor,
     axios
-      .post(`http://localhost:5050/box`, { label, destination_room, heavy, fragile, floor, move_id})  
+      .post(`http://localhost:5050/box`, { label, destination_room, heavy, fragile, floor, move_id})
       .then(res => {
         console.log(res);
         console.log(res.data);
@@ -126,16 +139,64 @@ function CreateBox(props) {
               {/* <input placeholder="label" value={label} onChange={handleLabelChange} />{' '} */}
             </Grid>
             <Grid item xs={12}>
+            {/* <FormControl className={classes.formControl}>
+              <InputLabel id="demo-simple-select-readonly-label">Destination</InputLabel>
+              <Select
+                labelId="demo-simple-select-readonly-label"
+                id="demo-simple-select-readonly"
+                value={destination_room}
+                onChange={handleDestinationRoomChange}
+                inputProps={{ readOnly: true }}
+              >
+              <MenuItem value="{destination_room}">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={'cuisine'}>Cuisine</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+            </FormControl> */}
               <input placeholder="destination_room" value={destination_room} onChange={handleDestinationRoomChange} />{' '}
             </Grid>
-            <Grid item xs={12}>  
-              <input placeholder="fragile" value={fragile} onChange={handleFragileChange} />{' '}
+            <Grid item xs={12}>
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={fragile.checked}
+                        onChange={handleFragileChange}
+                        name="checked"
+                        color="primary"
+                    />
+                }
+                label="fragile"
+            />
+              {/* <input placeholder="fragile" value={fragile} onChange={handleFragileChange} />{' '} */}
             </Grid>
             <Grid item xs={12}>
-              <input placeholder="heavy" value={heavy} onChange={handleHeavyChange} />{' '}
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={heavy.checked}
+                        onChange={handleHeavyChange}
+                        name="checked"
+                        color="primary"
+                    />
+                }
+                label="Lourd"
+            />
             </Grid>
             <Grid item xs={12}>
-              <input placeholder="floor" value={floor} onChange={handleFloorChange} />{' '}
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={floor.checked}
+                        onChange={handleFloorChange}
+                        name="checked"
+                        color="primary"
+                    />
+                }
+                label="Etage"
+            />
             </Grid>
             {/* <Grid item xs={12}>
               <input placeholder="move_id" value={move_id} onChange={handleMoveIdChange} />{' '}
@@ -150,8 +211,8 @@ function CreateBox(props) {
             >
               Ajouter
             </Button>
-            </Grid>  
-          </Grid> 
+            </Grid>
+          </Grid>
         </form>
       </div>
       </Container>
