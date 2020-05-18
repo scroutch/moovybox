@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const sendEmailUpdateRequest = require('../mail/sendEmailUpdateRequest'); 
 const sendEmailUpdateConfirmation = require('../mail/sendEmailUpdateConfirmation'); 
 const sendInfoEmailChanged = require('../mail/sendInfoEmailChanged'); 
+const sendInfoPasswordChanged = require('../mail/sendInfoPasswordChanged'); 
 
 const pseudoSchema = Joi.object({
     pseudo: Joi.string()
@@ -114,7 +115,7 @@ const profileController = {
                 }); 
             }; 
 
-            // Check if email doesn't already exist"
+            // Check if email doesn't already exist
             const emailExists = await User.emailExists (req.body.new_email); 
 
             // If email exists, send error : 409 Conflict
@@ -181,7 +182,6 @@ const profileController = {
                 id: storedUser.id,
                 old_email: storedUser.email,  
                 new_email: jwtPayload.new_email,
-                
             }; 
 
             // Set the email objet for second step confirmation
@@ -243,7 +243,7 @@ const profileController = {
         }
     }, 
 
-    updatePassword : async (req, res) => { // Might not keep it that way 
+    updatePassword : async (req, res) => {
         //* Updating Password under user request 
         //? Payload : {old_password, new_password, password_repeat}
         try {
@@ -263,7 +263,7 @@ const profileController = {
             const storedUser = await User.findByPk(req); 
 
             console.log("req.body.old_password", req.body.old_password); 
-            console.log("storedUser.passwordd", storedUser.passwordd); 
+            console.log("storedUser.password", storedUser.password); 
     
             // match old_password with saved password in DB
             const passwordMatch = await bcrypt.compare(req.body.old_password, storedUser.password); 
@@ -286,6 +286,8 @@ const profileController = {
             storedUser.password = req.body.new_password; 
                 // proceed to change 
             const result = await User.updatePassword(storedUser);
+
+            
             
             //
             if (!result){
@@ -298,12 +300,19 @@ const profileController = {
                 });
             }
 
+            const emailInfo = {
+                pseudo: storedUser.pseudo, 
+                email: storedUser.email,
+            }
+
+            await sendInfoPasswordChanged(emailInfo); 
+
             res.send({
                 en: 'Success - Password was updated',
                 fr: 'Le mot de passe à bien été mis à jour.'
             }); 
         } catch (error) {
-            
+            console.log(error);
         }
     }
 
