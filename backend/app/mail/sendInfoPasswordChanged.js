@@ -7,24 +7,22 @@ const appConfig = require ('../config');
 
 module.exports = async (emailData) => {
 
-  //? emailData : {pseudo, email, new_email}
+  //? emailData : {pseudo, email}
 
   // Addition of a custom subject for the email
-  emailData.subject = `Profil Moovybox - Email de compte modifié`; 
+  emailData.subject = `Profil Moovybox - Mot de passe modifié`; 
 
   // Addition of a customed email for email update
   emailData.html = `
     <body>
     <section>
       <header>
-        <h1>Confirmation de changement d'email</h1>
+        <h1>Confirmation de modification de mot de passe</h1>
       </header>
     
       <p>Bonjour ${emailData.pseudo},</p>
 
-      <p>Ton compte Moovybox est désormais accessible avec l'adresse suivante : <span>${emailData.new_email}</span></p> 
-
-      <p>Tu gardes le même mot de passe.</p>
+      <p>Nous t'informons que ton mot de passe vient d'être modifié.</p> 
 
       <p>Amuses-toi bien avec tes cartons ;) </p>
 

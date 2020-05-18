@@ -6,9 +6,6 @@ const app = express();
 const cors = require('cors');
 const multer = require('multer');
 
-const ejs = require('ejs');
-
-
 const corsOpts = {
   origin: ['http://localhost:8080', 'http://localhost:5050','http://18.206.96.118'],
   //origin:true,
@@ -18,8 +15,6 @@ const corsOpts = {
   allowedHeaders : ['Content-Type', 'Authorization', 'Set-Cookie', 'Cookie']
 }; 
 
-app.set("view engine", "ejs");
-app.set("views", "./app/mail/views"); 
 
 //app.use(cors(['localhost', '18.206.96.118'])); 
 app.use(cors(corsOpts)); 
@@ -42,7 +37,8 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     path:'/',
-    maxAge: 6*30*24*3600*1000,
+    maxAge: 6*30*24*3600*1000, // fix the life span of the cookie to 6 months (in milliseconds)
+    // maxAge: month|days|hours|seconds|milliseconds
     httpOnly: false,
     secure: false, // false : http and https / true : only https 
     sameSite:'none',

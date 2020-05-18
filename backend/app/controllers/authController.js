@@ -3,7 +3,8 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Move = require('../models/move'); 
 const jwt = require('jsonwebtoken'); 
-const sendAccountConfirmationEmail = require('../mail/sendAccountConfirmation'); 
+const sendAccountConfirmationEmail = require('../mail/sendAccountConfirmation');
+const sendPasswordResetLink = require('../mail/sendPasswordResetLink'); 
 require('dotenv').config(); 
 
 const signinSchema = Joi.object({
@@ -33,6 +34,20 @@ const emailSchema = Joi.object({
     email: Joi.string()
         .email()
         .required()
+});
+
+const newPasswordSchema = Joi.object({
+    id: Joi.number()
+        .integer()
+        .positive(),
+    email: Joi.string()
+        .email()
+        .required(), 
+    password: Joi.string()
+        .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
+        .required(),
+        // ^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$
+    repeat_password: Joi.ref('password'),
 });
 
 const authControlleur = {
@@ -121,8 +136,8 @@ const authControlleur = {
     }, 
 
     resetToken : async (req, res) => {
-        //* A already registred user is not confirmed and his token is outdated
-        //Renw token and
+        //* A registred user whose email is not confirmed and his token is outdated
+        //* will want to renew the confirmation token to activate his account
 
         try {
 
@@ -282,13 +297,88 @@ const authControlleur = {
     }, 
 
     signout: (req, res) => {
-        delete req.session.user;
+        delete req.session;
         res.redirect('/');   
     }, 
 
-    resetPassword : (req, res) => {
-        //* Reseting the password User password
-        // Checkout if both 
+    requestNewPassword : async (req, res) => {
+        //* Request a new password
+        //? paylaod : {email}
+        try {
+            // find user by email
+            const storedUser = await User.findByEmail(req.body.email); 
+
+            // if email doesn't exist 
+            if (!!storedUser) {
+                // abort and send error
+                res.status(401).send({
+                    error : {
+                        statusCode: 401,
+                        message: {
+                            en:"Email not found", 
+                            fr:"Email non trouvé"
+                        }
+                    }
+                }); 
+            }
+
+            delete storedUser.password; 
+            delete storedUser.confirmed; 
+
+            // if emails exists
+            const emailInfo = {
+                // prepare a token with obj : (id, pseudo, email)
+                pseudo: storedUser.pseudo,
+                email: storedUser.email,
+                token: await jwt.sign(storedUser, process.env.TOKENKEY, {expiresIn: '1d'})  
+            }
+
+            // send an email 
+            await sendPasswordResetLink(emailInfo); 
+
+            res.send({ // server code 200 : success
+                en: "Success - The password reset link has been sent to user email.", 
+                fr: "Réussie - Le lien de renouvelement de mot de passe a été envoyé adresse de l'utilisateur."
+            }); 
+            
+        } catch (error) {
+            console.log(error); 
+        }
+    }, 
+
+    resetPassword : async (req, res) => {
+        //* Resetting the User password
+        //? Payload :  {email}
+        try {
+            //
+            const payloadValidation = await newPasswordSchema.validate(req.body);
+
+            if (!!payloadValidation.error){
+                return res.status(400).send(payloadValidation.error); 
+            }
+
+            const storedUser = await User.updatePassword(req.body); 
+
+            // Get user with id AND email
+
+            if (!storedUser) {
+                return res.status(500).send({
+                    statusCode : 500,
+                    message : { // server code 200 : success
+                        en: "Error - Something went wrong.", 
+                        fr: "Aïe - Quelque chose s'est mal passé."
+                    }
+                }); 
+            }
+
+            res.send({ // server code 200 : success
+                en: "Success - Password was updated.", 
+                fr: "Réussie - Le mot de passe a bien été changé."
+            }); 
+
+        } catch (error) {
+            console.log(error); 
+        }
     }
 }
 

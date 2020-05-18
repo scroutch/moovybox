@@ -138,10 +138,17 @@ const moveController = {
                     // Request deletion from DB with move id
                     const success = await Move.delete(req, moveId); 
 
-                    // return : boolean
-                    // true : deletion ok
-                    // false : deletion didn't work
-                    res.send(success);
+                    if (!success) {
+                        res.status(500).send({
+                            statusCode : 500,
+                            message:  {
+                                en:"Something went wrong", 
+                                fr:"Quelque chose s'est mal passé"
+                            }
+                        });
+                    }
+
+                    return res.status(204); // 204 : No-content, here '.send()' is useless
                 } catch (error) {
                     console.trace(error);
                 }
