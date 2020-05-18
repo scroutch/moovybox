@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BoxesByMove = (props) => {
-  console.log("ceci est le props",props.location.state.id);
   const classes = useStyles();
   const [boxes, setBoxes] = useState([]);
   
@@ -55,7 +54,6 @@ const BoxesByMove = (props) => {
     
     axios.get(`http://localhost:5050/move/${props.location.state.id}`)
     .then(res => {
-      console.log(res.data);
       setBoxes(res.data);
     })
     .catch(err => {
@@ -66,12 +64,8 @@ const BoxesByMove = (props) => {
   // delete a box selected
   const handleBoxDelete = (id) => {
 
-    console.log('cliqué');
-
     axios.delete(`http://localhost:5050/box/${id}`)
          .then(res => {
-
-           console.log("ok");
           setBoxes(boxes.filter((boxe)=>(boxe.id !== id)));
          }).catch(err => {
           console.log(err);
@@ -81,7 +75,13 @@ const BoxesByMove = (props) => {
   return (
     <div className={classes.root}>
       <Header />
-      <Link to="/create-box">
+      <Link to ={{
+              pathname:"/create-box",
+              state: {
+                id: props.location.state.id,
+              }
+              }}>
+      {/* <Link to="/create-box" > */}
       <Typography component="h1" variant="h4" className={classes.titre}>
       <Tooltip title="Add" aria-label="add">
         <Fab color="primary" className={classes.fab}>

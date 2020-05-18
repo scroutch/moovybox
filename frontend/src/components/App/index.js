@@ -72,8 +72,8 @@ const App = () => {
           <Contact />
         </Route>
         <Route exact path="/move/:id" component={BoxesByMove} />
-        <Route exact path="/create-box">
-          <CreateBox />
+        <Route exact path="/create-box" component={CreateBox}>
+        
         </Route>
         <Route>404</Route>
       </Switch>
