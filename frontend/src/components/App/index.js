@@ -71,9 +71,7 @@ const App = () => {
         <Route exact path="/contact">
           <Contact />
         </Route>
-        <Route exact path="/move/:id">
-          <BoxesByMove />
-        </Route>
+        <Route exact path="/move/:id" component={BoxesByMove} />
         <Route exact path="/create-box">
           <CreateBox />
         </Route>
