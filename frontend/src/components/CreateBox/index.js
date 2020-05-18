@@ -46,13 +46,13 @@ const useStyles = makeStyles((theme) => ({
 
 axios.defaults.withCredentials = true; 
 
-function CreateBox() {
+function CreateBox(props) {
   const classes = useStyles();
   const [label, setLabel] = useState('');
   const [destination_room, setDestinationRoom] = useState('');
   const [fragile, setFragile] = useState('false');
   const [floor, setFloor] = useState('false');
-  const [move_id, setMoveId] = useState('51');
+  const [move_id, setMoveId] = useState(props.location.state.id);
   const [heavy, setHeavy] = useState('false');
   //
   function handleLabelChange(e) {
