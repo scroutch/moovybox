@@ -1,9 +1,12 @@
 import React from 'react';
+// import {BrowserRouter as Router, Link} from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIosRoundedIcon from '@material-ui/icons/ArrowBackIosRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -13,6 +16,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 // import Link from '@material-ui/core/Link';
 import { withRouter } from 'react-router-dom';
 import GoBack from '../components/GoBack' 
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,6 +54,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Header = ({history}) => {
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const classes = useStyles();
 
   return (
@@ -62,11 +76,28 @@ const Header = ({history}) => {
               <ArrowBackIosRoundedIcon />
             </IconButton> */}
           </div>
+          <Link to="/move">
           <Typography variant="h6" className={classes.title}>
             MoovyBox
           </Typography>
+          </Link>
           <div className={classes.right}>
-            <Button color="inherit" href="/profile"><AccountCircleIcon style={{ fontSize: 40 }} /></Button>
+            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} color="inherit"><AccountCircleIcon style={{ fontSize: 40 }} /></Button>
+            <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <Link href="/profile">
+          <MenuItem onClick={handleClose}>Profil</MenuItem>
+        </Link>
+        <Link href="/move">
+          <MenuItem onClick={handleClose}>Mes déménagements</MenuItem>
+        </Link>
+        <MenuItem onClick={handleClose}>Déconnexion</MenuItem>
+      </Menu>
           </div>
         </Toolbar>
       </AppBar>

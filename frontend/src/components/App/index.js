@@ -43,13 +43,13 @@ const App = () => {
               console.log('isLogged',isLogged);
               //console.log('email,password page App/index',email,password);
               return <Redirect to="/signin" />;
-              
+
             }
             //console.log('email,password,',email,password);
             return <Move />;
           }}
         />
-        
+
         <Route exact path="/signin">
           <SignIn />
         </Route>
@@ -62,9 +62,9 @@ const App = () => {
         <Route exact path="/ResetPassword">
           <ResetPassword />
         </Route>
-        <Route exact path="/move">
+        {/* <Route exact path="/move">
           <Move />
-        </Route>
+        </Route> */}
         <Route exact path="/create-move">
           <FormMove />
         </Route>
