@@ -3,7 +3,7 @@ const Box = require('../models/box');
 
 
 
-const newBoxSchema = Joi.object({
+const boxSchema = Joi.object({
     label: Joi.string()
         .pattern(new RegExp('^[^<>:%]{3,}$'))
         .max(150)
@@ -25,37 +25,14 @@ const newBoxSchema = Joi.object({
         .min(1).required(),
     });
 
-const boxUpdateSchema = Joi.object({
-    label: Joi.string()
-        .pattern(new RegExp('^[^<>%]{3,}$')) 
-        .min(3)
-        .max(150)
-        .required(), 
-    destination_room: Joi.string()
-        .pattern(new RegExp('^[^<>%]{3,}$'))
-        .max(500)
-        .allow(""),
-    fragile: Joi.boolean()
-        .truthy('on')
-        .optional(),
-    heavy: Joi.boolean()
-        .truthy('on')
-        .optional(),
-    floor: Joi.boolean()
-        .truthy('on')
-        .optional(),
-    move_id: Joi.number().integer()
-        .min(1).required()
-    });  
-
 const boxController = {
-
 
     getUserBoxes: async(req,res) => {
         //* Find and send all the boxes from a user
         try {
+
             // At this stage, a middleware has checked user authorization. 
-            const boxes = await Box.getAll(req); 
+            const boxes = await Box.getAllByUserId(req.session.user.id);
 
             res.send(boxes); 
 
@@ -74,12 +51,7 @@ const boxController = {
 
             const matchedMove = req.session.user.moves.filter(moveObj => moveObj.id == req.params.id); 
 
-            if (!!matchedMove.length) {
-                const boxes = await Box.getAllFromMove(req); 
-    
-                return res.send(boxes); 
-
-            } else {
+            if (!matchedMove.length) {
                 return res.status(403).send({
                     error : {
                         statusCode: 403,
@@ -90,6 +62,14 @@ const boxController = {
                     }
                 });
             }
+
+            // We found a matching move id !
+
+            const boxes = await Box.getAllFromMove(req.params.id); 
+
+            console.log('boxes', boxes)
+
+            return res.send(boxes); 
 
         } catch (error) {
             console.trace(error);
@@ -100,11 +80,22 @@ const boxController = {
         //* Create a new box in DB
         try {
 
-            const move = req.session.user.moves.filter(moveObj => moveObj.id == req.body.move_id); 
-            
-            console.log('move from createBox', move); 
+            const payloadValidation = boxSchema.validate(req.body); 
 
+            // if an error is found 
+            if (!!payloadValidation.error) {
+                // abort and send error 400 : bad request
+                return res.status(400).send(payloadValidation.error); 
+            }
+
+            // form is valid !
+
+            // Check if the destination move belongs to user
+            const move = req.session.user.moves.filter(moveObj => moveObj.id == req.body.move_id); 
+
+            // If no move matches
             if (!move.length) {
+                // abort and send error 403 : Forbidden action
                 return res.status(403).send({
                     error : {
                         statusCode: 403,
@@ -116,49 +107,40 @@ const boxController = {
                 });
             }
 
-            // Validate the data from the form
-            const boxValidation = await newBoxSchema.validate(req.body); 
+            // User is authorized to perform operation ! 
 
-            // if no error found then create Box instance and insert data. 
-            if (!boxValidation.error) {
-                // 
+            //Compare the label field with the DB values
+            const boxLabelMatch = await Box.boxLabelExists(req.body); 
+            console.log("boxLabelMatch :>>", boxLabelMatch);
 
-                //Compare the label field with the DB values
-                const boxLabelMatch = await Box.boxLabelExists(req); 
-                console.log("boxLabelMatch :>>", boxLabelMatch);
- 
-                //If the label is the same of the DB value of the same user
-                if (boxLabelMatch){
-                    // send a error to client
-                    res.status(409).send({
-                        error : {
-                            statusCode: 409,
-                            message: {
-                                en:"This label already exists", 
-                                fr:"Ce label existe déjà"
-                            }
+            //If the label is the same of the DB value of the same user
+            if (boxLabelMatch){
+                // send a error to client : 409  COnflict
+                return res.status(409).send({
+                    error : {
+                        statusCode: 409,
+                        message: {
+                            en:"This label already exists", 
+                            fr:"Ce label existe déjà"
                         }
-                    });
-                                
-                } else {
-                    // Else, we move on with the request
-
-                    // create an instance of a box
-                    const newBox = new Box(req.body); 
-                    console.log('newMove :>> ', newBox);
-
-                    // Save the current box object to DB
-                    /// zkdjfzf Box.insert(req)
-                    const storedBox = await newBox.insert(req); 
-
-                    // Send the newly added box entry to client
-                    res.send(storedBox);        
-                }
-
-            } else {
-                // if an error is found, update status code (400 for bad request)and send the error details
-                res.status(400).send(boxValidation.error.details); 
+                    }
+                });
+                            
             }
+            
+            // The box label in available for this move ! 
+
+            // Add current user_id to payload
+            req.body.user_id = req.session.user.id; 
+
+            // create an instance of a box
+            const newBox = new Box(req.body); 
+
+            // Save the current box object to DB
+            const storedBox = await newBox.insert(); 
+
+            // Send the newly added box entry to client
+            res.send(storedBox);        
     
         } catch (error) {
             console.trace(error);
@@ -166,130 +148,132 @@ const boxController = {
     }, 
 
     updateBox: async (req, res) => {
-        //* Update the boxes data
-        
-        // Filter the user moves with the pointed move (from form)
-        const move = req.session.user.moves.filter(moveObj => moveObj.id == req.body.move_id); 
-        console.log('move from createBox', move); 
+        try {
+            //* Update the boxes data
 
-        // If the pointed move doesn't belong to current user
-        if (!move.length) {
-            // prevent action and send an error
-            return res.status(403).send({
-                error : {
-                    statusCode: 403,
-                    message: {
-                        en:"Forbidden action", 
-                        fr:"Action interdite"
-                    }
-                }
-            });
-        }     
-        console.log('move[0].id', move[0].id); 
-        console.log('req.body.move_id', req.body.move_id);
-        const storedBox = await Box.getByPk(req, req.params.id); 
+            console.log('req.body', req.body); 
             
-        if (move[0].id != storedBox.move_id) {
-            return res.status(403).send({
-                error : {
-                    statusCode: 403,
-                    message: {
-                        en:"Forbidden action", 
-                        fr:"Action interdite"
-                    }
-                }
-            });
-        }  
-        
-        // Check form validity
-        const boxValidation = await boxUpdateSchema.validate(req.body); 
-
-        // if the form is valid, 
-        if (!boxValidation.error) {
-            // Check 
-            // Retrieve the arguments
-
-            // Add the false values to form if not sent 
-            // (by default the client does not send unckeked box data)
-
-            // Potential boolean values
-            const boxAttributes = ['fragile', 'heavy', 'floor']; 
-
-            // check in form data has boolean attributes 
-            // if it does NOt then add them set to false
-            for (attribute of boxAttributes) {
-                if (!req.body.hasOwnProperty(attribute)) {
-                    req.body[attribute] = false;  
-                }
+            // check form validity
+            const payloadValidation = boxSchema.validate(req.body); 
+    
+            // if an error is found 
+            if (!!payloadValidation.error) {
+                // abort and send error 400 : bad request
+                return res.status(400).send(payloadValidation.error); 
             }
-            // move id from params
-            // move infos from form body
-            const boxId = req.params.id;
+    
+            // form is valid !
+            
+            // Filter the user moves with the pointed move (from form)
+            const move = req.session.user.moves.filter(moveObj => moveObj.id == req.body.move_id); 
+            console.log('move from updateBox', move); 
+    
+            // If the pointed move doesn't belong to current user
+            if (!move.length) {
+                // prevent action and send an error
+                return res.status(403).send({
+                    error : {
+                        statusCode: 403,
+                        message: {
+                            en:"Forbidden action - Pointed move doesn't belong to the current user", 
+                            fr:"Action interdite - Le déménagement concerné n'appartient pas à l'utilisateur actuel"
+                        }
+                    }
+                });
+            }
+    
+            // User is authorized to perform operation on pointed move ! 
+            
+            console.log('req.params.id', req.params.id); 
 
-            console.log("req.body",req.body);
+            // Get pointed box from DB 
+            const storedBox = await Box.getByPk(req.params.id); 
+
+            console.log('storedBox', storedBox); 
+
+            if (!storedBox) {
+                return res.status(404).send({
+                    error : {
+                        statusCode: 404,
+                        message: {
+                            en:"Not found - This box doesn't exists", 
+                            fr:"Pas trouvé - Ce carton n'existe pas"
+                        }
+                    }
+                });
+            }
+            
+            // Check if box belongs to user
+            if (req.session.user.id != storedBox.user_id) {
+                return res.status(403).send({
+                    error : {
+                        statusCode: 403,
+                        message: {
+                            en:"Forbidden action - This box doesn't belong to the current user", 
+                            fr:"Action interdite - Le carton concerné n'appartient pas à l'utilisateur actuel"
+                        }
+                    }
+                });
+            }  
+
+            // Box belongs to user ! 
+
+            // Update storedBox values prior to update
+            for (const prop in req.body) {
+                storedBox[prop] = req.body[prop]; 
+            }
             
             // Execute request
-            const updatedBox = await Box.update(req, boxId); 
+            const updatedBox = await storedBox.update(); 
 
             // console.log("updateBox", updateBox); 
 
             // return the updated move
             res.send((!!updatedBox) ? updatedBox : false); 
-
-        } else {
-            // if the form is not valid, 
-            // abort operation and send error 
-            res.send(boxValidation.error); 
+        
+        } catch (error) {
+            console.log(error);
         }
     },
-
+/** */
     deleteBox: async (req, res) => {
         //* Delete a box from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
                 try {
-                    // det pointed box
-
-                    // Retrieve box id from url
-                    const boxId = req.params.id; 
-                    
-                    const storedBox = await Box.getByPk(req, boxId); 
+                    // retrieve box from id
+                    const storedBox = await Box.getByPk(req.params.id); 
 
                     // If move belongs to user continue 
                     // else send error
                     if (!storedBox) {
-                        return res.status(400).send({
+                        return res.status(404).send({
                             error : {
-                                statusCode: 400,
+                                statusCode: 404,
                                 message: {
-                                    en:"Bad request - The ressources doesn't exist", 
-                                    fr:"Requête erronée. - La ressouce visée n'existe pas"
+                                    en:"Not found - This box doesn't exists", 
+                                    fr:"Pas trouvé - Ce carton n'existe pas"
                                 }
                             }
                         });
                     }
 
+                    // A box was found 
 
-                    const matchedMove = req.session.user.moves.filter(moveObj => moveObj.id == storedBox.move_id); 
-                    
-                    // If the box is already deleted and a request for deletion is made, 
-                    // It'll simply fallback as a false from the DB
-
-                    // If the pointed box Id isnot related to the user moves
-                    if (!matchedMove.length) {
-                        // Abort operation and send error to client;
+                    // Check if box belongs to user
+                    if (req.session.user.id != storedBox.user_id) {
                         return res.status(403).send({
                             error : {
                                 statusCode: 403,
                                 message: {
-                                    en:"Forbidden action - The related move doesn't belongs to current user", 
-                                    fr:"Action interdite - Le déménagement concerné n'appartient pas à l'utilisateur actuel"
+                                    en:"Forbidden action - This box doesn't belong to the current user", 
+                                    fr:"Action interdite - Le carton concerné n'appartient pas à l'utilisateur actuel"
                                 }
                             }
                         });
                     }
                     
                     // Request deletion from DB with move id
-                    const success = await Box.delete(boxId); 
+                    const success = await storedBox.delete(); 
 
                     console.log('delete box success', success); 
 
@@ -298,7 +282,7 @@ const boxController = {
                     // false : deletion didn't work
 
                     if (!success) {
-                        res.status(500).send({
+                        return res.status(500).send({
                             statusCode : 500,
                             message:  {
                                 en:"Something went wrong", 
@@ -307,7 +291,8 @@ const boxController = {
                         });
                     }
 
-                    return res.status(200).send(true); // 204 : No-content, here '.send()' is useless
+                    return res.status(200).send(true);
+                    
                 } catch (error) {
                     console.trace(error);
                 }

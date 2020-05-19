@@ -2,7 +2,7 @@ const authChecker = (req, res, next) => {
     // Check if an authentified user is using the session
     if (!req.session.user) {
         // then request  
-        res.status(403).send({
+        return res.status(403).send({
             error : {
                 statusCode: 403,
                 message: {
