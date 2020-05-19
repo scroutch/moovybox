@@ -46,12 +46,12 @@ const useStyles = makeStyles((theme) => ({
 const BoxesByMove = (props) => {
   const classes = useStyles();
   const [boxes, setBoxes] = useState([]);
-  
-  
+
+
   // requeste to display all the boxes of 1 move selected
   useEffect(() => {
 
-    
+
     axios.get(`http://localhost:5050/move/${props.location.state.id}`)
     .then(res => {
       setBoxes(res.data);
@@ -93,18 +93,23 @@ const BoxesByMove = (props) => {
       </Typography>
       </Link>
         <ul className={classes.liste}>
-          {boxes.map(boxe => 
+          {boxes.map(boxe =>
             <li key={boxe.id}>
-            <Button 
-            variant="outlined" 
-            color="primary" 
-            href={"/box/"+boxe.id} 
-            className={classes.btn} 
+              <Link to={{
+                pathname:"/box/"+boxe.id,
+                 state: {
+                   id: boxe.id
+                  }
+                }}>
+            <Button
+            variant="outlined"
+            color="primary"
+            className={classes.btn}
             >
-               Nom : {boxe.label}- 
-               Pièce de destination : {boxe.destination_room} - 
-               Lourd : {boxe.heavy} - 
-               
+               Nom : {boxe.label}-
+               Pièce de destination : {boxe.destination_room} -
+               Lourd : {boxe.heavy} -
+
                {(() => {
                 if (boxe.heavy===true) {
                   return (
@@ -115,7 +120,7 @@ const BoxesByMove = (props) => {
               {(() => {
                 if (boxe.floor===true) {
                   return (
-                   <ArrowUpwardIcon /> 
+                   <ArrowUpwardIcon />
                   )
                 }
               })()}
@@ -130,6 +135,7 @@ const BoxesByMove = (props) => {
                Etage : {boxe.floor} -
                {/* {( {boxe.fragile} => {<Typography>Fragile</Typography> })();} */}
             </Button>
+            </Link>
             {/* <DeleteIcon fontSize="large" color="secondary"  onClick={() => {handleDelete(move.id)}}/> */}
             <IconButton aria-label="delete" color="secondary"  onClick={() => {handleBoxDelete(boxe.id)}} className={classes.margin}>
               <DeleteIcon fontSize="large" />
