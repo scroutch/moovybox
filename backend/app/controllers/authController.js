@@ -173,6 +173,7 @@ const authControlleur = {
                 // Password is valid
                 
                 // Check if user has confirmed account
+                /*
                 if (!storedUser.confirmed) {
                     return res.status(403).send({
                         error : {
@@ -184,6 +185,7 @@ const authControlleur = {
                         }
                     }); 
                 }
+                */
                     //   If there is a match add user id to session, 
 
                     // AND get his moves and send the results back 
