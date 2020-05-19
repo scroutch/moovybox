@@ -1,40 +1,23 @@
-import React from 'react';
+// index-Chris.js sur modèle Chris
+import React, { useState } from 'react';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
-import {
-  SYNC_LABEL_MOVE,
-  SYNC_DESTINATION_ROOM,
-  SYNC_FRAGILE,
-  SYNC_HEAVY,
-  SYNC_FLOOR,
-  SYNC_MOVE_ID,
-} from 'src/store/actions';
-
 import Avatar from '@material-ui/core/Avatar';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import QueueIcon from '@material-ui/icons/Queue';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormGroup from '@material-ui/core/FormGroup';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControl from '@material-ui/core/FormControl';
+import Checkbox from '@material-ui/core/Checkbox';
 import withRoot from '../modules/withRoot';
-import Button from '../modules/components/Button';
+// import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
-import HeaderHome from '../modules/views/HeaderHome';
+import Header from '../modules/views/Header';
+import TextField from '@material-ui/core/TextField';
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,105 +42,58 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-  formGroup: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  formLabel: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  titreNumero: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  Numero: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  margin302: {
-    margin: theme.spacing(3, 0, 2),
-  },
 }));
 
-const filter = createFilterOptions(); // to add in the room list
+axios.defaults.withCredentials = true; 
 
-
-const CreateBox = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const moveId = useSelector((state) => state.moveId);
-  const labelBox = useSelector((state) => state.labelBox);
-  const destination_room = useSelector((state) => state.destination_room);
-  const fragile = useSelector((state) => state.fragile);
-  const floor = useSelector((state) => state.floor);
-  const heavy = useSelector((state) => state.heavy);
-  const move_id = useSelector((state) => state.move_id);
-  const [value, setValue] = React.useState(null); // for the autocomplete
-  const [open, toggleOpen] = React.useState(false); // for the autocomplete
-
-  // for the autocomplete
-  const handleClose = () => {
-    setDialogValue({
-      nameRoom: '',
-    });
-
-    toggleOpen(true);
-  };
-
-  const [dialogValue, setDialogValue] = React.useState({
-    nameRoom: '',
-  });
-
+function CreateBox(props) {
   const classes = useStyles();
-
+  const [label, setLabel] = useState('');
+  const [destination_room, setDestinationRoom] = useState('');
+  const [fragile, setFragile] = useState('false');
+  const [floor, setFloor] = useState('false');
+  const [move_id, setMoveId] = useState(props.location.state.id);
+  const [heavy, setHeavy] = useState('false');
+  //
+  function handleLabelChange(e) {
+    console.log('input au onChange label ', e.target.value);
+    setLabel(e.target.value);
+  }
+  function handleDestinationRoomChange(e) {
+    console.log('input au onChange', e.target.value);
+    setDestinationRoom(e.target.value);
+  }
+  function handleFragileChange(e) {
+    console.log('input au onChange', e.target.value);
+    setFragile(e.target.value);
+  }
+  function handleFloorChange(e) {
+    console.log('input au onChange', e.target.value);
+    setFloor(e.target.value);
+  }
+  function handleMoveIdChange(e) {
+    console.log('input au onChange', e.target.value);
+    setMoveId(e.target.value);
+  }
+  function handleHeavyChange(e) {
+    console.log('input au onChange', e.target.value);
+    setHeavy(e.target.value);
+  }
+  
   function handleSubmit(e) {
     e.preventDefault(); // stops default reloading behaviour
-    console.log('input on onSubmit', move_id, labelBox, destination_room, fragile, heavy, floor);
-    const label = labelBox;
-    setValue({
-      nameRoom: dialogValue.nameRoom,
-    });
-    handleClose();
+    console.log('input au onSubmit', label, destination_room, heavy, fragile, floor, move_id); // , user_id, destination_room, heavy, fragile, floor,
     axios
-      .post('http://localhost:5050/box', {
-        move_id, label, destination_room, fragile, heavy, floor,
-      })
-      .then((res) => {
-        if (res.status === 201) {
-          console.log('response.status', res.status);
-        }
-        else {
-          console.error('erreur', res);
-        }
-        console.log('res : ', res);
-        console.log('res.data : ', res.data);
-      })
-      .catch((error) => {
-        console.log('very big error');
+      .post(`http://localhost:5050/box`, { label, destination_room, heavy, fragile, floor, move_id})  
+      .then(res => {
+        console.log(res);
+        console.log(res.data);
       });
   }
-  const [state, setState] = React.useState({
-    heavy: false,
-    fragile: false,
-    floor: false,
-  });
-
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
-  };
-
-  const room = [
-    { nameRoom: 'Salle de bain' },
-    { nameRoom: 'Salon' },
-    { nameRoom: 'Cuisine' },
-    { nameRoom: 'Chambre 1' },
-    { nameRoom: 'Chambre 2' },
-    { nameRoom: 'Cellier' },
-    { nameRoom: 'Cave' },
-    { nameRoom: 'Buanderie' },
-  ];
-
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <HeaderHome />
+      <Header />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
@@ -167,54 +103,44 @@ const CreateBox = () => {
           <Typography component="h1" variant="h3">
             J'ajoute un carton
           </Typography>
-          <Typography className="titreNumero" component="h2" variant="h5">
-            Numéro à écrire sur le carton
-          </Typography>
-          <Avatar className={classes.avatar}>
-            11
-          </Avatar>
           <form
             className={classes.form}
             noValidate
             onSubmit={handleSubmit}
           >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Autocomplete
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+            <TextField
+                  autoComplete="label"
+                  name="label"
+                  variant="outlined"
+                  required
                   fullWidth
-                  freeSolo
-                  autoHighlight
-                  id="destination_room"
-                  options={room}
-                  getOptionLabel={(option) => option.nameRoom}
-                  renderInput={(params) => <TextField {...params} label="Pièce de destination" variant="outlined" />}
-                  onChange={(evt) => {
-                    const newDestination_room = evt.target.value;
-                    dispatch({ type: SYNC_DESTINATION_ROOM, destination_room: newDestination_room });
-                  }}
-                />
-              </Grid>
-              <Grid>
-                <FormControl component="fieldset">
-                  <Typography className={classes.formLabel} variant="h5">Ce carton est :</Typography>
-                  <FormGroup className={classes.formGroup}>
-                    <FormControlLabel
-                      control={<Switch checked={state.heavy} onChange={handleChange} name="heavy" />}
-                      label="Lourd"
-                    />
-                    <FormControlLabel
-                      control={<Switch checked={state.fragile} onChange={handleChange} name="fragile" />}
-                      label="Fragile"
-                    />
-                    <FormControlLabel
-                      control={<Switch checked={state.floor} onChange={handleChange} name="floor" />}
-                      label="A l'étage"
-                    />
-                  </FormGroup>
-
-                </FormControl>
-              </Grid>
+                  id="label"
+                  label="Nom du carton"
+                  autoFocus
+                  helperText="Un nom est requis"
+                  value={label}
+                  onChange={handleLabelChange}
+                />{' '}
+              {/* <input placeholder="label" value={label} onChange={handleLabelChange} />{' '} */}
             </Grid>
+            <Grid item xs={12}>
+              <input placeholder="destination_room" value={destination_room} onChange={handleDestinationRoomChange} />{' '}
+            </Grid>
+            <Grid item xs={12}>  
+              <input placeholder="fragile" value={fragile} onChange={handleFragileChange} />{' '}
+            </Grid>
+            <Grid item xs={12}>
+              <input placeholder="heavy" value={heavy} onChange={handleHeavyChange} />{' '}
+            </Grid>
+            <Grid item xs={12}>
+              <input placeholder="floor" value={floor} onChange={handleFloorChange} />{' '}
+            </Grid>
+            {/* <Grid item xs={12}>
+              <input placeholder="move_id" value={move_id} onChange={handleMoveIdChange} />{' '}
+            </Grid> */}
+            <Grid item xs={12}>
             <Button
               type="submit"
               fullWidth
@@ -224,13 +150,13 @@ const CreateBox = () => {
             >
               Ajouter
             </Button>
-
-          </form>
-        </div>
+            </Grid>  
+          </Grid> 
+        </form>
+      </div>
       </Container>
       <Footer />
     </div>
   );
-};
-
+}
 export default withRoot(CreateBox);
