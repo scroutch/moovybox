@@ -17,6 +17,7 @@ import AssignmentLateIcon from '@material-ui/icons/AssignmentLate';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import IconButton from '@material-ui/core/IconButton';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -85,11 +86,11 @@ const BoxesByMove = (props) => {
       <Typography component="h1" variant="h4" className={classes.titre}>
       <Tooltip title="Add" aria-label="add">
         <Fab color="primary" className={classes.fab}>
-          <AddIcon />
+          <AddIcon /> 
 
         </Fab>
       </Tooltip>
-      Liste des cartons
+      Créer un nouveau carton
       </Typography>
       </Link>
         <ul className={classes.liste}>
@@ -131,8 +132,6 @@ const BoxesByMove = (props) => {
                   )
                 }
               })()}
-
-               Etage : {boxe.floor} -
                {/* {( {boxe.fragile} => {<Typography>Fragile</Typography> })();} */}
             </Button>
             </Link>

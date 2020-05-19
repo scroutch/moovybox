@@ -16,6 +16,9 @@ import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 
 
 
@@ -54,7 +57,8 @@ function CreateBox(props) {
   const [floor, setFloor] = useState('false');
   const [move_id, setMoveId] = useState(props.location.state.id);
   const [heavy, setHeavy] = useState('false');
-  //
+  const [checked, setChecked] = React.useState(true);
+
   function handleLabelChange(e) {
     console.log('input au onChange label ', e.target.value);
     setLabel(e.target.value);
@@ -64,20 +68,16 @@ function CreateBox(props) {
     setDestinationRoom(e.target.value);
   }
   function handleFragileChange(e) {
-    console.log('input au onChange', e.target.value);
-    setFragile(e.target.value);
+    console.log('input au onChange', e.target.checked);
+    setFragile(e.target.checked);
   }
   function handleFloorChange(e) {
-    console.log('input au onChange', e.target.value);
-    setFloor(e.target.value);
-  }
-  function handleMoveIdChange(e) {
-    console.log('input au onChange', e.target.value);
-    setMoveId(e.target.value);
+    console.log('input au onChange', e.target.checked);
+    setFloor(e.target.checked);
   }
   function handleHeavyChange(e) {
-    console.log('input au onChange', e.target.value);
-    setHeavy(e.target.value);
+    console.log('input au onChange', e.target.checked);
+    setHeavy(e.target.checked);
   }
   
   function handleSubmit(e) {
@@ -126,10 +126,34 @@ function CreateBox(props) {
               {/* <input placeholder="label" value={label} onChange={handleLabelChange} />{' '} */}
             </Grid>
             <Grid item xs={12}>
-              <input placeholder="destination_room" value={destination_room} onChange={handleDestinationRoomChange} />{' '}
+            <TextField
+                  autoComplete="Pièce de destination"
+                  name="destinationRoom"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="destinationRoom"
+                  label="Pièce de destination"
+                  autoFocus
+                  helperText="Un nom est requis"
+                  value={destination_room}
+                  onChange={handleDestinationRoomChange}
+                />{' '}
+              {/* <input placeholder="destination_room" value={destination_room} onChange={handleDestinationRoomChange} />{' '} */}
             </Grid>
             <Grid item xs={12}>  
-              <input placeholder="fragile" value={fragile} onChange={handleFragileChange} />{' '}
+              <FormControlLabel
+                value="checked"
+                control={<Checkbox color="primary" />}
+                label="Fragile"
+                labelPlacement="start"
+              />
+              <Checkbox
+              checked={checked}
+              onChange={handleFragileChange}
+              inputProps={{ 'aria-label': 'primary checkbox' }}
+              />
+              {/* <input placeholder="fragile" value={fragile} onChange={handleFragileChange} />{' '} */}
             </Grid>
             <Grid item xs={12}>
               <input placeholder="heavy" value={heavy} onChange={handleHeavyChange} />{' '}
