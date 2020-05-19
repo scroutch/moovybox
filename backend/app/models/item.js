@@ -69,6 +69,22 @@ class Item {
         }
     }
 
+    async update() {
+        // Insert a item in DB 
+        try {
+            
+            const query = `UPDATE "item" SET ("name", "box_id") = ($1, $2) WHERE "id" = $3 RETURNING *;`; 
+    
+            const values = [this.name, this.box_id, this.id]; 
+    
+            const results = await client.query(query, values); 
+    
+            return new Item(results.rows[0]); 
+        } catch (error) {
+            console.trace(error);
+        }
+    }
+
     async delete() {
 
         try {

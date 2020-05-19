@@ -75,8 +75,8 @@ router.route('/item')
 
 
 router.route('/item/:id')
-   // .get(authCheckerMW, moveController.getItem) // TODO 
-   // .put(authCheckerMW, moveController.updateItem) // TODO 
+   // .get(authCheckerMW, itemController.getItem) // TODO 
+    .put(authCheckerMW, itemController.updateItem) // TODO 
     .delete(authCheckerMW, itemController.deleteItem);
 
 router.use('*', mainController.notFound); 
