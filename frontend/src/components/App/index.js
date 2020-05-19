@@ -16,7 +16,7 @@ import Profile from 'src/components/Profile';
 import Contact from '../Contact';
 import CreateBox from 'src/components/CreateBox';
 import BoxesByMove from 'src/components/BoxesByMove';
-
+import Item from 'src/components/Item';
 
 
 // == Composant
@@ -72,9 +72,10 @@ const App = () => {
           <Contact />
         </Route>
         <Route exact path="/move/:id" component={BoxesByMove} />
-        <Route exact path="/create-box" component={CreateBox}>
-        
-        </Route>
+        <Route exact path="/create-box" component={CreateBox} />
+        <Route exact path="/box/:id" component={Item} />
+
+  
         <Route>404</Route>
       </Switch>
     </div>
