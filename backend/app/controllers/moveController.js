@@ -1,5 +1,5 @@
 const Joi = require('@hapi/joi').extend(require('@hapi/joi-date'));
-const Move = require('../models/move'); 
+const Move = require('../models/move');
 
 const moveSchema = Joi.object({
     label: Joi.string()
@@ -14,6 +14,7 @@ const moveSchema = Joi.object({
     .pattern(new RegExp('^[^<>:%]{0,}$'))
     .allow("")
     .max(500)
+
 });
 
 const moveController = {
@@ -21,12 +22,13 @@ const moveController = {
     getUserMoves: async(req,res) => {
         //* Find a send all the moves from a user
         try {
+
             const userId = req.session.user.id; 
             // At this stage, a middleware has checked user authorization. 
             const moves = await Move.getAllFromUserId(userId); 
             
             res.send(moves); 
-            
+          
         } catch (error) {
             console.trace(error);
         }
@@ -36,6 +38,7 @@ const moveController = {
         //* Create a new move in DB
         try {
             // Validate the data from the form
+
             const payloadValidation = await moveSchema.validate(req.body);
             
             // if no error found then create Move instance and insert data. 
@@ -131,6 +134,7 @@ const moveController = {
                     }
                 }
             });
+
         }
         
         // We have a move !
@@ -150,6 +154,7 @@ const moveController = {
     deleteMove: async (req, res) => {
         //* Delete a move from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
+      
         try {                    
             // Filter user move to check if he can use the ressources
             
