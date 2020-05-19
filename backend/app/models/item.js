@@ -3,9 +3,10 @@ const client = require('../db_client');
 class Item {
 
     constructor(obj) {
+        this.id = obj.id; 
         this.name = obj.name;
         this.box_id = obj.box_id; 
-       
+        this.user_id = obj.user_id;
     }
 
     static async getByPk(itemId) {
@@ -17,27 +18,31 @@ class Item {
 
         const results = await client.query(query, values); 
 
-        return results.rows[0]; 
+        return (results.rows[0]) ? new this(results.rows[0]) : false; 
     }
 
-    static async getAllInBox(req, boxId) {
+    static async getAllInBox(boxId) {
         // Method to retrieve all user item and send them to client
 
-        const query = `SELECT * FROM "item" WHERE user_id = $1 AND box_id = $2;`; 
+        const query = `SELECT * FROM "item" WHERE box_id = $1;`; 
 
-        const values = [req.session.user.id, boxId]; 
+        const results = await client.query(query, [boxId]); 
 
-        const results = await client.query(query, values); 
+        const instances = []; 
 
-        return results.rows; 
+        for(const row of results.rows) {
+            instances.push(new this(row)); 
+        }
+
+        return instances; 
     }
 
-    static async itemNameExists (req) {
-        //* Check the existence of the entred box in the DB
+    static async itemNameExistsInBox (form) {
+        //* Check the existence of the item in the same box in the DB
         try {
             // request to find an associated user
             const query = `SELECT * FROM "item" WHERE "name" = $1 AND user_id = $2 AND box_id=$3;`; 
-            const results = await client.query(query, [req.body.name, req.session.user.id, req.body.box_id]); 
+            const results = await client.query(query, [form.name, form.user_id, form.box_id]); 
             
             // Returns a boolean 
             // - true : name exists
@@ -48,19 +53,17 @@ class Item {
         }
     }
 
-    async insert(req) {
+    async insert() {
         // Insert a item in DB 
-        // expected (label, date, adress and user id); 
-        // user id to get from session. 
         try {
             
             const query = `INSERT INTO "item" (name, user_id, box_id) VALUES ($1, $2, $3) RETURNING *`; 
     
-            const values = [ this.name, req.session.user.id, this.box_id]; 
+            const values = [ this.name, this.user_id, this.box_id]; 
     
             const results = await client.query(query, values); 
     
-            return results.rows[0]; 
+            return new Item(results.rows[0]); 
         } catch (error) {
             console.trace(error);
         }
