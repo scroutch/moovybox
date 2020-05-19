@@ -252,7 +252,23 @@ const profileController = {
             storedUser.email = jwtPayload.new_email; 
             console.log('storedUser', storedUser);
 
-            const saveSuccess = await User.saveEmail(jwtPayload); 
+            if (!storedUser) {
+                return res.status(404).send(`
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                </head>
+                <body>
+                    <script>
+                        alert('Utilisateur non trouvé');
+                        window.close(); 
+                    </script>
+                </body>
+                </html>
+                `); 
+            }
+
+            const saveSuccess = await storedUser.save(jwtPayload); 
             // success with redirection to home page
             if (saveSuccess) {
                 const emailInfo = {
