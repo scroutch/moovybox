@@ -69,16 +69,14 @@ class Item {
         }
     }
 
-    static async delete(req, itemId) {
+    async delete() {
 
         try {
             // Select a item 
-            const query = `DELETE FROM "item" WHERE "id"= $1 AND user_id = $2;`; 
+            const query = `DELETE FROM "item" WHERE "id"= $1;`; 
 
             // Delete the item
-            const result = await client.query(query, [itemId, req.session.user.id]);
-
-            //console.log('result :>> ', result);
+            const result = await client.query(query, [this.id]);
 
             // return boolean
             // true : delete ok
