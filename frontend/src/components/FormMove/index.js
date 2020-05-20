@@ -2,6 +2,7 @@ import 'date-fns';
 import React, {useState} from 'react';
 import axios from 'axios';
 import withRoot from '../modules/withRoot';
+import { useHistory } from "react-router-dom";
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 
 const FormMove = () => {
     const classes = useStyles();
-
+    let history = useHistory();
     const [label, setLabel] = useState('');
     const [address, setAddress] = useState('');
     const [date, setDate] = useState(new Date());
@@ -87,6 +88,8 @@ const FormMove = () => {
              .then(res => {
                 console.log('coincoin')
                 console.log(res);
+                history.push({
+                  pathname:"/move/"})
              }).catch(err => {
                console.log('pouet');
                console.log(err);
