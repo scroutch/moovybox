@@ -40,6 +40,8 @@ const moveController = {
             // Validate the data from the form
 
             const payloadValidation = await moveSchema.validate(req.body);
+
+            console.log('req.body', req.body); 
             
             // if no error found then create Move instance and insert data. 
             if (!!payloadValidation.error) {
@@ -71,19 +73,23 @@ const moveController = {
             } 
             // the move label is available for the user !
             // We move on with the request
+
+            req.body.user_id = userId; 
             
             // create an instance of a move
             const newMove = new Move(req.body); 
             console.log('newMove :>> ', newMove);
             
             // Save the current move object to DB
-            const storedMove = await newMove.insert(userId); 
+            const storedMove = await newMove.save(); 
+            console.log('storedMove :>> ', storedMove);
             
             // add the created move in session 
             req.session.user.moves.push(storedMove); 
             
             // Send the newly added move entry to client
             res.send(storedMove);        
+
         } catch (error) {
             console.trace(error);
         }
