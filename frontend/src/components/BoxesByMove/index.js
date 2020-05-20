@@ -18,7 +18,8 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-
+import { loadCSS } from 'fg-loadcss'; // for th icons
+import Icon from '@material-ui/core/Icon';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,6 +49,13 @@ const BoxesByMove = (props) => {
   const classes = useStyles();
   const [boxes, setBoxes] = useState([]);
 
+  // for the font awesome heavy
+  useEffect(() => {
+    loadCSS(
+      'https://use.fontawesome.com/releases/v5.12.0/css/all.css',
+      document.querySelector('#font-awesome-css'),
+    );
+  }, []);
 
   // requeste to display all the boxes of 1 move selected
   useEffect(() => {
@@ -107,28 +115,26 @@ const BoxesByMove = (props) => {
             color="primary"
             className={classes.btn}
             >
-               Nom : {boxe.label}-
-               Pièce de destination : {boxe.destination_room} -
-               Lourd : {boxe.heavy} -
+              {boxe.label} - {boxe.destination_room} - {boxe.heavy} -
 
                {(() => {
                 if (boxe.heavy===true) {
                   return (
-                    <FitnessCenterIcon />
+                    <Icon className="fas fa-weight-hanging" color="secondary" />
                   )
                 }
               })()}
               {(() => {
                 if (boxe.floor===true) {
                   return (
-                   <ArrowUpwardIcon />
+                    <Icon className="fas fa-level-up-alt" color="secondary" />
                   )
                 }
               })()}
               {(() => {
                 if (boxe.fragile===true) {
                   return (
-                    <AssignmentLateIcon />
+                    <Icon className="fas fa-wine-glass" color="secondary" />
                   )
                 }
               })()}
