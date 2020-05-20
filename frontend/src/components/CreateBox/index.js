@@ -17,8 +17,7 @@ import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import TextField from '@material-ui/core/TextField';
-import { loadCSS } from 'fg-loadcss';
-import { green } from '@material-ui/core/colors';
+import { loadCSS } from 'fg-loadcss'; // for th icons
 import Icon from '@material-ui/core/Icon';
 
 const useStyles = makeStyles((theme) => ({
@@ -57,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 axios.defaults.withCredentials = true; 
 
 function CreateBox(props) {
-  let history = useHistory();
+  let history = useHistory(); // to return on move/:id
 
   const classes = useStyles();
   const [label, setLabel] = useState('');
