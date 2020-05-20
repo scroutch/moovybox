@@ -1,8 +1,9 @@
 // index-Chris.js sur modèle Chris
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {BrowserRouter as Router, Link, Redirect} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Avatar from '@material-ui/core/Avatar';
-
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -16,17 +17,18 @@ import withRoot from '../modules/withRoot';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-
-
+import { loadCSS } from 'fg-loadcss';
+import { green } from '@material-ui/core/colors';
+import Icon from '@material-ui/core/Icon';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
+    '& > .fa': {
+      margin: theme.spacing(2),
+    },
   },
   paper: {
     marginTop: theme.spacing(8),
@@ -45,20 +47,29 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  margin: {
+    margin: theme.spacing(1, 0, 2),
+  },
+  
+
 }));
 
 axios.defaults.withCredentials = true; 
 
 function CreateBox(props) {
+  let history = useHistory();
+
   const classes = useStyles();
   const [label, setLabel] = useState('');
   const [destination_room, setDestinationRoom] = useState('');
-  const [fragile, setFragile] = useState('false');
-  const [floor, setFloor] = useState('false');
-  const [move_id, setMoveId] = useState(props.location.state.id);
-  const [heavy, setHeavy] = useState('false');
-  const [checked, setChecked] = React.useState(true);
+  const [fragile, setFragile] = useState(true);
+  const [floor, setFloor] = useState(true);
+  const [heavy, setHeavy] = useState(true);
+  
+  
 
+  const [move_id, setMoveId] = useState(props.location.state.id);
+  
   function handleLabelChange(e) {
     console.log('input au onChange label ', e.target.value);
     setLabel(e.target.value);
@@ -79,16 +90,40 @@ function CreateBox(props) {
     console.log('input au onChange', e.target.checked);
     setHeavy(e.target.checked);
   }
-  
+  // for the font awesome heavy
+  useEffect(() => {
+    loadCSS(
+      'https://use.fontawesome.com/releases/v5.12.0/css/all.css',
+      document.querySelector('#font-awesome-css'),
+    );
+  }, []);
+
   function handleSubmit(e) {
     e.preventDefault(); // stops default reloading behaviour
-    console.log('input au onSubmit', label, destination_room, heavy, fragile, floor, move_id); // , user_id, destination_room, heavy, fragile, floor,
+    
     axios
-      .post(`http://localhost:5050/box`, { label, destination_room, heavy, fragile, floor, move_id})  
-      .then(res => {
+      .post(`http://localhost:5050/box`, { label, destination_room, fragile, heavy, floor, move_id})  
+      .then((res => {
         console.log(res);
         console.log(res.data);
+        console.log("move_id", move_id);
+        history.push({
+          pathname:"/move/"+move_id,
+          state: {
+            id: move_id,
+          }
+        });
+        
+        // () => (() => history.push('/move/'+move_id));
+        // () => history.goBack();
+        // return (() => history.push('/move/'+move_id))();
+       
+      })
+      )
+      .catch(err => {
+        console.log(err);
       });
+    
   }
   return (
     <div className={classes.root}>
@@ -97,8 +132,8 @@ function CreateBox(props) {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <QueueIcon />
+          <Avatar className={classes.avatar}> 
+           <QueueIcon /> 
           </Avatar>
           <Typography component="h1" variant="h3">
             J'ajoute un carton
@@ -123,7 +158,7 @@ function CreateBox(props) {
                   value={label}
                   onChange={handleLabelChange}
                 />{' '}
-              {/* <input placeholder="label" value={label} onChange={handleLabelChange} />{' '} */}
+              
             </Grid>
             <Grid item xs={12}>
             <TextField
@@ -139,41 +174,51 @@ function CreateBox(props) {
                   value={destination_room}
                   onChange={handleDestinationRoomChange}
                 />{' '}
-              {/* <input placeholder="destination_room" value={destination_room} onChange={handleDestinationRoomChange} />{' '} */}
-            </Grid>
-            <Grid item xs={12}>  
-              <FormControlLabel
-                value="checked"
-                control={<Checkbox color="primary" />}
-                label="Fragile"
-                labelPlacement="start"
-              />
-              <Checkbox
-              checked={checked}
-              onChange={handleFragileChange}
-              inputProps={{ 'aria-label': 'primary checkbox' }}
-              />
-              {/* <input placeholder="fragile" value={fragile} onChange={handleFragileChange} />{' '} */}
+              </Grid>
+            <Grid item xs={12} className={classes.margin} container
+              direction="row"
+              justify="center"
+              >
+              <Typography component="h1" variant="h5" className={classes.margin}>
+                Mon carton est :
+              </Typography>
+              <Grid item xs={12}>
+                <Checkbox 
+                  checked={fragile}
+                  onChange={handleFragileChange}
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                  
+                /> Fragile <Icon className="fas fa-wine-glass" color="secondary" />
+              </Grid>
+              <Grid item xs={12}>
+                <Checkbox
+                  checked={heavy}
+                  onChange={handleHeavyChange}
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                  
+                />  Lourd <Icon className="fas fa-weight-hanging" color="secondary" />
+              </Grid>
+              <Grid item xs={12}>
+                <Checkbox
+                  checked={floor}
+                  onChange={handleFloorChange}
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                  
+                /> A l'étage <Icon className="fas fa-level-up-alt" color="secondary" />
+              </Grid>
+
             </Grid>
             <Grid item xs={12}>
-              <input placeholder="heavy" value={heavy} onChange={handleHeavyChange} />{' '}
-            </Grid>
-            <Grid item xs={12}>
-              <input placeholder="floor" value={floor} onChange={handleFloorChange} />{' '}
-            </Grid>
-            {/* <Grid item xs={12}>
-              <input placeholder="move_id" value={move_id} onChange={handleMoveIdChange} />{' '}
-            </Grid> */}
-            <Grid item xs={12}>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="secondary"
-              className={classes.submit}
-            >
-              Ajouter
-            </Button>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  className={classes.submit}
+                >
+                  Ajouter
+                </Button>
+              
             </Grid>  
           </Grid> 
         </form>
