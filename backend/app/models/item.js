@@ -53,6 +53,36 @@ class Item {
         }
     }
 
+    static async search (data) {
+        //* Research function
+        try {
+
+            const query = `WITH user_boxes AS (SELECT * FROM "box" WHERE user_id = $1 AND move_id=$2) 
+
+
+            SELECT 
+                "user_boxes".id, "user_boxes".code, "user_boxes".label, "user_boxes".destination_room, 
+                "user_boxes".fragile, "user_boxes".heavy, "user_boxes".floor, 
+                --"user_boxes".user_id,"user_boxes".move_id,
+                json_agg(item) items FROM user_boxes 
+            JOIN "item" ON "user_boxes".id=item.box_id
+            GROUP BY 
+                "user_boxes".id, "user_boxes".code, "user_boxes".label, "user_boxes".destination_room, 
+                "user_boxes".fragile, "user_boxes".heavy, "user_boxes".floor--, 
+                --"user_boxes".user_id,"user_boxes".move_id;  `; 
+                
+            // TODO  : accept 
+            const values = [data.user_id, data.move_id]; 
+
+            const results = await client.query(query, values); 
+
+            return results.rows; 
+             
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     async insert() {
         // Insert a item in DB 
         try {

@@ -50,7 +50,7 @@ router.route('/profile/reset-password')
 // delete account
 router.delete('/profile', authCheckerMW, profileController.deleteAccount); 
 
-/* Box related routes  */
+/* Move related routes  */
 
 router.route('/move')
     .get(authCheckerMW, moveController.getUserMoves) 
@@ -60,7 +60,9 @@ router.route('/move/:id')
     .get(authCheckerMW, boxController.getMoveBoxes)
     .put(authCheckerMW, moveController.updateMove)
     .delete(authCheckerMW, moveController.deleteMove);
-    
+
+/* Box related routes  */
+
 router.route('/box')
     .get(authCheckerMW, boxController.getUserBoxes)
     .post(authCheckerMW, boxOptionFillMW, boxController.createBox); 
@@ -70,14 +72,22 @@ router.route('/box/:id')
     .put(authCheckerMW, boxOptionFillMW, boxController.updateBox)
     .delete(authCheckerMW, boxController.deleteBox);
 
+/* Item related routes  */
+
 router.route('/item')
-    .post(authCheckerMW,itemController.createItem);
+    .post(authCheckerMW, itemController.createItem);
 
 
 router.route('/item/:id')
    // .get(authCheckerMW, itemController.getItem) // TODO 
     .put(authCheckerMW, itemController.updateItem) // TODO 
     .delete(authCheckerMW, itemController.deleteItem);
+
+/* Search route*/
+
+router.route('/search')
+    //! enable "authCheckerMW" middleware after development 
+    .get(authCheckerMW, itemController.searchItem);
 
 router.use('*', mainController.notFound); 
 

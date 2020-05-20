@@ -155,7 +155,7 @@ const itemController = {
             console.trace(error);
         }
     }, 
-
+    
     updateItem: async (req, res) => {
         //* Update an item in DB
         try {
@@ -167,7 +167,7 @@ const itemController = {
                 // update status code (400 for bad request)and send the error details
                 res.status(400).send(itemValidation.error); 
             }
-
+            
             // Form is valid !
             
             const storedItem = await Item.getByPk(req.params.id); 
@@ -203,7 +203,7 @@ const itemController = {
             }
             
             // User is authorized to perform operation on pointed box ! 
-
+            
             const storedBox = await Box.getByPk(req.body.box_id); 
             
             // If no box was found 
@@ -263,24 +263,185 @@ const itemController = {
             
             // The item name is available in the destination box !
             
-
+            
             // Update storedItem values prior to update
             for (const prop in req.body) {
                 storedItem[prop] = req.body[prop]; 
             }
-
+            
             // create an instance of a item
             const updatedItem = await storedItem.update(); 
             console.log('updatedItem :>> ', updatedItem);
-
+            
             res.send(updatedItem);         
-              
+            
         } catch (error) {
             console.trace(error);
         }
     }, 
     
     /** Markpage */
+    
+    searchItem: async (req, res) => {
+        //* Search item function
+        //? query string ?&search=researched+element
+        //? payload moveId=15
+        try {
+            // receive a query string search and moveId
+            
+            console.log('req.query', req.query); 
+            
+            //? escape special characters 
+            
+            // No data is stored in DB, so we do not see the need for escaping the special characters
+            
+            // The is prepared in DB and would prevent SQL script inclusion
+            
+            // Retreive data from query string 
+            const {research} = req.query; 
+            const {move_id} = req.body; 
+            const user_id = req.session.user.id; 
+            console.log('move_id', move_id); 
+            console.log('research', research); 
+            
+            // Filter the user moves with the pointed move (from query string)
+            const move = req.session.user.moves.filter(moveObj => moveObj.id == move_id);  
+
+            
+            //TODO : UNCOMMENT THESE LINES
+            // If the pointed move doesn't belong to current user
+            if (!move.length) {
+                // prevent action and send an error
+                return res.status(403).send({
+                    error : {
+                        statusCode: 403,
+                        message: {
+                            en:"Forbidden action - Pointed move doesn't belong to the current user", 
+                            fr:"Action interdite - Le déménagement concerné n'appartient pas à l'utilisateur actuel"
+                        }
+                    }
+                });
+            }
+
+            // User is authorized to perform search operation on pointed move ! 
+            console.log("User may pass !"); 
+            
+            const belongings = await Item.search({user_id, move_id}); 
+            
+            //const searchRE = new RegExp(research.trim(), 'i'); 
+            
+            //console.log('"  t  bal   ".trim()', `"${"  t  bal   ".trim()}"`)
+            const searchRE = new RegExp(research.trim(), 'i');
+            
+            
+            
+            
+            const results = [...belongings]; 
+            const itemGroups = []; 
+            
+            for ( const box of results) {
+                itemGroups.push([...box.items]); 
+                delete box.items; 
+            }
+            
+            //console.log('itemGroups :>> ', itemGroups);
+            
+            
+            const allItems = [].concat(...itemGroups); 
+            
+            //console.log('allItems', allItems);
+            
+            const filteredItems =  allItems.filter( item => searchRE.test(item.name)); 
+            
+            const startWith = new RegExp(`^${research}`, 'i'); 
+            
+            // console.log('filtered Items', filteredItems);
+            // Sort results by item name
+            filteredItems.sort((a, b) => a.name.localeCompare(b.name));
+            
+            // console.log('sorted items', filteredItems);
+            // Sort agin to brgin items starting with the given input
+            filteredItems.sort((a, b) => (startWith.test(a.name)) ? -1 : 1); 
+            
+            // 
+            console.log('pertinent items first', filteredItems);
+            
+            //console.log('results', results);
+            
+            // belongings should be grouped by boxes 
+            // Repopulate boxes with filter objects 
+            for (box of results) {
+                for (item of filteredItems) {
+                    if (item.box_id === box.id) {
+                        if (!box.hasOwnProperty('items')) {
+                            box.items = []; 
+                            box.items.push(item); 
+                        } else {
+                            box.items.push(item); 
+                        }
+                    }
+                }
+            }
+            
+            console.log('results', results);
+
+            const filledBoxes = results.filter(box => box.hasOwnProperty('items')); 
+
+            //console.log('filledBoxes', filledBoxes);
+
+
+            // Filter boxes ressembling search input by label OR by destination_room $
+            // To be includes in search results despite having no mathcing items
+            const filteredBoxes = results.filter( box => searchRE.test(box.label) || searchRE.test(box.destination_room)); 
+
+            //console.log('filteredBoxes', filteredBoxes);
+
+            let boxAlreadyFiltered = false; 
+
+            for (const filteredBox of filteredBoxes) {
+                // BY default the box is eligible to takepart in the results
+                boxAlreadyFiltered = false; 
+                // for box matching the research 
+                for (const filledBox of filledBoxes) {
+                    // if it is already referenced in the result array 
+                    if (filteredBox.id == filledBox.id) {
+                        // we update 'boxAlreadyFiltered' value to be true
+                        boxAlreadyFiltered = true; 
+                    }
+                }
+
+                // If the current empty box matching the results isn't yet refrenced in the final results
+                if (!boxAlreadyFiltered) {
+                    // we add the current box
+                    filledBoxes.push(filteredBox); 
+                }
+
+            }
+
+            console.log('final filledBoxes', filledBoxes);
+
+
+            /* 
+            Retunred values 
+            [
+                {Box[
+                        {Item}, 
+                        {Item}
+                    ]
+                }, 
+                {Box[
+                    {Item}
+                    ]
+                }
+            ]
+            */
+            
+            res.send(filledBoxes); 
+            
+        } catch (error) {
+            console.log(error); 
+        }
+    },
     deleteItem: async (req, res) => {
         //* Delete a item from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
@@ -290,7 +451,7 @@ const itemController = {
             const itemId = req.params.id; 
             
             const storedItem = await Item.getByPk(req.params.id); 
-
+            
             // If no box was found 
             if (!storedItem) {
                 // Abort and send error : 404 not found
@@ -321,7 +482,7 @@ const itemController = {
             
             // User is authorized to perform operation on pointed box ! 
             
-
+            
             
             // Request deletion from DB
             const success = await storedItem.delete(); 
@@ -330,7 +491,7 @@ const itemController = {
             // true : deletion ok
             // false : deletion didn't work
             res.send(success);
-
+            
         } catch (error) {
             console.trace(error);
         }
