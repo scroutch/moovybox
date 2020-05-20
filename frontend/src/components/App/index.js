@@ -75,7 +75,7 @@ const App = () => {
         <Route exact path="/create-box" component={CreateBox} />
         <Route exact path="/box/:id" component={Item} />
 
-  
+
         <Route>404</Route>
       </Switch>
     </div>
