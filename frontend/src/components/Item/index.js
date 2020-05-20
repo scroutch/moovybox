@@ -130,6 +130,6 @@ const Item = (props) => {
             <Footer />
         </div>
     )
-};
+}
 
 export default withRoot(Item);
