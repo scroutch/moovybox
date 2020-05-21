@@ -84,7 +84,7 @@ const Move = () => {
   const handleClickOpen = (value) => {
     setOpen(true);
     setSelectedId(value)
-    console.log("value :", value)
+    
   };
 
   const handleClose = () => {
