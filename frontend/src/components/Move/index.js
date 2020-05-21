@@ -13,6 +13,13 @@ import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
 import axios from 'axios';
 
+// to confirm
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -40,6 +47,9 @@ const useStyles = makeStyles((theme) => ({
 const Move = () => {
   const classes = useStyles();
   const [moves, setMoves] = useState([]);
+  // to confirm
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState();
 
   useEffect(() => {
     axios.get('http://localhost:5050/move')
@@ -52,18 +62,33 @@ const Move = () => {
          })
   }, []);
 
-  const handleDelete = (id) => {
+  const handleDelete = (props) => {
 
-    console.log('cliqué');
+    console.log('cliqué, props', props);
+    const id = props.selectedId;
+    console.log('id : ', id);
+    
 
     axios.delete(`http://localhost:5050/move/${id}`)
          .then(res => {
 
            console.log("ok");
           setMoves(moves.filter((move)=>(move.id !== id)));
+          setOpen(false);
          }).catch(err => {
           console.log(err);
         })
+  };
+
+  // to confirm
+  const handleClickOpen = (value) => {
+    setOpen(true);
+    setSelectedId(value)
+    console.log("value :", value)
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -98,7 +123,24 @@ const Move = () => {
                {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
             </Button>
             </Link>
-            <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleDelete(move.id)}}/>
+            {/* <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleDelete(move.id)}}/> */}
+            <Button variant="outlined" color="primary" onClick={() => {handleClickOpen(move.id)}}>
+              Open alert dialog
+            </Button>
+            <Dialog
+              open={open}
+              onClose={handleClose}
+            >
+              
+              <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                  Anuuler, je garde ce déménagement !
+                </Button>
+                <Button onClick={() => {handleDelete({selectedId})} }color="primary" autoFocus>
+                  Je veux supprimer de déménagement.
+                </Button>
+              </DialogActions>
+            </Dialog>
             </li>)}
         </ul>
       <Footer />
