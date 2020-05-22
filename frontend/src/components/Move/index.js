@@ -12,6 +12,11 @@ import Tooltip from '@material-ui/core/Tooltip';
 import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
 import axios from 'axios';
+import Avatar from '@material-ui/core/Avatar';
+// for the icon fontasome
+import { loadCSS } from 'fg-loadcss'; // for th icons
+import Icon from '@material-ui/core/Icon';
+import Container from '@material-ui/core/Container';
 
 // to confirm
 import Dialog from '@material-ui/core/Dialog';
@@ -27,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
     alignContent: 'center',
     flexDirection: 'column',
     minHeight: '100vh',
+    '& > .fa': {
+      margin: theme.spacing(2),
+      
+    },
   },
 
   liste: {
@@ -39,13 +48,22 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     marginBottom: theme.spacing(2)
   },
-  titre: {
+  title: {
     textAlign: 'center',
-    paddingTop: theme.spacing(5)
+    paddingTop: theme.spacing(1),
+    margin: theme.spacing(1),
   },
   dialogTitle: {
     backgroundColor: theme.palette.secondary.main,
-  }
+  },
+  
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  
 }));
 
 const Move = () => {
@@ -66,6 +84,7 @@ const Move = () => {
          })
   }, []);
 
+    
   const handleDelete = (props) => {
 
     console.log('cliqué, props', props);
@@ -95,75 +114,93 @@ const Move = () => {
     setOpen(false);
   };
 
+  // for the font awesome heavy
+  useEffect(() => {
+    loadCSS(
+      'https://use.fontawesome.com/releases/v5.12.0/css/all.css',
+      document.querySelector('#font-awesome-css'),
+    );
+  }, []);
+
   return (
     <div className={classes.root}>
       <Header />
-      <Link to="/create-move">
-      <Typography component="h1" variant="h4" className={classes.titre}>
-      <Tooltip title="Add" aria-label="add">
-        <Fab color="primary" className={classes.fab}>
-          <AddIcon />
-        </Fab>
-      </Tooltip>
-      Ajouter un déménagement
-      </Typography>
-      </Link>
-        <ul className={classes.liste}>
-          {moves.map(move => <li key={move.id}>
-            <Link to ={{
-              pathname:"/move/"+move.id,
-              state: {
-                id: move.id,
-              }
-              }}>
-            
-            <Button 
-            variant="outlined" 
-            color="primary" 
-            //href={"/move/"+move.id} mettre LINK
-            // href={"/create-box"}
-            className={classes.btn} 
-            >
-               {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
-            </Button>
-            </Link>
-            <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleClickOpen(move.id)}}/>
-            {/* <Button variant="outlined" color="primary" onClick={() => {handleClickOpen(move.id)}}>
-              Open alert dialog
-            </Button> */}
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title" className={classes.dialogTitle} color="secondary">{"Confirmation de suppression"}</DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  Etes-vous sûr de vouloir supprimer ce déménagement ?
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose} variant="outlined" color="primary" >
-                  Annuler
-                </Button>
-                <ButtonCustom
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  onClick={() => {handleDelete({selectedId})} }
-                  color="secondary"
-                  // className={classes.submit}
+      <Container component="main" maxWidth="xs">
+        <div className={classes.paper}>
+          <Icon className="fas fa-truck" color="secondary" style={{ fontSize: 30, width: 45 }}/>
+          
+          <Typography component="h1" variant="h4"  className={classes.title}>
+            Mes déménagements
+          </Typography>
+          <Link to="/create-move">
+            <Typography component="h1" variant="h5" className={classes.title}>
+              <Tooltip title="Ajouter" aria-label="Add">
+                <Fab color="primary" className={classes.fab}>
+                  <AddIcon />
+                </Fab>
+              </Tooltip>
+              <Button size="medium" variant="outlined" color="primary" >Ajouter un déménagement</Button>
+            </Typography>
+          
+          </Link>
+            <ul className={classes.liste}>
+              {moves.map(move => <li key={move.id}>
+                <Link to ={{
+                  pathname:"/move/"+move.id,
+                  state: {
+                    id: move.id,
+                  }
+                  }}>
+                
+                <Button 
+                variant="outlined" 
+                color="primary" 
+                //href={"/move/"+move.id} mettre LINK
+                // href={"/create-box"}
+                className={classes.btn} 
                 >
-                  Confirmation de suppression
-                </ButtonCustom>
-                {/* <Button onClick={() => {handleDelete({selectedId})} }color="secondary" autoFocus>
-                  Confirmation de suppression
+                  {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
+                </Button>
+                </Link>
+                <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleClickOpen(move.id)}}/>
+                {/* <Button variant="outlined" color="primary" onClick={() => {handleClickOpen(move.id)}}>
+                  Open alert dialog
                 </Button> */}
-              </DialogActions>
-            </Dialog>
-            </li>)}
-        </ul>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title" className={classes.dialogTitle} color="secondary">{"Confirmation de suppression"}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Etes-vous sûr de vouloir supprimer ce déménagement ?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} variant="outlined" color="primary" >
+                      Annuler
+                    </Button>
+                    <ButtonCustom
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      onClick={() => {handleDelete({selectedId})} }
+                      color="secondary"
+                      // className={classes.submit}
+                    >
+                      Confirmation de suppression
+                    </ButtonCustom>
+                    {/* <Button onClick={() => {handleDelete({selectedId})} }color="secondary" autoFocus>
+                      Confirmation de suppression
+                    </Button> */}
+                  </DialogActions>
+                </Dialog>
+                </li>)}
+            </ul>
+          </div>
+      </Container>
       <Footer />
     </div>
   );
