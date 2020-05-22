@@ -124,7 +124,7 @@ const Item = (props) => {
                 {item.map(elt => <li key={elt.id}>
                     <Button variant="outlined" color="primary" className={classes.item}>
                         {elt.name}
-                        <HighlightOffIcon fontSize="small" color="default" edge="end" onClick={() => {handleDelete(elt.id)}}/>
+                        <HighlightOffIcon fontSize="small" color="inherit" edge="end" onClick={() => {handleDelete(elt.id)}}/>
                     </Button>
 
                 </li>)}
