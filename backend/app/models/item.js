@@ -53,6 +53,25 @@ class Item {
         }
     }
 
+    static async search (data) {
+        //* Research function
+        try {
+
+            const query = `SELECT row_to_json(get_move_boxes_and_content($1, $2)); `; 
+            // TODO  : accept 
+            const values = [data.user_id, data.move_id]; 
+
+            const answerFromDB = await client.query(query, values); 
+
+            const results = answerFromDB.rows.map(entry => entry.row_to_json); 
+
+            return results; 
+             
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     async insert() {
         // Insert a item in DB 
         try {
