@@ -4,7 +4,7 @@ import { LOGIN, toSignin, SIGNUP, TO_SIGNIN, SYNC_PSEUDO, SYNC_PASSWORD, SYNC_IS
 
 const prodURL = 'http://18.206.96.118';
 
-axios.defaults.withCredentials = true; 
+axios.defaults.withCredentials = true;
 
 export default (store) => (next) => (action) => {
   //console.log('MW Auth');
@@ -29,12 +29,12 @@ export default (store) => (next) => (action) => {
             store.dispatch({ type: SYNC_MOVES, moves});
             store.dispatch(enterMove(action.history));
             //console.log('Authenticated');
-            
+
           }
           else {
             console.error('impossible de se connecter', res);
           }
-          
+
         }).catch((error) => {
           console.log('Error on Authentication', error);
         });
@@ -43,7 +43,7 @@ export default (store) => (next) => (action) => {
     };
     case SIGNUP: {
       axios
-        .post(`http://localhost:5050/signup`, { 
+        .post(`http://localhost:5050/signup`, {
           email: store.getState().email,
           password: store.getState().password,
           pseudo: store.getState().pseudo
@@ -53,7 +53,7 @@ export default (store) => (next) => (action) => {
           console.log("status :", res.status)
           if (res.status == 201) {
             // dispatch(login(history));
-            
+
             store.dispatch({ type: SYNC_PSEUDO, pseudo });
             store.dispatch({ type: SYNC_USER_ID, user_id: id});
             store.dispatch({ type: SYNC_MOVES, moves});
@@ -62,7 +62,7 @@ export default (store) => (next) => (action) => {
           else {
             console.error('impossible de se connecter', res);
           }
-          
+
         }).catch((error) => {
           console.log('Error on Authentication', error);
         });
@@ -74,5 +74,5 @@ export default (store) => (next) => (action) => {
     }
   }
 };
-        
+
         
