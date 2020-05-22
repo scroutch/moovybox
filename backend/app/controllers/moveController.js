@@ -151,6 +151,14 @@ const moveController = {
         
         // Execute request
         const updatedMove = await move.update(); 
+
+        const sessionMove = req.session.user.moves.filter(move => move.id == req.params.id); 
+
+        for (const moveProp in updatedMove) {
+            sessionMove[0][moveProp] = updatedMove[moveProp];  
+        }
+
+        console.log('req.session.moves', req.session.moves); 
         
         // return the updated move
         res.send((updatedMove) ? updatedMove : false);
@@ -208,6 +216,16 @@ const moveController = {
                         fr:"Quelque chose s'est mal passé"
                     }
                 });
+            }
+
+            const sessionMove = req.session.user.moves.filter(entry => entry.id == req.params.id); 
+            console.log('sessionMove[0]', sessionMove[0]); 
+
+  
+            const moveIndexToDelete = req.session.user.moves.indexOf(sessionMove[0])
+
+            if (moveIndexToDelete >= 0) {
+                req.session.user.moves.splice(moveIndexToDelete, 1); 
             }
             
             return res.status(200).send(success);

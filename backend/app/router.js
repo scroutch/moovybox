@@ -87,7 +87,9 @@ router.route('/item/:id')
 
 router.route('/search')
     //! enable "authCheckerMW" middleware after development 
-    .get(authCheckerMW, itemController.searchItem);
+    .get(/*authCheckerMW,*/ itemController.searchItem);
+
+router.get('/session', (req,res) => {return res.send(req.session.user)});
 
 router.use('*', mainController.notFound); 
 

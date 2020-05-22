@@ -57,26 +57,15 @@ class Item {
         //* Research function
         try {
 
-            const query = `WITH user_boxes AS (SELECT * FROM "box" WHERE user_id = $1 AND move_id=$2) 
-
-
-            SELECT 
-                "user_boxes".id, "user_boxes".code, "user_boxes".label, "user_boxes".destination_room, 
-                "user_boxes".fragile, "user_boxes".heavy, "user_boxes".floor, 
-                --"user_boxes".user_id,"user_boxes".move_id,
-                json_agg(item) items FROM user_boxes 
-            JOIN "item" ON "user_boxes".id=item.box_id
-            GROUP BY 
-                "user_boxes".id, "user_boxes".code, "user_boxes".label, "user_boxes".destination_room, 
-                "user_boxes".fragile, "user_boxes".heavy, "user_boxes".floor--, 
-                --"user_boxes".user_id,"user_boxes".move_id;  `; 
-                
+            const query = `SELECT row_to_json(get_move_boxes_and_content($1, $2)); `; 
             // TODO  : accept 
             const values = [data.user_id, data.move_id]; 
 
-            const results = await client.query(query, values); 
+            const answerFromDB = await client.query(query, values); 
 
-            return results.rows; 
+            const results = answerFromDB.rows.map(entry => entry.row_to_json); 
+
+            return results; 
              
         } catch (error) {
             console.log(error);

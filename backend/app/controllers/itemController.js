@@ -2,6 +2,8 @@ const Joi = require('@hapi/joi').extend(require('@hapi/joi-date'));
 const Box = require('../models/box');
 const Item = require('../models/item');
 
+const { normalize } = require('diacritics-normalizr');
+
 
 const itemSchema = Joi.object({
     name: Joi.string()
@@ -285,10 +287,12 @@ const itemController = {
     searchItem: async (req, res) => {
         //* Search item function
         //? query string ?&search=researched+element
-        //? payload moveId=15
+        //? payload move_id=15
         try {
             // receive a query string search and moveId
             
+            console.time('Search span'); 
+
             console.log('req.query', req.query); 
             
             //? escape special characters 
@@ -297,20 +301,20 @@ const itemController = {
             
             // The is prepared in DB and would prevent SQL script inclusion
             
-            // Retreive data from query string 
-            const {research} = req.query; 
+            // Retrieve data from query string 
+            const research = await normalize(req.query.research); 
             const {move_id} = req.body; 
             const user_id = req.session.user.id; 
             console.log('move_id', move_id); 
-            console.log('research', research); 
+            console.log('research', await normalize(research)); 
             
             // Filter the user moves with the pointed move (from query string)
-            const move = req.session.user.moves.filter(moveObj => moveObj.id == move_id);  
+            const move = req.session.user.moves.filter(moveObj => moveObj.id == move_id)[0];  
 
-            
+
             //TODO : UNCOMMENT THESE LINES
             // If the pointed move doesn't belong to current user
-            if (!move.length) {
+            if (!move) {
                 // prevent action and send an error
                 return res.status(403).send({
                     error : {
@@ -323,54 +327,59 @@ const itemController = {
                 });
             }
 
-            // User is authorized to perform search operation on pointed move ! 
-            console.log("User may pass !"); 
-            
-            const belongings = await Item.search({user_id, move_id}); 
-            
-            //const searchRE = new RegExp(research.trim(), 'i'); 
-            
-            //console.log('"  t  bal   ".trim()', `"${"  t  bal   ".trim()}"`)
-            const searchRE = new RegExp(research.trim(), 'i');
-            
-            
-            
-            
-            const results = [...belongings]; 
-            const itemGroups = []; 
-            
-            for ( const box of results) {
-                itemGroups.push([...box.items]); 
-                delete box.items; 
+            if (!move.boxes) {
+                move.boxes = await Item.search({user_id, move_id}); 
             }
             
-            //console.log('itemGroups :>> ', itemGroups);
+            const searchRE = new RegExp(research.trim(), 'i');
+            
+            const boxesInMove = [...move.boxes]; 
+            const itemGroups = []; 
+
+            console.log('boxesInMove', boxesInMove); 
+            
+            for ( const box of boxesInMove) {
+                box.labelNormal = await normalize(box.label); 
+                box.destination_roomNormal = await normalize(box.destination_room); 
+
+                if (!!box.items) {
+                    itemGroups.push([...box.items]); 
+                    delete box.items; 
+                }
+            }
+            
             
             
             const allItems = [].concat(...itemGroups); 
+
+            console.log('searchRE :>> ', searchRE);
+            console.log('allItems :>> ', allItems);
             
-            //console.log('allItems', allItems);
+            // Have a normalized itemName string (removes diacritics : accents)
+            for (let item of allItems) {
+                item.nameNormal= await normalize(item.name);
+            }
             
-            const filteredItems =  allItems.filter( item => searchRE.test(item.name)); 
+            const filteredItems =  allItems.filter((item) => searchRE.test(item.nameNormal)); 
+
+            console.log('filteredItems', filteredItems);
             
             const startWith = new RegExp(`^${research}`, 'i'); 
             
-            // console.log('filtered Items', filteredItems);
             // Sort results by item name
-            filteredItems.sort((a, b) => a.name.localeCompare(b.name));
+            filteredItems.sort((a, b) => a.nameNormal.localeCompare(b.nameNormal));
             
-            // console.log('sorted items', filteredItems);
-            // Sort agin to brgin items starting with the given input
-            filteredItems.sort((a, b) => (startWith.test(a.name)) ? -1 : 1); 
+            // Sort again to bring items starting with the given input
+            filteredItems.sort((a, b) => (startWith.test(a.nameNormal)) ? -1 : 1); 
             
             // 
-            console.log('pertinent items first', filteredItems);
+            //console.log('pertinent items first', filteredItems);
             
             //console.log('results', results);
             
             // belongings should be grouped by boxes 
             // Repopulate boxes with filter objects 
-            for (box of results) {
+            for (box of boxesInMove) {
                 for (item of filteredItems) {
                     if (item.box_id === box.id) {
                         if (!box.hasOwnProperty('items')) {
@@ -383,16 +392,14 @@ const itemController = {
                 }
             }
             
-            console.log('results', results);
+            //console.log('results', results);
 
-            const filledBoxes = results.filter(box => box.hasOwnProperty('items')); 
+            // Filter result box and items to retain the boxes with a matching content
+            const filledBoxes = boxesInMove.filter(box => box.hasOwnProperty('items')); 
 
-            //console.log('filledBoxes', filledBoxes);
-
-
-            // Filter boxes ressembling search input by label OR by destination_room $
-            // To be includes in search results despite having no mathcing items
-            const filteredBoxes = results.filter( box => searchRE.test(box.label) || searchRE.test(box.destination_room)); 
+            // Filter boxes ressembling search input on label OR  destination_room ..
+            // .. to be included in search results despite having no mathcing items
+            const filteredBoxes = boxesInMove.filter( box => searchRE.test(box.labelNormal) || searchRE.test(box.destination_roomNormal)); 
 
             //console.log('filteredBoxes', filteredBoxes);
 
@@ -420,22 +427,41 @@ const itemController = {
 
             console.log('final filledBoxes', filledBoxes);
 
+            const endWithNormal = /Normal$/;
 
+            for (const box of filledBoxes) {
+
+                for (boxProp in box) {
+                    if (endWithNormal.test(boxProp)) {
+                        delete box[boxProp]; 
+                    } 
+                }
+
+                if (!!box.items) {
+                    for (item of box.items) {
+                        for (itemProp in item) {
+                            if (endWithNormal.test(itemProp)) {
+                                delete item[itemProp]; 
+                            } 
+                        }
+                    }
+                }
+                
+            }
             /* 
-            Retunred values 
+            Returned values example
             [
                 {Box[
-                        {Item}, 
-                        {Item}
+                        {Item}, //item match (name) 
+                        {Item}  //item match (name)
                     ]
                 }, 
-                {Box[
-                    {Item}
+                {Box[           //box match (label OR destination room)
                     ]
                 }
             ]
             */
-            
+           console.timeEnd('Search span'); 
             res.send(filledBoxes); 
             
         } catch (error) {
