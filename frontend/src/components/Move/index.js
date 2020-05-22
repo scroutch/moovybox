@@ -19,6 +19,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import ButtonCustom from '../modules/components/Button';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,6 +42,9 @@ const useStyles = makeStyles((theme) => ({
   titre: {
     textAlign: 'center',
     paddingTop: theme.spacing(5)
+  },
+  dialogTitle: {
+    backgroundColor: theme.palette.secondary.main,
   }
 }));
 
@@ -123,22 +127,39 @@ const Move = () => {
                {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
             </Button>
             </Link>
-            {/* <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleDelete(move.id)}}/> */}
-            <Button variant="outlined" color="primary" onClick={() => {handleClickOpen(move.id)}}>
+            <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleClickOpen(move.id)}}/>
+            {/* <Button variant="outlined" color="primary" onClick={() => {handleClickOpen(move.id)}}>
               Open alert dialog
-            </Button>
+            </Button> */}
             <Dialog
               open={open}
               onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
             >
-              
+              <DialogTitle id="alert-dialog-title" className={classes.dialogTitle} color="secondary">{"Confirmation de suppression"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Etes-vous sûr de vouloir supprimer ce déménagement ?
+                </DialogContentText>
+              </DialogContent>
               <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                  Anuuler, je garde ce déménagement !
+                <Button onClick={handleClose} variant="outlined" color="primary" >
+                  Annuler
                 </Button>
-                <Button onClick={() => {handleDelete({selectedId})} }color="primary" autoFocus>
-                  Je veux supprimer de déménagement.
-                </Button>
+                <ButtonCustom
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  onClick={() => {handleDelete({selectedId})} }
+                  color="secondary"
+                  // className={classes.submit}
+                >
+                  Confirmation de suppression
+                </ButtonCustom>
+                {/* <Button onClick={() => {handleDelete({selectedId})} }color="secondary" autoFocus>
+                  Confirmation de suppression
+                </Button> */}
               </DialogActions>
             </Dialog>
             </li>)}
