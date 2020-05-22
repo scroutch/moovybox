@@ -13,11 +13,13 @@ import moment from 'moment';
 import {BrowserRouter as Router, Link} from "react-router-dom";
 import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 // for the icon fontasome
 import { loadCSS } from 'fg-loadcss'; // for th icons
 import Icon from '@material-ui/core/Icon';
-import Container from '@material-ui/core/Container';
-
+import CssBaseline from '@material-ui/core/Icon';
 // to confirm
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -32,9 +34,9 @@ const useStyles = makeStyles((theme) => ({
     alignContent: 'center',
     flexDirection: 'column',
     minHeight: '100vh',
+    // for the font awesome
     '& > .fa': {
       margin: theme.spacing(2),
-      
     },
   },
 
@@ -43,10 +45,14 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
 
   },
+  // btn for the button of moves and boxes
   btn: {
-    width: '60%',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2)
+    width: '90%',
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+    textTransform: "none",
+    fontWeight: 500,
+
   },
   title: {
     textAlign: 'center',
@@ -126,6 +132,7 @@ const Move = () => {
     <div className={classes.root}>
       <Header />
       <Container component="main" maxWidth="xs">
+        <CssBaseline />
         <div className={classes.paper}>
           <Icon className="fas fa-truck" color="secondary" style={{ fontSize: 30, width: 45 }}/>
           
@@ -158,7 +165,20 @@ const Move = () => {
                 // href={"/create-box"}
                 className={classes.btn} 
                 >
-                  {move.label} {move.address} {moment(move.date).format('MM-DD-YYYY')}
+                <Grid container>
+                  <Grid item xs={12}>
+                  <Typography>{move.label}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                  <Typography>{move.address}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                  <Typography> {moment(move.date).format('MM-DD-YYYY')}</Typography>
+                  </Grid>
+                  {/* <Typography>{move.label}</Typography>
+                  <Typography>{move.address}</Typography>
+                  <Typography> {moment(move.date).format('MM-DD-YYYY')}</Typography> */}
+                </Grid>
                 </Button>
                 </Link>
                 <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleClickOpen(move.id)}}/>
