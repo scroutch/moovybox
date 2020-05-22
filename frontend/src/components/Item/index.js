@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
-
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import QueueIcon from '@material-ui/icons/Queue';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Checkbox from '@material-ui/core/Checkbox';
 import withRoot from '../modules/withRoot';
-// import Button from '../modules/components/Button';
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import TextField from '@material-ui/core/TextField';
-import Input from '@material-ui/core/Input';
-import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 axios.defaults.withCredentials = true;
 
@@ -47,6 +38,13 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  item: {
+    marginTop: "10px",
+
+  },
+  form: {
+    padding: "20px"
+  }
 }));
 
 axios.defaults.withCredentials = true;
@@ -70,14 +68,21 @@ const Item = (props) => {
              })
       }, []);
 
+    const addItem = name => {
+      const newItems = [...item, {name}];
+      setItem(newItems);
+    }
+
     const handleItemChange = (e) => {
         console.log(e.target.value);
         setName(e.target.value);
     }
 
     const handleSubmit = (e) => {
+        addItem(name);
         e.preventDefault();
         const data = {name, box_id};
+        console.log('data :', data);
         axios.post('http://localhost:5050/item', data)
              .then(res => {
                  console.log('ici les items', res.data);
@@ -112,17 +117,16 @@ const Item = (props) => {
             <Typography component="h1" variant="h4">
                 Ajouter un objet au carton
             </Typography>
-            <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-            <TextField id="outlined-basic" label="Outlined" variant="outlined" value={item.name} onChange={handleItemChange}/>
+            <form noValidate autoComplete="on" className={classes.form} onSubmit={handleSubmit}>
+            <TextField id="outlined-basic" label="Item" variant="outlined" value={item.name} onChange={handleItemChange}/>
             </form>
             <ul>
-
-                {item.map(elt => <li key={item.id}>
-                    <Button variant="outlined" color="primary">
+                {item.map(elt => <li key={elt.id}>
+                    <Button variant="outlined" color="primary" className={classes.item}>
                         {elt.name}
-
+                        <HighlightOffIcon fontSize="small" color="default" edge="end" onClick={() => {handleDelete(elt.id)}}/>
                     </Button>
-                    <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleDelete(item.id)}}/>
+
                 </li>)}
             </ul>
             </div>
