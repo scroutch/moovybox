@@ -56,6 +56,7 @@ const Item = (props) => {
     const [item, setItem] = useState([]);
     const [name, setName] = useState('');
     const [box_id, setBoxeId] = useState(props.location.state.id);
+    const [getItem, setGetItem] = useState(false)
 
     useEffect(() => {
         axios.get(`http://localhost:5050/box/${props.location.state.id}`)
@@ -67,6 +68,18 @@ const Item = (props) => {
                console.log(err);
              })
       }, []);
+
+      useEffect(() => {
+        axios.get(`http://localhost:5050/box/${props.location.state.id}`)
+             .then(res => {
+               console.log(res.data);
+               setItem(res.data);
+               setGetItem(false)
+             })
+             .catch(err => {
+               console.log(err);
+             })
+      }, [getItem]);
 
     const addItem = name => {
       const newItems = [...item, {name}];
@@ -86,6 +99,7 @@ const Item = (props) => {
         axios.post('http://localhost:5050/item', data)
              .then(res => {
                  console.log('ici les items', res.data);
+                 setGetItem(true)
              }).catch(err => {
                 console.log(err);
               });
@@ -98,7 +112,7 @@ const Item = (props) => {
         axios.delete(`http://localhost:5050/item/${id}`)
              .then(res => {
 
-               console.log("ok");
+               console.log("ok et id", id);
               setItem(item.filter((ite)=>(ite.id !== id)));
              }).catch(err => {
               console.log(err);
@@ -118,16 +132,18 @@ const Item = (props) => {
                 Ajouter un objet au carton
             </Typography>
             <form noValidate autoComplete="on" className={classes.form} onSubmit={handleSubmit}>
-            <TextField id="outlined-basic" label="Item" variant="outlined" value={item.name} onChange={handleItemChange}/>
+            <TextField id="outlined-basic" label="Item" variant="outlined" value={item.name}  onChange={handleItemChange}/>
             </form>
             <ul>
-                {item.map(elt => <li key={elt.id}>
+                {item.map(elt => 
+                <li key={elt.id}>
                     <Button variant="outlined" color="primary" className={classes.item}>
                         {elt.name}
-                        <HighlightOffIcon fontSize="small" color="inherit" edge="end" onClick={() => {handleDelete(elt.id)}}/>
+                        {/* <HighlightOffIcon fontSize="small" color="inherit" edge="end" onClick={() => {handleDelete(elt.id)}}/> */}
                     </Button>
-
-                </li>)}
+                    <HighlightOffIcon fontSize="small" color="inherit" edge="end" onClick={() => {handleDelete(elt.id)}}/>
+                </li>)
+                }
             </ul>
             </div>
             </Container>
