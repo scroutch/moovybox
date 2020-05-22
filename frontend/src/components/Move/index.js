@@ -151,7 +151,6 @@ const Move = () => {
                     id: move.id,
                   }
                   }}>
-                
                 <Button 
                 variant="outlined" 
                 color="primary" 
