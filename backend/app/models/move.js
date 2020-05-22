@@ -64,7 +64,20 @@ class Move {
         }
     }
 
-    //async save()
+    async save() {
+        try {
+
+            if(!!this.id) {
+               return this.update(); 
+            } else {
+               return this.insert(); 
+            }
+            
+        } catch (error) {
+            console.log(error); 
+        }
+    }
+
 
     async insert() {
         // Insert a move in DB 
@@ -77,8 +90,8 @@ class Move {
             const values = [this.label, this.date, this.address, this.user_id]; 
     
             const results = await client.query(query, values); 
-    
-            return new Move(results.rows[0]); 
+             
+            return  new Move(results.rows[0]); 
         } catch (error) {
             console.trace(error);
         }
