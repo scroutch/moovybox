@@ -104,6 +104,21 @@ class Item {
         }
     }
 
+    async save() {
+        try {
+
+            if(!!this.id) {
+                return this.update(); 
+            } else {
+                return this.insert(); 
+            }
+            
+        } catch (error) {
+            console.log(error); 
+        }
+    }
+
+
     async delete() {
 
         try {

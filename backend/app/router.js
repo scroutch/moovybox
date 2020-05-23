@@ -42,6 +42,7 @@ router.get('/profile/confirm-new-email-update/:token',  profileController.update
 
 // Modify password
 router.post('/profile/password', authCheckerMW, profileController.updatePassword);
+
 router.route('/profile/reset-password')
     .get(authController.resetPasswordRedirection)
     .put(authController.resetPassword); 

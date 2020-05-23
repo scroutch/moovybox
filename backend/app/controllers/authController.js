@@ -103,14 +103,14 @@ const authControlleur = {
             const payload = {}; 
 
             // - Retrieve user email
-            emailInfo.userId = payload.id = storedUser.id; 
-            emailInfo.userPseudo = storedUser.pseudo; 
-            emailInfo.userEmail = payload.email = storedUser.email; 
+            payload.id = storedUser.id; 
+            emailInfo.pseudo = storedUser.pseudo; 
+            emailInfo.email = payload.email = storedUser.email; 
 
             // - Create token with user id and email
-            emailInfo.userToken = jwt.sign(payload, process.env.TOKENKEY, {expiresIn: '1d'}); 
+            emailInfo.token = jwt.sign(payload, process.env.TOKENKEY, {expiresIn: '1d'}); 
             
-            // - Use the email function ({userPseudo, userEmail, UserToken})
+            // - Use the email function ({pseudo, email, UserToken})
             sendAccountConfirmationEmail(emailInfo); 
 
             res.status(201).send(storedUser); // Status 201 : resosurces created

@@ -342,12 +342,14 @@ const profileController = {
             // change password in storedUser and update
             storedUser.password = await bcrypt.hash(req.body.new_password, salt); 
 
-                // proceed to change 
-            const result = await storedUser.save(storedUser);
+            // proceed to change 
+            const result = await storedUser.save();
+
+            console.log("updatePassword result :>", result); 
             
             //
             if (!result){
-                res.status(500).send({
+                return res.status(500).send({
                     statusCode : 500,
                     message:  {
                         en:"Something went wrong", 
@@ -367,6 +369,7 @@ const profileController = {
                 en: 'Success - Password was updated',
                 fr: 'Le mot de passe à bien été mis à jour.'
             }); 
+
         } catch (error) {
             console.log(error);
         }
