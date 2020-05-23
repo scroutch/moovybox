@@ -25,7 +25,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import { loadCSS } from 'fg-loadcss'; // for th icons
 import Icon from '@material-ui/core/Icon';
-
+// to redirection signin
+import { useSelector } from 'react-redux';
+import { Redirect} from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +64,13 @@ const BoxesByMove = (props) => {
   const [boxes, setBoxes] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
+  const isLogged = useSelector((state) => state.isLogged);
+
+  if (!isLogged) {
+    console.log('isLogged',isLogged);
+    //console.log('email,password page App/index',email,password);
+    return <Redirect to="/signin" />;
+  };
 
   // for the font awesome heavy
   useEffect(() => {
@@ -90,7 +99,7 @@ const BoxesByMove = (props) => {
       boxes.filter(box =>
         box.label.toLowerCase().includes(search.toLowerCase()))
     );
-  }, [search, boxes]);
+  }, [search, boxes]); 
 
   // delete a box selected
   const handleBoxDelete = (id) => {
