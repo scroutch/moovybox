@@ -106,7 +106,7 @@ const authControlleur = {
             payload.id = storedUser.id; 
             emailInfo.pseudo = storedUser.pseudo; 
             emailInfo.email = payload.email = storedUser.email; 
-            
+
             // - Create token with user id and email
             emailInfo.token = jwt.sign(payload, process.env.TOKENKEY, {expiresIn: '1d'}); 
             
