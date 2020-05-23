@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     textTransform: "none",
     fontWeight: 500,
+    
 
   },
   title: {
@@ -69,6 +70,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  fab: {
+    marginRight: theme.spacing(3),
+  }
   
 }));
 
@@ -142,7 +146,7 @@ const Move = () => {
           <Link to="/create-move">
             <Typography component="h1" variant="h5" className={classes.title}>
               <Tooltip title="Ajouter" aria-label="Add">
-                <Fab color="primary" className={classes.fab}>
+                <Fab color="secondary" className={classes.fab}>
                   <AddIcon />
                 </Fab>
               </Tooltip>
@@ -173,18 +177,13 @@ const Move = () => {
                   <Typography>{move.address}</Typography>
                   </Grid>
                   <Grid item xs={12}>
-                  <Typography> {moment(move.date).format('MM-DD-YYYY')}</Typography>
+                  <Typography> {moment(move.date).format('DD-MM-YYYY')}</Typography>
                   </Grid>
-                  {/* <Typography>{move.label}</Typography>
-                  <Typography>{move.address}</Typography>
-                  <Typography> {moment(move.date).format('MM-DD-YYYY')}</Typography> */}
+                  
                 </Grid>
                 </Button>
                 </Link>
                 <DeleteIcon fontSize="large" color="secondary" onClick={() => {handleClickOpen(move.id)}}/>
-                {/* <Button variant="outlined" color="primary" onClick={() => {handleClickOpen(move.id)}}>
-                  Open alert dialog
-                </Button> */}
                 <Dialog
                   open={open}
                   onClose={handleClose}
@@ -194,7 +193,7 @@ const Move = () => {
                   <DialogTitle id="alert-dialog-title" className={classes.dialogTitle} color="secondary">{"Confirmation de suppression"}</DialogTitle>
                   <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                      Etes-vous sûr de vouloir supprimer ce déménagement ?
+                      Etes-vous sûr de vouloir supprimer ce déménagement ? Cette action entrainera la suppression de tous les cartons et leur contenu.
                     </DialogContentText>
                   </DialogContent>
                   <DialogActions>
