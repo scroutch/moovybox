@@ -227,6 +227,7 @@ const profileController = {
             </head>
             <body>
                 <script>
+                    alert("On t'envois un mail à la nouvelle adresse ;)"); 
                     window.close(); 
                 </script>
             </body>
@@ -286,6 +287,7 @@ const profileController = {
                 </head>
                 <body>
                     <script>
+                        alert("Tu peux maintenant te connecter avec ta nouvelle adresse."); 
                         window.close(); 
                     </script>
                 </body>
