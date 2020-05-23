@@ -52,17 +52,17 @@ const boxController = {
             const matchedMove = req.session.user.moves.filter(moveObj => moveObj.id == req.params.id); 
 
             if (!matchedMove.length) {
+                // Abort operation and send error to client;
                 return res.status(403).send({
                     error : {
                         statusCode: 403,
                         message: {
-                            en:"Forbidden action", 
-                            fr:"Action interdite"
+                            en:"Forbidden action - The requested move doesn't belongs to current user", 
+                            fr:"Action interdite - Le déménagement concerné n'appartient pas à l'utilisateur actuel"
                         }
                     }
                 });
             }
-
             // We found a matching move id !
 
             const boxes = await Box.getAllFromMove(req.params.id); 
@@ -100,8 +100,8 @@ const boxController = {
                     error : {
                         statusCode: 403,
                         message: {
-                            en:"Forbidden action", 
-                            fr:"Action interdite"
+                            en:"Forbidden action - The requested move doesn't belongs to current user", 
+                            fr:"Action interdite - Le déménagement concerné n'appartient pas à l'utilisateur actuel"
                         }
                     }
                 });
@@ -120,8 +120,8 @@ const boxController = {
                     error : {
                         statusCode: 409,
                         message: {
-                            en:"This label already exists", 
-                            fr:"Ce label existe déjà"
+                            en:"Conflict - This box label already exists", 
+                            fr:"Conflit - Cette étiquette de carton existe déjà"
                         }
                     }
                 });
@@ -183,8 +183,8 @@ const boxController = {
             }
     
             // User is authorized to perform operation on pointed move ! 
-            
-            console.log('req.params.id', req.params.id); 
+        
+            //console.log('req.params.id', req.params.id); 
 
             // Get pointed box from DB 
             const storedBox = await Box.getByPk(req.params.id); 
@@ -224,11 +224,11 @@ const boxController = {
             }
             
             // Execute request
-            const updatedBox = await storedBox.update(); 
+            const updatedBox = await storedBox.save(); 
 
             // console.log("updateBox", updateBox); 
 
-            // return the updated move
+            // return the updated box
             res.send((!!updatedBox) ? updatedBox : false); 
         
         } catch (error) {

@@ -10,7 +10,7 @@ const sendInfoPasswordChanged = require('../mail/sendInfoPasswordChanged');
 
 const pseudoSchema = Joi.object({
     pseudo: Joi.string()
-        .alphanum()
+        .pattern(new RegExp('^[^<>:%]{0,}$'))
         .min(3)
         .max(30)
         .required()
@@ -35,7 +35,8 @@ const passwordChangeSchema = Joi.object({
     new_password: Joi.string()
         .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
         .required(),
-    password_repeat: Joi.ref('new_password')
+    password_repeat: Joi.any().valid(Joi.ref('new_password')).required()
+        
 })
 
 

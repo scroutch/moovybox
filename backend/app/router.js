@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router(); 
 
-const accessHomeMW = require('./middlewares/accessHome'); 
+//const accessHomeMW = require('./middlewares/accessHome'); 
 const authCheckerMW = require('./middlewares/authChecker'); 
 const boxOptionFillMW = require('./middlewares/boxOptionFill'); 
 
@@ -14,7 +14,7 @@ const itemController = require('./controllers/itemController');
 
 
 
-router.get('/', /*accessHomeMW,*/ mainController.homePage); 
+//router.get('/', /*accessHomeMW,*/ mainController.homePage); 
 
 /* Access related routes */
 
@@ -28,11 +28,14 @@ router.get('/confirmation/:token', authController.confirmEmail);
 
 router.post('/reset-token', authController.resetToken);
 
+router.get('/profile/reset-password/:token', authController.resetPasswordRedirection); 
+    
+router.put('/profile/reset-password',authController.resetPassword); 
 
 
 /* PROFILE RELATED ROUTES */ 
 
-// Upadate pseudo
+// Update pseudo
 router.put('/profile/pseudo', authCheckerMW, profileController.updatePseudo); 
 
 // Change email
@@ -43,9 +46,6 @@ router.get('/profile/confirm-new-email-update/:token',  profileController.update
 // Modify password
 router.post('/profile/password', authCheckerMW, profileController.updatePassword);
 
-router.route('/profile/reset-password')
-    .get(authController.resetPasswordRedirection)
-    .put(authController.resetPassword); 
 
 
 // delete account
@@ -54,7 +54,9 @@ router.delete('/profile', authCheckerMW, profileController.deleteAccount);
 /* Move related routes  */
 
 router.route('/move')
+    // Get all move from the current user
     .get(authCheckerMW, moveController.getUserMoves) 
+    // Create a new move
     .post(authCheckerMW, moveController.createMove);
 
 router.route('/move/:id')
@@ -80,7 +82,6 @@ router.route('/item')
 
 
 router.route('/item/:id')
-   // .get(authCheckerMW, itemController.getItem) // TODO 
     .put(authCheckerMW, itemController.updateItem) // TODO 
     .delete(authCheckerMW, itemController.deleteItem);
 
@@ -88,7 +89,7 @@ router.route('/item/:id')
 
 router.route('/search')
     //! enable "authCheckerMW" middleware after development 
-    .get(/*authCheckerMW,*/ itemController.searchItem);
+    .get(authCheckerMW, itemController.searchItem);
 
 router.get('/session', (req,res) => {return res.send(req.session.user)});
 

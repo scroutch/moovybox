@@ -12,7 +12,7 @@ const itemSchema = Joi.object({
     .max(150)
     .required(),
     box_id: Joi.number().integer()
-    .min(1), 
+    .min(1).required(), 
 });
 
 const itemController = {
@@ -244,12 +244,12 @@ const itemController = {
             req.body.user_id = req.session.user.id;
             
             // Check if the item name is available in the destination box
-            const itemNameMatch = await Item.itemNameExistsInBox(req.body); 
+            const matchedItem = await Item.itemNameExistsInBox(req.body); 
             
-            console.log("itemNameMatch :>>", itemNameMatch);
+            console.log("matchedItem :>>", matchedItem);
             
             //If the name already exists inbox 
-            if (itemNameMatch){
+            if (!!matchedItem && matchedItem.id !== storedItem.id ){
                 // abort and send error : 409 conflict
                 return res.status(409).send({
                     error : {
@@ -282,24 +282,19 @@ const itemController = {
         }
     }, 
     
-    /** Markpage */
-    
     searchItem: async (req, res) => {
         //* Search item function
         //? query string ?&search=researched+element
         //? payload move_id=15
         try {
-            // receive a query string search and moveId
-            
-            console.time('Search span'); 
 
             console.log('req.query', req.query); 
             
-            //? escape special characters 
+            //? escape special characters ??
             
-            // No data is stored in DB, so we do not see the need for escaping the special characters
+            //? No data is stored in DB, so we do not see the need for escaping the special characters
             
-            // The is prepared in DB and would prevent SQL script inclusion
+            //? The is prepared in DB and would prevent SQL script inclusion
             
             // Retrieve data from query string 
             const research = await normalize(req.query.research); 
@@ -311,8 +306,6 @@ const itemController = {
             // Filter the user moves with the pointed move (from query string)
             const move = req.session.user.moves.filter(moveObj => moveObj.id == move_id)[0];  
 
-
-            //TODO : UNCOMMENT THESE LINES
             // If the pointed move doesn't belong to current user
             if (!move) {
                 // prevent action and send an error
@@ -327,9 +320,8 @@ const itemController = {
                 });
             }
 
-            if (!move.boxes) {
-                move.boxes = await Item.search({user_id, move_id}); 
-            }
+            // Save the move content in the move object
+            move.boxes = await Item.search({user_id, move_id}); 
             
             const searchRE = new RegExp(research.trim(), 'i');
             
@@ -371,11 +363,6 @@ const itemController = {
             
             // Sort again to bring items starting with the given input
             filteredItems.sort((a, b) => (startWith.test(a.nameNormal)) ? -1 : 1); 
-            
-            // 
-            //console.log('pertinent items first', filteredItems);
-            
-            //console.log('results', results);
             
             // belongings should be grouped by boxes 
             // Repopulate boxes with filter objects 
@@ -451,23 +438,18 @@ const itemController = {
             /* 
             Returned values example
             [
-                {Box[
-                        {Item}, //item match (name) 
-                        {Item}  //item match (name)
-                    ]
-                }, 
-                {Box[           //box match (label OR destination room)
-                    ]
-                }
+                Box{items:[{Item},{Item}] }, //item match (name) 
+                Box{}        //box match (label OR destination room)
             ]
             */
-           console.timeEnd('Search span'); 
+
             res.send(filledBoxes); 
             
         } catch (error) {
             console.log(error); 
         }
     },
+
     deleteItem: async (req, res) => {
         //* Delete a item from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
