@@ -19,6 +19,8 @@ import Header from '../modules/views/Header';
 import TextField from '@material-ui/core/TextField';
 import { loadCSS } from 'fg-loadcss'; // for th icons
 import Icon from '@material-ui/core/Icon';
+// to redirection signin
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,10 +67,15 @@ function CreateBox(props) {
   const [floor, setFloor] = useState(true);
   const [heavy, setHeavy] = useState(true);
   
-  
-
   const [move_id, setMoveId] = useState(props.location.state.id);
-  
+
+  const isLogged = useSelector((state) => state.isLogged);
+  if (!isLogged) {
+    console.log('isLogged',isLogged);
+    //console.log('email,password page App/index',email,password);
+    return <Redirect to="/signin" />;
+  };
+
   function handleLabelChange(e) {
     console.log('input au onChange label ', e.target.value);
     setLabel(e.target.value);

@@ -12,6 +12,9 @@ import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import TextField from '@material-ui/core/TextField';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+// to redirection signin
+import { useSelector } from 'react-redux';
+import { Redirect} from 'react-router';
 
 axios.defaults.withCredentials = true;
 
@@ -57,6 +60,14 @@ const Item = (props) => {
     const [name, setName] = useState('');
     const [box_id, setBoxeId] = useState(props.location.state.id);
     const [getItem, setGetItem] = useState(false)
+
+    const isLogged = useSelector((state) => state.isLogged);
+
+    if (!isLogged) {
+      console.log('isLogged',isLogged);
+      //console.log('email,password page App/index',email,password);
+      return <Redirect to="/signin" />;
+    };
 
     useEffect(() => {
         axios.get(`http://localhost:5050/box/${props.location.state.id}`)
