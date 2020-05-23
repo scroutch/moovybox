@@ -180,13 +180,14 @@ const SignUp = () => {
               </Grid>
             </Grid>
             <Button
+              sizeLarge
               type="submit"
               fullWidth
               variant="contained"
               color="secondary"
               className={classes.submit}
             >
-              Connexion
+              Je valide et j'active mon compte avec le mail reçu.
             </Button>
             <Grid container>
               <Grid item xs>
