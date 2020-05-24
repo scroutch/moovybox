@@ -17,7 +17,7 @@ import Contact from '../Contact';
 import CreateBox from 'src/components/CreateBox';
 import BoxesByMove from 'src/components/BoxesByMove';
 import Item from 'src/components/Item';
-
+import NotFound from 'src/components/Notfound';
 
 // == Composant
 const App = () => {
@@ -56,8 +56,8 @@ const App = () => {
         <Route exact path="/signup">
           <SignUp />
         </Route>
-        <Route 
-        exact 
+        <Route
+        exact
         path="/profile"
         render={() => {
             //if ((email === '') || (password === '')) {
@@ -71,12 +71,12 @@ const App = () => {
             return  <Profile />;
           }}
         />
-         
+
         <Route exact path="/ResetPassword">
           <ResetPassword />
         </Route>
-        <Route 
-        exact 
+        <Route
+        exact
         path="/create-move"
         render={() => {
             //if ((email === '') || (password === '')) {
@@ -96,7 +96,7 @@ const App = () => {
         <Route exact path="/move/:id" component={BoxesByMove} />
         <Route exact path="/create-box" component={CreateBox} />
         <Route exact path="/box/:id" component={Item} />
-        <Route>404</Route>
+        <Route exact path="*"><NotFound /></Route>
       </Switch>
     </div>
   );
