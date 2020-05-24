@@ -21,6 +21,7 @@ import { loadCSS } from 'fg-loadcss'; // for th icons
 import Icon from '@material-ui/core/Icon';
 // to redirection signin
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,11 +52,11 @@ const useStyles = makeStyles((theme) => ({
   margin: {
     margin: theme.spacing(1, 0, 2),
   },
-  
-
 }));
 
-axios.defaults.withCredentials = true; 
+axios.defaults.withCredentials = true;
+
+toast.configure();
 
 function CreateBox(props) {
   let history = useHistory(); // to return on move/:id
@@ -66,7 +67,7 @@ function CreateBox(props) {
   const [fragile, setFragile] = useState(true);
   const [floor, setFloor] = useState(true);
   const [heavy, setHeavy] = useState(true);
-  
+
   const [move_id, setMoveId] = useState(props.location.state.id);
 
   const isLogged = useSelector((state) => state.isLogged);
@@ -75,6 +76,22 @@ function CreateBox(props) {
     //console.log('email,password page App/index',email,password);
     return <Redirect to="/signin" />;
   };
+
+  const successBox = () => {
+    toast.success('Votre carton a bien été créé !', {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 5000,
+      closeOnClick: true
+    })
+  }
+
+  const errorBox = () => {
+    toast.error('Une erreur est survenue. Veuillez réessayer ultérieurement !', {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 5000,
+      closeOnClick: true
+    })
+  }
 
   function handleLabelChange(e) {
     console.log('input au onChange label ', e.target.value);
@@ -106,9 +123,9 @@ function CreateBox(props) {
 
   function handleSubmit(e) {
     e.preventDefault(); // stops default reloading behaviour
-    
+
     axios
-      .post(`http://localhost:5050/box`, { label, destination_room, fragile, heavy, floor, move_id})  
+      .post(`http://localhost:5050/box`, { label, destination_room, fragile, heavy, floor, move_id})
       .then((res => {
         console.log(res);
         console.log(res.data);
@@ -119,17 +136,18 @@ function CreateBox(props) {
             id: move_id,
           }
         });
-        
+        successBox();
         // () => (() => history.push('/move/'+move_id));
         // () => history.goBack();
         // return (() => history.push('/move/'+move_id))();
-       
+
       })
       )
       .catch(err => {
         console.log(err);
+        errorBox();
       });
-    
+
   }
   return (
     <div className={classes.root}>
@@ -138,8 +156,8 @@ function CreateBox(props) {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}> 
-           <QueueIcon /> 
+          <Avatar className={classes.avatar}>
+           <QueueIcon />
           </Avatar>
           <Typography component="h1" variant="h3">
             J'ajoute un carton
@@ -164,7 +182,7 @@ function CreateBox(props) {
                   value={label}
                   onChange={handleLabelChange}
                 />{' '}
-              
+
             </Grid>
             <Grid item xs={12}>
             <TextField
@@ -189,11 +207,11 @@ function CreateBox(props) {
                 Mon carton est :
               </Typography>
               <Grid item xs={12}>
-                <Checkbox 
+                <Checkbox
                   checked={fragile}
                   onChange={handleFragileChange}
                   inputProps={{ 'aria-label': 'primary checkbox' }}
-                  
+
                 /> Fragile <Icon className="fas fa-wine-glass" color="secondary" />
               </Grid>
               <Grid item xs={12}>
@@ -201,7 +219,7 @@ function CreateBox(props) {
                   checked={heavy}
                   onChange={handleHeavyChange}
                   inputProps={{ 'aria-label': 'primary checkbox' }}
-                  
+
                 />  Lourd <Icon className="fas fa-weight-hanging" color="secondary" />
               </Grid>
               <Grid item xs={12}>
@@ -209,7 +227,7 @@ function CreateBox(props) {
                   checked={floor}
                   onChange={handleFloorChange}
                   inputProps={{ 'aria-label': 'primary checkbox' }}
-                  
+
                 /> A l'étage <Icon className="fas fa-level-up-alt" color="secondary" />
               </Grid>
 
@@ -224,9 +242,9 @@ function CreateBox(props) {
                 >
                   Ajouter
                 </Button>
-              
-            </Grid>  
-          </Grid> 
+
+            </Grid>
+          </Grid>
         </form>
       </div>
       </Container>

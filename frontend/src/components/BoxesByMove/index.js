@@ -28,6 +28,7 @@ import Icon from '@material-ui/core/Icon';
 // to redirection signin
 import { useSelector } from 'react-redux';
 import { Redirect} from 'react-router';
+import { toast } from 'react-toastify';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,12 +60,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+toast.configure();
+
 const BoxesByMove = (props) => {
   const classes = useStyles();
   const [boxes, setBoxes] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
   const isLogged = useSelector((state) => state.isLogged);
+
+  const successDelete = () => {
+    toast.success('Votre carton a bien été supprimé !', {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 5000,
+      closeOnClick: true
+    })
+  }
+
+  const errorDelete = () => {
+    toast.error('Une erreur est survenue. Veuillez réessayer ultérieurement !', {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 5000,
+      closeOnClick: true
+    })
+  }
 
   if (!isLogged) {
     console.log('isLogged',isLogged);
@@ -99,7 +118,7 @@ const BoxesByMove = (props) => {
       boxes.filter(box =>
         box.label.toLowerCase().includes(search.toLowerCase()))
     );
-  }, [search, boxes]); 
+  }, [search, boxes]);
 
   // delete a box selected
   const handleBoxDelete = (id) => {
@@ -107,17 +126,16 @@ const BoxesByMove = (props) => {
     axios.delete(`http://localhost:5050/box/${id}`)
          .then(res => {
           setBoxes(boxes.filter((boxe)=>(boxe.id !== id)));
+          successDelete();
          }).catch(err => {
           console.log(err);
+          errorDelete();
         })
   };
 
   return (
     <div className={classes.root}>
       <Header />
-
-
-
       <Container component="div" maxwidth="md">
       <InputBase
         className={classes.input}
@@ -184,11 +202,13 @@ const BoxesByMove = (props) => {
                 }
               })()}
                {/* {( {boxe.fragile} => {<Typography>Fragile</Typography> })();} */}
-               <IconButton aria-label="delete" color="default" edge='end' onClick={() => {handleBoxDelete(boxe.id)}} className={classes.margin}>
-                <DeleteIcon fontSize="small" />
-              </IconButton>
+
             </Button>
             </Link>
+            <IconButton aria-label="delete" color="default" edge='end' onClick={() => {handleBoxDelete(boxe.id)}} className={classes.margin}>
+                <DeleteIcon fontSize="small" />
+            </IconButton>
+
             {/* <DeleteIcon fontSize="large" color="secondary"  onClick={() => {handleDelete(move.id)}}/> */}
 
             </li>)}
