@@ -43,7 +43,7 @@
     "terser-webpack-plugin": "*",
     "webpack": "*",
     "webpack-cli": "*",
-    "webpack-dev-server": "*",
+    "webpack-dev-server": "^3.11.0",
     "webpack-merge": "*"
   },
   "dependencies": {

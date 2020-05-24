@@ -140,7 +140,7 @@ const authControlleur = {
             
             // If the user exists  
             if (!storedUser) {
-                res.status(401).send({
+                return res.status(401).send({
                     error : {
                         statusCode: 401,
                         message: {
@@ -161,7 +161,7 @@ const authControlleur = {
             
             if (!passwordMatch) {
                 //  If no match send error (wrong password)
-                res.status(401).send({
+                return res.status(401).send({
                     error : {
                         statusCode: 401,
                         message: {
@@ -175,7 +175,7 @@ const authControlleur = {
             // Password is valid
             
             // Check if user has confirmed account
-            /*
+            
             if (!storedUser.confirmed) {
                 return res.status(403).send({
                     error : {
@@ -187,7 +187,7 @@ const authControlleur = {
                     }
                 }); 
             }
-            */
+            
             //   If there is a match add user id to session, 
             
             // AND get his moves and send the results back 
@@ -326,7 +326,7 @@ const authControlleur = {
             // if email doesn't exist 
             if (!!storedUser) {
                 // abort and send error
-                res.status(401).send({
+                return res.status(401).send({
                     error : {
                         statusCode: 401,
                         message: {
