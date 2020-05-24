@@ -10,7 +10,7 @@ const sendInfoPasswordChanged = require('../mail/sendInfoPasswordChanged');
 
 const pseudoSchema = Joi.object({
     pseudo: Joi.string()
-        .alphanum()
+        .pattern(new RegExp('^[^<>:%]{0,}$'))
         .min(3)
         .max(30)
         .required()
@@ -35,7 +35,8 @@ const passwordChangeSchema = Joi.object({
     new_password: Joi.string()
         .pattern(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'))
         .required(),
-    password_repeat: Joi.ref('new_password')
+    password_repeat: Joi.any().valid(Joi.ref('new_password')).required()
+        
 })
 
 
@@ -227,6 +228,7 @@ const profileController = {
             </head>
             <body>
                 <script>
+                    alert("On t'envois un mail à la nouvelle adresse ;)"); 
                     window.close(); 
                 </script>
             </body>
@@ -286,6 +288,7 @@ const profileController = {
                 </head>
                 <body>
                     <script>
+                        alert("Tu peux maintenant te connecter avec ta nouvelle adresse."); 
                         window.close(); 
                     </script>
                 </body>
@@ -342,12 +345,14 @@ const profileController = {
             // change password in storedUser and update
             storedUser.password = await bcrypt.hash(req.body.new_password, salt); 
 
-                // proceed to change 
-            const result = await storedUser.save(storedUser);
+            // proceed to change 
+            const result = await storedUser.save();
+
+            console.log("updatePassword result :>", result); 
             
             //
             if (!result){
-                res.status(500).send({
+                return res.status(500).send({
                     statusCode : 500,
                     message:  {
                         en:"Something went wrong", 
@@ -367,6 +372,7 @@ const profileController = {
                 en: 'Success - Password was updated',
                 fr: 'Le mot de passe à bien été mis à jour.'
             }); 
+
         } catch (error) {
             console.log(error);
         }

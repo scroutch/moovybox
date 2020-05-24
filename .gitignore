@@ -8,6 +8,7 @@ frontend/yarn-error.log
 
 /backend/node_modules
 /backend/.env
-/backend/brouillon.js
+/backend/revise
+#/backend/brouillon.js
 /backend/modelTest.js
 

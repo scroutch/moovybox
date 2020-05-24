@@ -47,9 +47,28 @@ class Item {
             // Returns a boolean 
             // - true : name exists
             // - false : name does not exist
-            return !!results.rowCount; 
+            return results.rows[0]; 
         } catch (error) {
             return console.trace(error); 
+        }
+    }
+
+    static async search (data) {
+        //* Research function
+        try {
+
+            const query = `SELECT row_to_json(get_move_boxes_and_content($1, $2)); `; 
+            // TODO  : accept 
+            const values = [data.user_id, data.move_id]; 
+
+            const answerFromDB = await client.query(query, values); 
+
+            const results = answerFromDB.rows.map(entry => entry.row_to_json); 
+
+            return results; 
+             
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -84,6 +103,21 @@ class Item {
             console.trace(error);
         }
     }
+
+    async save() {
+        try {
+
+            if(!!this.id) {
+                return this.update(); 
+            } else {
+                return this.insert(); 
+            }
+            
+        } catch (error) {
+            console.log(error); 
+        }
+    }
+
 
     async delete() {
 

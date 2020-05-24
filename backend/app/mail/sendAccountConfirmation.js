@@ -5,7 +5,7 @@ const appConfig = require ('../config');
 
 module.exports = async (emailData) => {
 
-  //? emailData : {pseudo, new_email, old_email, token}
+  //? emailData : {pseudo, email, token}
   const link = `${appConfig.domain}/confirmation/${emailData.token}`; 
 
   emailData.subject = `Bienvenue ${emailData.pseudo} - Activer votre compte Moovybox`; 

@@ -55,9 +55,8 @@ const moveController = {
             
             //Compare the label field with the DB values
             const labelMatch = await Move.labelExists({moveLabel, userId}); 
-            
-            console.log("labelMatch :>>", labelMatch);
-            //If the label is the same of the DB value of the same user
+
+            //If the label is already in DB for the current user
             if (labelMatch){
                 // send a error to client
                 return res.status(409).send({
@@ -71,21 +70,23 @@ const moveController = {
                 });
                 
             } 
-            // the move label is available for the user !
-            // We move on with the request
 
+            // The move label is available for the user !
+
+            // Overload the payload 
             req.body.user_id = userId; 
             
             // create an instance of a move
             const newMove = new Move(req.body); 
-            console.log('newMove :>> ', newMove);
             
             // Save the current move object to DB
             const storedMove = await newMove.save(); 
-            console.log('storedMove :>> ', storedMove);
             
             // add the created move in session 
             req.session.user.moves.push(storedMove); 
+
+            // Content was updated : on search generate a new item
+            req.session.user.contentUpdated = true; 
             
             // Send the newly added move entry to client
             res.send(storedMove);        
@@ -144,13 +145,24 @@ const moveController = {
         }
         
         // We have a move !
-        
+
+        // Update the current move with paylod values
         for (let prop in req.body) {
             move[prop] = req.body[prop]; 
         }
         
         // Execute request
         const updatedMove = await move.update(); 
+
+        const sessionMove = req.session.user.moves.filter(move => move.id == req.params.id); 
+
+        // update session move with the retun info from DB 
+        for (const moveProp in updatedMove) {
+            sessionMove[0][moveProp] = updatedMove[moveProp];  
+        }
+
+        // Content was updated : on search generate a new item
+        req.session.user.contentUpdated = true; 
         
         // return the updated move
         res.send((updatedMove) ? updatedMove : false);
@@ -179,7 +191,7 @@ const moveController = {
                 });
             }
             
-            // payload is valid !! 
+            // The pointed move was found !! 
 
             // get move from DB 
             const moveId = req.params.id; 
@@ -208,6 +220,18 @@ const moveController = {
                         fr:"Quelque chose s'est mal passé"
                     }
                 });
+            }
+
+            // The move was deleted from DB 
+            const sessionMove = req.session.user.moves.filter(entry => entry.id == req.params.id); 
+
+            // get the move object index from session.moves array
+            const moveIndexToDelete = req.session.user.moves.indexOf(sessionMove[0])
+
+            // If an idex was found 
+            if (moveIndexToDelete >= 0) {
+                // Delete the move object from the session.moves array
+                req.session.user.moves.splice(moveIndexToDelete, 1); 
             }
             
             return res.status(200).send(success);
