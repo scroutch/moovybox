@@ -247,11 +247,7 @@ const deleteZero = (str) => {
                 justify="center"
                 alignItems="center"
                 >
-                  <Grid >
-                  <Typography className={classes.arround}> {deleteZero(boxe.code) } 
-                  </Typography>
                   
-                  </Grid>
                   <Grid item xs={12}>
                    <Typography>
                       {boxe.label} 
@@ -296,6 +292,11 @@ const deleteZero = (str) => {
                       )
                     }
                   })()}
+                  </Grid>
+                  <Grid >
+                  <Typography className={classes.arround}> {deleteZero(boxe.code) } 
+                  </Typography>
+                  
                   </Grid>
                 </Grid>
                 </Button>
