@@ -32,6 +32,7 @@ import ButtonCustom from '../modules/components/Button';
 // to redirection signin
 import { useSelector } from 'react-redux';
 import { Redirect} from 'react-router';
+import { toast } from 'react-toastify';
 // search
 import SearchIcon from '@material-ui/icons/Search';
 
@@ -102,6 +103,8 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
+toast.configure();
+
 const BoxesByMove = (props) => {
   const classes = useStyles();
   const [boxes, setBoxes] = useState([]);
@@ -113,6 +116,22 @@ const BoxesByMove = (props) => {
   
 
   const isLogged = useSelector((state) => state.isLogged);
+
+  const successDelete = () => {
+    toast.success('Votre carton a bien été supprimé !', {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 5000,
+      closeOnClick: true
+    })
+  }
+
+  const errorDelete = () => {
+    toast.error('Une erreur est survenue. Veuillez réessayer ultérieurement !', {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 5000,
+      closeOnClick: true
+    })
+  }
 
   if (!isLogged) {
     console.log('isLogged',isLogged);
@@ -130,8 +149,6 @@ const BoxesByMove = (props) => {
 
 // requeste to display all the boxes of 1 move selected
 useEffect(() => {
-
-
   axios.get(`http://localhost:5050/move/${props.location.state.id}`)
   .then(res => {
     setBoxes(res.data);
@@ -170,8 +187,10 @@ const handleDelete = (props) => {
        .then(res => {
         setBoxes(boxes.filter((boxe)=>(boxe.id !== id)));
         setOpen(false);
+        successDelete();
        }).catch(err => {
         console.log(err);
+        errorDelete();
       })
 };
 
@@ -236,6 +255,7 @@ const deleteZero = (str) => {
                    id: boxe.id
                   }
                 }}>
+
                 <Button 
                 variant="outlined" 
                 color="primary" 

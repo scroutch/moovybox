@@ -20,6 +20,7 @@ import {
 import { loadCSS } from 'fg-loadcss'; // for th icons
 import Icon from '@material-ui/core/Icon';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 axios.defaults.withCredentials = true;
 
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
+  toast.configure();
 
 const FormMove = () => {
   const classes = useStyles();
@@ -74,6 +76,22 @@ const FormMove = () => {
   //     setReminder({ ...reminder, [event.target.name]: event.target.checked});
   // }
 
+  const successMove = () => {
+    toast.success('Votre déménagement a bien été créé !', {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 5000,
+      closeOnClick: true
+    })
+  }
+
+  const errorMove = () => {
+    toast.error('Une erreur est survenue. Veuillez réessayer ultérieurement !', {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 5000,
+      closeOnClick: true
+    })
+  }
+
   const handleDateChange = (date) => {
     setDate(date);
   };
@@ -87,7 +105,7 @@ const FormMove = () => {
 
       setAddress(e.target.value);
   };
-  
+
   const handleSubmit = (e) => {
       e.preventDefault();
 
@@ -97,13 +115,13 @@ const FormMove = () => {
 
       axios.post('http://localhost:5050/move', data)
             .then(res => {
-              console.log('coincoin')
               console.log(res);
               history.push({
                 pathname:"/move/"})
+              successMove();
             }).catch(err => {
-              console.log('pouet');
               console.log(err);
+              errorMove();
             });
   };
 
@@ -190,16 +208,16 @@ const FormMove = () => {
           <Grid container spacing={3}>
             <Grid item xs={4}>
               <Link to="/move">
-                <Button 
-                variant="outlined" 
-                color="primary" 
-                fullWidth 
+                <Button
+                variant="outlined"
+                color="primary"
+                fullWidth
                 className={classes.submit}
                 >
                   Annuler
                 </Button>
               </Link>
-              
+
             </Grid>
             <Grid item xs={8}>
               <Button
