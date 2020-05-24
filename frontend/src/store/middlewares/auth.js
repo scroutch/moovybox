@@ -65,14 +65,14 @@ export default (store) => (next) => (action) => {
             //console.log('Authenticated');
             store.dispatch(successAuth());
           }
-          else {
-
+          if(res.status == 400) {
+            store.dispatch(errorAuth());
             console.error('impossible de se connecter', res);
           }
 
         }).catch((error) => {
           console.log('Error on Authentication', error);
-          store.dispatch(errorAuth());
+          // store.dispatch(errorAuth());
         });
 
       return;
