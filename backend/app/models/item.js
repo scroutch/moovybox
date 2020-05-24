@@ -47,7 +47,7 @@ class Item {
             // Returns a boolean 
             // - true : name exists
             // - false : name does not exist
-            return !!results.rowCount; 
+            return results.rows[0]; 
         } catch (error) {
             return console.trace(error); 
         }
@@ -103,6 +103,21 @@ class Item {
             console.trace(error);
         }
     }
+
+    async save() {
+        try {
+
+            if(!!this.id) {
+                return this.update(); 
+            } else {
+                return this.insert(); 
+            }
+            
+        } catch (error) {
+            console.log(error); 
+        }
+    }
+
 
     async delete() {
 

@@ -104,9 +104,9 @@ class User {
         try {
 
             if(!!this.id) {
-                this.update(); 
+                return this.update(); 
             } else {
-                this.insert(); 
+                return this.insert(); 
             }
             
         } catch (error) {
