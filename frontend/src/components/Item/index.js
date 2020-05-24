@@ -15,6 +15,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 // to redirection signin
 import { useSelector } from 'react-redux';
 import { Redirect} from 'react-router';
+import { toast } from 'react-toastify';
 
 axios.defaults.withCredentials = true;
 
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 axios.defaults.withCredentials = true;
 
-
+toast.configure();
 
 const Item = (props) => {
     const classes = useStyles();
@@ -68,6 +69,30 @@ const Item = (props) => {
       //console.log('email,password page App/index',email,password);
       return <Redirect to="/signin" />;
     };
+
+    const successAdd = () => {
+      toast.success('Votre objet a bien été ajouté au carton !', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 5000,
+        closeOnClick: true
+      })
+    }
+
+    const successDelete = () => {
+      toast.success('Votre objet a bien été supprimé du carton !', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 5000,
+        closeOnClick: true
+      })
+    }
+
+    const errorDelete = () => {
+      toast.error('Une erreur est survenue. Veuillez réessayer ultérieurement !', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 5000,
+        closeOnClick: true
+      })
+    }
 
     useEffect(() => {
         axios.get(`http://localhost:5050/box/${props.location.state.id}`)
@@ -111,8 +136,10 @@ const Item = (props) => {
              .then(res => {
                  console.log('ici les items', res.data);
                  setGetItem(true)
+                 successAdd();
              }).catch(err => {
                 console.log(err);
+                errorDelete();
               });
     }
 
@@ -122,11 +149,11 @@ const Item = (props) => {
 
         axios.delete(`http://localhost:5050/item/${id}`)
              .then(res => {
-
-               console.log("ok et id", id);
               setItem(item.filter((ite)=>(ite.id !== id)));
+              successDelete();
              }).catch(err => {
               console.log(err);
+              errorDelete();
             })
       };
 
@@ -146,7 +173,7 @@ const Item = (props) => {
             <TextField id="outlined-basic" label="Item" variant="outlined" value={item.name}  onChange={handleItemChange}/>
             </form>
             <ul>
-                {item.map(elt => 
+                {item.map(elt =>
                 <li key={elt.id}>
                     <Button variant="outlined" color="primary" className={classes.item}>
                         {elt.name}
