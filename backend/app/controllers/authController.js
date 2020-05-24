@@ -8,6 +8,8 @@ const configLocal = require('../config');
 
 const salt = parseInt(process.env.SALT, 10);
 const sendAccountConfirmationEmail= require('../mail/sendAccountConfirmation');
+
+const sendNewAccountConfirmationLinkEmail= require('../mail/sendNewAccountConfirmationLink');
 const sendPasswordResetLink = require('../mail/sendPasswordResetLink'); 
 require('dotenv').config(); 
 
@@ -192,6 +194,10 @@ const authControlleur = {
             req.session.user ={ id: storedUser.id }; 
             req.session.user.moves = storedUser.moves = await Move.getAllFromUserId(req.session.user.id); 
             
+            // set a content modified value for research update 
+            req.session.user.contentUpdated = false; 
+
+            
             console.log('req.session :>> ', req.session);
             
             delete storedUser.password; 
@@ -297,7 +303,7 @@ const authControlleur = {
             confirmationEmailData.token = jwt.sign({id: storedUser.id, email: storedUser.email}, process.env.TOKENKEY, {expiresIn: '1d'}); 
             // - Use the email function ({userPseudo, userEmail, UserToken})
             
-            sendPasswordResetLink(confirmationEmailData); 
+            sendNewAccountConfirmationLinkEmail(confirmationEmailData); 
             
             res.status(200).send({ // server code 200 : success
                 en: "Success - The new confirmation link has been sent.", 

@@ -149,6 +149,8 @@ const itemController = {
             // Item.insert()
             const storedItem = await newItem.insert(); 
             
+            req.session.user.contentUpdated = true; 
+            
             // Send the newly added item entry to client
             res.send(storedItem);        
             
@@ -275,6 +277,9 @@ const itemController = {
             const updatedItem = await storedItem.update(); 
             console.log('updatedItem :>> ', updatedItem);
             
+            req.session.user.contentUpdated = true;             
+            
+            
             res.send(updatedItem);         
             
         } catch (error) {
@@ -287,7 +292,7 @@ const itemController = {
         //? query string ?&search=researched+element
         //? payload move_id=15
         try {
-
+            
             console.log('req.query', req.query); 
             
             //? escape special characters ??
@@ -295,6 +300,8 @@ const itemController = {
             //? No data is stored in DB, so we do not see the need for escaping the special characters
             
             //? The is prepared in DB and would prevent SQL script inclusion
+            
+            console.time("search through");
             
             // Retrieve data from query string 
             const research = await normalize(req.query.research); 
@@ -305,7 +312,7 @@ const itemController = {
             
             // Filter the user moves with the pointed move (from query string)
             const move = req.session.user.moves.filter(moveObj => moveObj.id == move_id)[0];  
-
+            
             // If the pointed move doesn't belong to current user
             if (!move) {
                 // prevent action and send an error
@@ -319,21 +326,28 @@ const itemController = {
                     }
                 });
             }
-
-            // Save the move content in the move object
-            move.boxes = await Item.search({user_id, move_id}); 
+            
+            console.log('move', move); 
+            
+            if (req.session.user.contentUpdated || !move.boxes) {
+                // Save the move content in the move object
+                move.boxes = await Item.search({user_id, move_id}); 
+                console.log("On est aller dans la base de données"); 
+                req.session.user.contentUpdated = false; 
+            }
+            
             
             const searchRE = new RegExp(research.trim(), 'i');
             
             const boxesInMove = [...move.boxes]; 
             const itemGroups = []; 
-
+            
             console.log('boxesInMove', boxesInMove); 
             
             for ( const box of boxesInMove) {
                 box.labelNormal = await normalize(box.label); 
                 box.destination_roomNormal = await normalize(box.destination_room); 
-
+                
                 if (!!box.items) {
                     itemGroups.push([...box.items]); 
                     delete box.items; 
@@ -343,7 +357,7 @@ const itemController = {
             
             
             const allItems = [].concat(...itemGroups); 
-
+            
             console.log('searchRE :>> ', searchRE);
             console.log('allItems :>> ', allItems);
             
@@ -353,7 +367,7 @@ const itemController = {
             }
             
             const filteredItems =  allItems.filter((item) => searchRE.test(item.nameNormal)); 
-
+            
             console.log('filteredItems', filteredItems);
             
             const startWith = new RegExp(`^${research}`, 'i'); 
@@ -380,18 +394,18 @@ const itemController = {
             }
             
             //console.log('results', results);
-
+            
             // Filter result box and items to retain the boxes with a matching content
             const filledBoxes = boxesInMove.filter(box => box.hasOwnProperty('items')); 
-
+            
             // Filter boxes ressembling search input on label OR  destination_room ..
             // .. to be included in search results despite having no mathcing items
             const filteredBoxes = boxesInMove.filter( box => searchRE.test(box.labelNormal) || searchRE.test(box.destination_roomNormal)); 
-
+            
             //console.log('filteredBoxes', filteredBoxes);
-
+            
             let boxAlreadyFiltered = false; 
-
+            
             for (const filteredBox of filteredBoxes) {
                 // BY default the box is eligible to takepart in the results
                 boxAlreadyFiltered = false; 
@@ -403,27 +417,25 @@ const itemController = {
                         boxAlreadyFiltered = true; 
                     }
                 }
-
+                
                 // If the current empty box matching the results isn't yet refrenced in the final results
                 if (!boxAlreadyFiltered) {
                     // we add the current box
                     filledBoxes.push(filteredBox); 
                 }
-
+                
             }
-
-            console.log('final filledBoxes', filledBoxes);
-
+            
             const endWithNormal = /Normal$/;
-
+            
             for (const box of filledBoxes) {
-
+                
                 for (boxProp in box) {
                     if (endWithNormal.test(boxProp)) {
                         delete box[boxProp]; 
                     } 
                 }
-
+                
                 if (!!box.items) {
                     for (item of box.items) {
                         for (itemProp in item) {
@@ -435,6 +447,8 @@ const itemController = {
                 }
                 
             }
+
+            console.log('final result', filledBoxes);
             /* 
             Returned values example
             [
@@ -442,14 +456,14 @@ const itemController = {
                 Box{}        //box match (label OR destination room)
             ]
             */
-
+            console.timeEnd("search through");
             res.send(filledBoxes); 
             
         } catch (error) {
             console.log(error); 
         }
     },
-
+    
     deleteItem: async (req, res) => {
         //* Delete a item from DB matching user id
         // At this stage user IS authentified (authCheckerMW.js)
@@ -494,6 +508,10 @@ const itemController = {
             
             // Request deletion from DB
             const success = await storedItem.delete(); 
+            
+            if (success) {
+                req.session.user.contentUpdated = true;    
+            }
             
             // return : boolean
             // true : deletion ok
