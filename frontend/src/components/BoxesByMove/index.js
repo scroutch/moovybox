@@ -305,7 +305,7 @@ const deleteZero = (str) => {
           </Typography>
           </Link>
           <Typography variant="h5"  className={classes.title}>
-            Cliquer sur les cartons pour consulter ou ajouter du contenu.
+            Cliquer sur les cartons ci-dessous pour consulter ou ajouter du contenu. Attention, n'oubliez pas le code dans le rond à écrire sur votre carton. 
           </Typography>
           <ul className={classes.liste}>
           {filteredItems.map(boxe =>
