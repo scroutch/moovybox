@@ -35,6 +35,9 @@ import { Redirect} from 'react-router';
 import { toast } from 'react-toastify';
 // search
 import SearchIcon from '@material-ui/icons/Search';
+import { fade} from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(1),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -99,7 +102,47 @@ const useStyles = makeStyles((theme) => ({
   arrow: { 
     margin: theme.spacing(0,1, 0,1 ),
    
-  }
+  },
+  // research
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '20ch',
+      },
+    },
+  },
   
 }));
 
@@ -213,24 +256,39 @@ const deleteZero = (str) => {
   return (
     <div className={classes.root}>
       <Header />
+      {/* test */}
+      {/* research */}
+      
+        <AppBar position="static">
+          <Toolbar>
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                placeholder="Recherche…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'Recherche' }}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+          </Toolbar>
+        </AppBar>
+     
+      {/* end research */}
       <Container component="main" maxWidth="xs">
         {/* <CssBaseline /> */}
         <div className={classes.paper}>
-          {/* research */}
-          <InputBase
-            className={classes.input}
-            placeholder="Search"
-            onChange={e => setSearch(e.target.value)}
-          />
-          <IconButton type="submit" className={classes.iconButton} aria-label="search">
-            <SearchIcon />
-          </IconButton>
-          {/* end research */}
+          
           <Icon className="fas fa-box-open" color="secondary" style={{ fontSize: 30, width: 45 }}/>
           
           <Typography component="h1" variant="h4"  className={classes.title}>
             Listes des cartons de mon déménagement
           </Typography>
+          
           <Link to ={{
               pathname:"/create-box",
               state: {
@@ -246,6 +304,9 @@ const deleteZero = (str) => {
             <Button size="medium" variant="outlined" color="primary" >Créer un nouveau carton</Button>
           </Typography>
           </Link>
+          <Typography variant="h5"  className={classes.title}>
+            Cliquer sur les cartons pour consulter ou ajouter du contenu.
+          </Typography>
           <ul className={classes.liste}>
           {filteredItems.map(boxe =>
             <li key={boxe.id}>
