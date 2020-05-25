@@ -25,6 +25,7 @@ const signupSchema = Joi.object({
     .alphanum()
     .min(3)
     .max(30)
+    .allow(" ")
     .required(),
     email: Joi.string()
     .email()
