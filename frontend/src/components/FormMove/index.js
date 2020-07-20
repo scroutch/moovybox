@@ -1,6 +1,8 @@
 import 'date-fns';
 import React, {useState} from 'react';
+import axios from 'axios';
 import withRoot from '../modules/withRoot';
+import { useHistory } from "react-router-dom";
 import Footer from '../modules/views/Footer';
 import Header from '../modules/views/Header';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,14 +12,13 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Button from '../modules/components/Button';
-import Switch from '@material-ui/core/Switch';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
   } from '@material-ui/pickers';
+
+axios.defaults.withCredentials = true;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,24 +36,33 @@ const useStyles = makeStyles((theme) => ({
       width: '100%', // Fix IE 11 issue.
       marginTop: theme.spacing(1),
     },
+    textField: {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      width: 200,
+    },
     submit: {
       margin: theme.spacing(3, 0, 2),
     },
   }));
 
+
 const FormMove = () => {
     const classes = useStyles();
+    let history = useHistory();
     const [label, setLabel] = useState('');
-    const [adress, setAdress] = useState('');
-    const [selectedDate, setSelectedDate] = useState(new Date('2020-06-18'));
-    const [reminder, setReminder] = useState({checked: true});
+    const [address, setAddress] = useState('');
+    const [date, setDate] = useState(new Date());
 
-    const handleReminderChange = (e) => {
-        setReminder({ ...reminder, [event.target.name]: event.target.checked});
-    }
+
+    // const [reminder, setReminder] = useState({checked: true});
+
+    // const handleReminderChange = (e) => {
+    //     setReminder({ ...reminder, [event.target.name]: event.target.checked});
+    // }
 
     const handleDateChange = (date) => {
-      setSelectedDate(date);
+      setDate(date);
     };
 
     const handleLabelChange = (e) => {
@@ -60,18 +70,30 @@ const FormMove = () => {
         setLabel(e.target.value);
     }
 
-    const handleAdressChange = (e) => {
+    const handleAddressChange = (e) => {
 
-        setAdress(e.target.value);
+        setAddress(e.target.value);
     }
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(`Form envoyé :`);
-        console.log([{label}]);
-        console.log([{adress}]);
-        console.log([{selectedDate}]);
-        console.log([{reminder}]);
+
+        const data = {label, address, date};
+
+        console.log(data)
+
+        axios.post('http://localhost:5050/move', data)
+             .then(res => {
+                console.log('coincoin')
+                console.log(res);
+                history.push({
+                  pathname:"/move/"})
+             }).catch(err => {
+               console.log('pouet');
+               console.log(err);
+             });
     }
 
   return (
@@ -106,20 +128,21 @@ const FormMove = () => {
                 required
                 fullWidth
                 label="Adresse"
-                value={adress}
-                onChange={handleAdressChange}
+                value={address}
+                onChange={handleAddressChange}
               />
             </Grid>
+
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justify="space-around">
                 <KeyboardDatePicker
                     disableToolbar
                     variant="inline"
-                    format="dd/MM/yyyy"
+                    format="yyyy-MM-dd"
+                    // type="date.format"
                     margin="normal"
                     id="date-picker-inline"
-                    label="Entrez une date"
-                    value={selectedDate}
+                    value={date}
                     onChange={handleDateChange}
                     KeyboardButtonProps={{
                     'aria-label': 'change date',
@@ -127,7 +150,7 @@ const FormMove = () => {
                 />
             </Grid>
             </MuiPickersUtilsProvider>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
             <FormControlLabel
                 control={
                     <Switch
@@ -139,18 +162,20 @@ const FormMove = () => {
                 }
                 label="Voulez-vous un rappel"
             />
-            </Grid>
+            </Grid> */}
           </Grid>
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="secondary"
             className={classes.submit}
-
+            // href="/move"
           >
             Valider
           </Button>
+
         </form>
       </div>
     </Container>
